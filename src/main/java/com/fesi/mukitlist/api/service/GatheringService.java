@@ -10,17 +10,24 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fesi.mukitlist.api.controller.dto.response.GatheringResponse;
 import com.fesi.mukitlist.api.domain.Gathering;
+import com.fesi.mukitlist.api.domain.Review;
+import com.fesi.mukitlist.api.domain.User;
 import com.fesi.mukitlist.api.domain.UserGathering;
 import com.fesi.mukitlist.api.domain.UserGatheringId;
 import com.fesi.mukitlist.api.repository.GatheringRepository;
 import com.fesi.mukitlist.api.repository.ReviewRepository;
 import com.fesi.mukitlist.api.repository.UserGatheringRepository;
+import com.fesi.mukitlist.api.repository.UserRepository;
 import com.fesi.mukitlist.api.service.request.GatheringServiceCreateRequest;
 import com.fesi.mukitlist.api.service.request.GatheringServiceRequest;
+import com.fesi.mukitlist.api.service.response.GatheringParticipantsResponse;
+import com.fesi.mukitlist.api.service.response.GatheringResponse;
+import com.fesi.mukitlist.api.service.response.JoinedGatheringsResponse;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 
@@ -31,6 +38,7 @@ public class GatheringService {
 
 	private final GatheringRepository gatheringRepository;
 	private final UserGatheringRepository userGatheringRepository;
+	private final UserRepository userRepository;
 	private final ReviewRepository reviewRepository;
 
 	@Transactional(readOnly = true)
@@ -78,31 +86,35 @@ public class GatheringService {
 		return GatheringResponse.of(savedGathering);
 	}
 
-
+	@Transactional(readOnly = true)
 	public GatheringResponse getGatheringById(Long id) {
 		Gathering gathering = getGatheringsFrom(id);
 		return GatheringResponse.of(gathering);
 	}
 
-	public void cancelGathering(Long id, Long userId) {
+	public GatheringResponse cancelGathering(Long id) {
+
+		User user = getUserFrom(1L);
 		Gathering gathering = getGatheringsFrom(id);
-		if (!gathering.getCreatedBy().equals(userId)) {
+		if (!gathering.getCreatedBy().equals(user)) {
 			throw new RuntimeException("Permission denied");
 		}
 
 		LocalDateTime canceledTime = LocalDateTime.now();
 		gathering.updateCanceledAt(canceledTime);
-		gatheringRepository.save(gathering);
+		Gathering savedGathering = gatheringRepository.save(gathering);
+
+		return GatheringResponse.of(savedGathering);
 	}
 
-	public void joinGathering(Long id, Long userId) {
+	public void joinGathering(Long id) {
 		Gathering gathering = getGatheringsFrom(id);
-
+		User user = getUserFrom(1L);
 		if (gathering.getCanceledAt() != null || gathering.getParticipantCount() >= gathering.getCapacity()) {
 			throw new RuntimeException("Cannot join gathering");
 		}
 
-		UserGatheringId userGatheringId = UserGatheringId.of(id,userId);
+		UserGatheringId userGatheringId = UserGatheringId.of(user, gathering);
 		LocalDateTime joinedTime = LocalDateTime.now();
 		UserGathering userGathering = UserGathering.of(userGatheringId, joinedTime);
 		userGatheringRepository.save(userGathering);
@@ -110,18 +122,66 @@ public class GatheringService {
 		gathering.joinParticipant();
 	}
 
-	public void leaveGathering(Long id, Long userId) {
-		UserGatheringId userGatheringId = UserGatheringId.of(id,userId);
+	public void leaveGathering(Long id) {
+		Gathering gathering = getGatheringsFrom(id);
+		User user = getUserFrom(1L);
+		UserGatheringId userGatheringId = UserGatheringId.of(user, gathering);
 		userGatheringRepository.deleteById(userGatheringId);
 
-		Gathering gathering = getGatheringsFrom(id);
 		gathering.leaveParticipant();
-
 		gatheringRepository.save(gathering);
+	}
+
+	public List<JoinedGatheringsResponse> getJoinedGatherings(Boolean completed, Boolean reviewed, Pageable pageable) {
+		User user = getUserFrom(1L);
+
+		Specification<UserGathering> specification = (root, query, criteriaBuilder) -> {
+			List<Predicate> predicates = new ArrayList<>();
+
+			Join<UserGatheringId,UserGathering> userGatheringIdJoin = root.join("id", JoinType.INNER);
+
+			predicates.add(criteriaBuilder.equal(userGatheringIdJoin.get("user"), user));
+
+			Join<UserGatheringId, Gathering> gatheringJoin = userGatheringIdJoin.join("gathering", JoinType.INNER);
+
+			if (completed != null) {
+				LocalDateTime now = LocalDateTime.now();
+				if (completed) {
+					predicates.add(criteriaBuilder.lessThan(gatheringJoin.get("dateTime"), now));
+				} else {
+					predicates.add(criteriaBuilder.greaterThanOrEqualTo(gatheringJoin.get("dateTime"), now));
+				}
+			}
+
+			if (reviewed != null) {
+				Join<Gathering, Review> reviewJoin = gatheringJoin.join("reviews", JoinType.LEFT);
+				if (reviewed) {
+					predicates.add(criteriaBuilder.isNotNull(reviewJoin.get("id")));
+				} else {
+					predicates.add(criteriaBuilder.isNull(reviewJoin.get("id")));
+				}
+			}
+			return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+		};
+		Page<UserGathering> userGatheringsPage = userGatheringRepository.findAll(specification, pageable);
+		return userGatheringsPage.stream()
+			.map(JoinedGatheringsResponse::of)
+			.toList();
+	}
+
+	public List<GatheringParticipantsResponse> getGatheringParticipants(Long id, Pageable pageable) {
+		List<UserGathering> gatherings = userGatheringRepository.findByIdGatheringId(id, pageable).getContent();
+		return gatherings.stream()
+			.map(GatheringParticipantsResponse::of)
+			.toList();
 	}
 
 	private Gathering getGatheringsFrom(Long id) {
 		return gatheringRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 모임입니다."));
 	}
 
+
+	private User getUserFrom(Long id) {
+		return userRepository.findById(id).orElse(null);
+	}
 }

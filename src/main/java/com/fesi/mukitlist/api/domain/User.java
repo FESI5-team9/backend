@@ -10,13 +10,16 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@Table(name = "USER_TABLE")
 public class User {
 
 	@Id
@@ -46,4 +49,16 @@ public class User {
 
 	private LocalDateTime deletedAt;
 
+	@Builder
+	private User(String email, String password, String name, String companyName, String image, LocalDateTime createdAt,
+		LocalDateTime updatedAt, LocalDateTime deletedAt) {
+		this.email = email;
+		this.password = password;
+		this.name = name;
+		this.companyName = companyName;
+		this.image = image;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
+		this.deletedAt = deletedAt;
+	}
 }

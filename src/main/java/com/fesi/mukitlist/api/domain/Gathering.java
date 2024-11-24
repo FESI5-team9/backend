@@ -3,6 +3,7 @@ package com.fesi.mukitlist.api.domain;
 import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
 
 import com.fesi.mukitlist.api.service.request.GatheringServiceCreateRequest;
 
@@ -75,7 +76,7 @@ public class Gathering {
 			.dateTime(request.dateTime())
 			.capacity(request.capacity())
 			.registrationEnd(request.registrationEnd())
-			//.createdBy()
+			.createdBy("test")
 			.build();
 	}
 
