@@ -60,8 +60,7 @@ public class GatheringController {
 	@PostMapping
 	public ResponseEntity<GatheringResponse> createGathering(
 		@RequestBody GatheringCreateRequest gatheringCreateRequest) {
-		LocalDateTime canceledAt = LocalDateTime.now();
-		GatheringResponse gathering = gatheringService.createGathering(gatheringCreateRequest.toServiceRequest(), canceledAt);
+		GatheringResponse gathering = gatheringService.createGathering(gatheringCreateRequest.toServiceRequest());
 		return new ResponseEntity<>(gathering, HttpStatus.CREATED);
 	}
 

@@ -80,8 +80,8 @@ public class GatheringService {
 			.toList();
 	}
 
-	public GatheringResponse createGathering(GatheringServiceCreateRequest request, LocalDateTime now) {
-		Gathering gathering = Gathering.create(request, now);
+	public GatheringResponse createGathering(GatheringServiceCreateRequest request) {
+		Gathering gathering = Gathering.create(request);
 		Gathering savedGathering = gatheringRepository.save(gathering);
 		return GatheringResponse.of(savedGathering);
 	}

@@ -68,7 +68,7 @@ public class Gathering {
 		this.canceledAt = canceledAt;
 	}
 
-	public static Gathering create(GatheringServiceCreateRequest request, LocalDateTime now) {
+	public static Gathering create(GatheringServiceCreateRequest request) {
 		return Gathering.builder()
 			.location(request.location())
 			.type(request.type())
@@ -77,7 +77,6 @@ public class Gathering {
 			.capacity(request.capacity())
 			.registrationEnd(request.registrationEnd())
 			.createdBy("test")
-			.canceledAt(now)
 			.build();
 	}
 
