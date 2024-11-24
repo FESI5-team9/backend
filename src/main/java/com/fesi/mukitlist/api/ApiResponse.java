@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.api.service;
+package com.fesi.mukitlist.api;
 
 import org.springframework.http.HttpStatus;
 
