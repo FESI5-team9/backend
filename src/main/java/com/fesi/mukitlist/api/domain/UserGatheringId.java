@@ -1,6 +1,7 @@
 package com.fesi.mukitlist.api.domain;
 
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,15 +10,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Embeddable
 public class UserGatheringId {
-	private Long userId;
-	private Long gatheringId;
+	@ManyToOne
+	private User user;
+	@ManyToOne
+	private Gathering gathering;
 
-	private UserGatheringId(Long userId, Long gatheringId) {
-		this.userId = userId;
-		this.gatheringId = gatheringId;
+	private UserGatheringId(User user, Gathering gathering) {
+		this.user = user;
+		this.gathering = gathering;
 	}
 
-	public static UserGatheringId of(Long userId, Long gatheringId) {
-		return new UserGatheringId(userId, gatheringId);
+	public static UserGatheringId of(User user, Gathering gathering) {
+		return new UserGatheringId(user, gathering);
 	}
 }

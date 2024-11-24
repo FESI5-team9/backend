@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.api.controller.dto.response;
+package com.fesi.mukitlist.api.service.response;
 
 import java.time.LocalDateTime;
 
@@ -16,8 +16,8 @@ public record GatheringResponse(
 	LocalDateTime registrationEnd,
 	String location,
 	int participantCount,
-	int capacity
-) {
+	int capacity,
+	LocalDateTime canceledAt) {
 
 	public static GatheringResponse of(Gathering gathering) {
 		return GatheringResponse.builder()
@@ -29,6 +29,7 @@ public record GatheringResponse(
 			.location(gathering.getLocation())
 			.participantCount(gathering.getParticipantCount())
 			.capacity(gathering.getCapacity())
+			.canceledAt(gathering.getCanceledAt())
 			.build();
 	}
 }
