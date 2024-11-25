@@ -200,6 +200,7 @@ public class GatheringService {
 			.toList();
 	}
 
+
 	private Gathering getGatheringsFrom(Long id) {
 		return gatheringRepository.findById(id).orElseThrow(() -> new AppException(NOT_FOUND));
 	}
