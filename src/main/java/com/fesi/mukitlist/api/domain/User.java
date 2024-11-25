@@ -1,5 +1,6 @@
 package com.fesi.mukitlist.api.domain;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -22,7 +23,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of();
