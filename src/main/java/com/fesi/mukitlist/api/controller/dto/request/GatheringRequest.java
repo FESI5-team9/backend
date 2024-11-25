@@ -14,6 +14,7 @@ import lombok.Builder;
  */
 public record GatheringRequest(
 	List<Long> id,
+
 	GatheringType type,
 	LocalDateTime dateTime,
 	String location,
