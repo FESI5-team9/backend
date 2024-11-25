@@ -5,9 +5,11 @@ import java.time.LocalDateTime;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import com.fesi.mukitlist.api.service.request.GatheringServiceCreateRequest;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
@@ -31,6 +33,9 @@ public class Gathering {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@Column(nullable = false)
+	private String location;
+
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private GatheringType type;
@@ -44,7 +49,13 @@ public class Gathering {
 	private LocalDateTime registrationEnd;
 
 	@Column(nullable = false)
-	private String location;
+	private String address1;
+
+	@Column(nullable = false)
+	private String address2;
+
+	@Column
+	private String description;
 
 	@Column(nullable = false)
 	private int participantCount = 0;
@@ -61,13 +72,29 @@ public class Gathering {
 	private LocalDateTime canceledAt;
 
 	@Builder
-	private Gathering(GatheringType type, String name, LocalDateTime dateTime, LocalDateTime registrationEnd,
-		String location, int participantCount, int capacity, String createdBy, User user, LocalDateTime canceledAt) {
+	private Gathering(
+		String location,
+		GatheringType type,
+		String name,
+		LocalDateTime dateTime,
+		LocalDateTime registrationEnd,
+		String address1,
+		String address2,
+		String description,
+		int participantCount,
+		int capacity,
+		String createdBy,
+		User user,
+		LocalDateTime canceledAt) {
+
+		this.location = location;
 		this.type = type;
 		this.name = name;
 		this.dateTime = dateTime;
 		this.registrationEnd = registrationEnd;
-		this.location = location;
+		this.address1 = address1;
+		this.address2 = address2;
+		this.description = description;
 		this.participantCount = participantCount;
 		this.capacity = capacity;
 		this.createdBy = createdBy;
@@ -83,6 +110,9 @@ public class Gathering {
 			.dateTime(request.dateTime())
 			.capacity(request.minimumCapacity())
 			.registrationEnd(request.registrationEnd())
+			.address1(request.address1())
+			.address2(request.address2())
+			.description(request.description())
 			.createdBy(user.getName())
 			.user(user)
 			.build();

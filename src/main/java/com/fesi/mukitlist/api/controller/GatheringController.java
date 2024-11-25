@@ -42,8 +42,6 @@ public class GatheringController {
 		@PageableDefault(sort = "dateTime", direction = Sort.Direction.ASC, size = 10) Pageable pageable
 	) {
 
-		log.info("Pageable: page={}, size={}, sort={}", pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
-
 		List<GatheringResponse> gatheringResponseDtoList = gatheringService.getGatherings(request.toServiceRequest(),
 			pageable);
 
