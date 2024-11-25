@@ -48,11 +48,16 @@ public class User {
     private LocalDateTime deletedAt;
 
     @Builder
-    public User(String email, String password, String name, String companyName, String image) {
+    private User(String email, String password, String name, String companyName, String image, LocalDateTime createdAt,
+                 LocalDateTime updatedAt, LocalDateTime deletedAt) {
         this.email = email;
         this.password = password;
         this.name = name;
         this.companyName = companyName;
+        this.image = image;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
     }
 
 }
