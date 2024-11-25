@@ -61,6 +61,9 @@ public class User implements UserDetails {
 
     private LocalDateTime deletedAt;
 
+    @OneToMany(mappedBy = "user")
+    private List<Token> tokens;
+
     @Builder
     private User(String email, String password, String name, String companyName, String image, LocalDateTime createdAt,
                  LocalDateTime updatedAt, LocalDateTime deletedAt) {
