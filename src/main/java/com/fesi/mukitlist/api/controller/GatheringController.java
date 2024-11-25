@@ -25,11 +25,14 @@ import com.fesi.mukitlist.api.service.response.GatheringResponse;
 import com.fesi.mukitlist.api.service.GatheringService;
 import com.fesi.mukitlist.api.service.response.JoinedGatheringsResponse;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/gatherings")
+@Slf4j
 public class GatheringController {
 	private final GatheringService gatheringService;
 
@@ -38,6 +41,8 @@ public class GatheringController {
 		GatheringRequest request,
 		@PageableDefault(sort = "dateTime", direction = Sort.Direction.ASC, size = 10) Pageable pageable
 	) {
+
+		log.info("Pageable: page={}, size={}, sort={}", pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
 
 		List<GatheringResponse> gatheringResponseDtoList = gatheringService.getGatherings(request.toServiceRequest(),
 			pageable);
@@ -59,7 +64,7 @@ public class GatheringController {
 
 	@PostMapping
 	public ResponseEntity<GatheringResponse> createGathering(
-		@RequestBody GatheringCreateRequest gatheringCreateRequest) {
+		@Valid @RequestBody GatheringCreateRequest gatheringCreateRequest) {
 		GatheringResponse gathering = gatheringService.createGathering(gatheringCreateRequest.toServiceRequest());
 		return new ResponseEntity<>(gathering, HttpStatus.CREATED);
 	}
@@ -87,7 +92,8 @@ public class GatheringController {
 
 	@DeleteMapping("/{id}/leave")
 	public ResponseEntity leaveGathering(@PathVariable("id") Long id) {
-		gatheringService.leaveGathering(id);
+		LocalDateTime leaveTime = LocalDateTime.now();
+		gatheringService.leaveGathering(id, leaveTime);
 		return new ResponseEntity(HttpStatus.OK);
 	}
 

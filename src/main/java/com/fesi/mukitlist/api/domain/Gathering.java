@@ -15,6 +15,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -54,11 +55,14 @@ public class Gathering {
 	@CreatedBy
 	private String createdBy;
 
+	@ManyToOne
+	private User user;
+
 	private LocalDateTime canceledAt;
 
 	@Builder
 	private Gathering(GatheringType type, String name, LocalDateTime dateTime, LocalDateTime registrationEnd,
-		String location, int participantCount, int capacity, String createdBy, LocalDateTime canceledAt) {
+		String location, int participantCount, int capacity, String createdBy, User user, LocalDateTime canceledAt) {
 		this.type = type;
 		this.name = name;
 		this.dateTime = dateTime;
@@ -67,19 +71,33 @@ public class Gathering {
 		this.participantCount = participantCount;
 		this.capacity = capacity;
 		this.createdBy = createdBy;
+		this.user = user;
 		this.canceledAt = canceledAt;
 	}
 
-	public static Gathering create(GatheringServiceCreateRequest request) {
+	public static Gathering create(GatheringServiceCreateRequest request, User user) {
 		return Gathering.builder()
 			.location(request.location())
 			.type(request.type())
 			.name(request.name())
 			.dateTime(request.dateTime())
-			.capacity(request.capacity())
+			.capacity(request.minimumCapacity())
 			.registrationEnd(request.registrationEnd())
-			.createdBy("test")
+			.createdBy(user.getName())
+			.user(user)
 			.build();
+	}
+
+	public boolean isCancelAuthorization(User user) {
+		return this.user.equals(user);
+	}
+
+	public boolean isCanceledGathering() {
+		return this.canceledAt != null;
+	}
+
+	public boolean isJoinableGathering() {
+		return this.participantCount <= this.capacity;
 	}
 
 	public void updateCanceledAt(LocalDateTime canceledTime) {

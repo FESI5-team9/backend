@@ -1,8 +1,11 @@
 package com.fesi.mukitlist.api.service.request;
 
+import static com.fesi.mukitlist.api.exception.ExceptionCode.*;
+
 import java.time.LocalDateTime;
 
 import com.fesi.mukitlist.api.domain.GatheringType;
+import com.fesi.mukitlist.api.exception.AppException;
 
 import lombok.Builder;
 
@@ -17,5 +20,8 @@ public record GatheringServiceCreateRequest(
 	// MultipartFile image
 	LocalDateTime registrationEnd
 ) {
-
+	public int minimumCapacity() {
+		if (capacity < 5) throw new AppException(MINIMUM_CAPACITY);
+		return capacity;
+	}
 }

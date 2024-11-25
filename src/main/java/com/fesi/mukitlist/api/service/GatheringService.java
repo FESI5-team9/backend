@@ -1,5 +1,7 @@
 package com.fesi.mukitlist.api.service;
 
+import static com.fesi.mukitlist.api.exception.ExceptionCode.*;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +17,7 @@ import com.fesi.mukitlist.api.domain.Review;
 import com.fesi.mukitlist.api.domain.User;
 import com.fesi.mukitlist.api.domain.UserGathering;
 import com.fesi.mukitlist.api.domain.UserGatheringId;
+import com.fesi.mukitlist.api.exception.AppException;
 import com.fesi.mukitlist.api.repository.GatheringRepository;
 import com.fesi.mukitlist.api.repository.ReviewRepository;
 import com.fesi.mukitlist.api.repository.UserGatheringRepository;
@@ -25,7 +28,6 @@ import com.fesi.mukitlist.api.service.response.GatheringParticipantsResponse;
 import com.fesi.mukitlist.api.service.response.GatheringResponse;
 import com.fesi.mukitlist.api.service.response.JoinedGatheringsResponse;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
@@ -81,7 +83,8 @@ public class GatheringService {
 	}
 
 	public GatheringResponse createGathering(GatheringServiceCreateRequest request) {
-		Gathering gathering = Gathering.create(request);
+		User user = getUserFrom(1L);
+		Gathering gathering = Gathering.create(request, user);
 		Gathering savedGathering = gatheringRepository.save(gathering);
 		return GatheringResponse.of(savedGathering);
 	}
@@ -93,12 +96,10 @@ public class GatheringService {
 	}
 
 	public GatheringResponse cancelGathering(Long id) {
-
 		User user = getUserFrom(1L);
 		Gathering gathering = getGatheringsFrom(id);
-		if (!gathering.getCreatedBy().equals(user)) {
-			throw new RuntimeException("Permission denied");
-		}
+
+		checkCancelAuthority(gathering, user);
 
 		LocalDateTime canceledTime = LocalDateTime.now();
 		gathering.updateCanceledAt(canceledTime);
@@ -110,9 +111,9 @@ public class GatheringService {
 	public void joinGathering(Long id) {
 		Gathering gathering = getGatheringsFrom(id);
 		User user = getUserFrom(1L);
-		if (gathering.getCanceledAt() != null || gathering.getParticipantCount() >= gathering.getCapacity()) {
-			throw new RuntimeException("Cannot join gathering");
-		}
+
+		checkIsCanceledGathering(gathering);
+		checkIsJoinedGathering(gathering);
 
 		UserGatheringId userGatheringId = UserGatheringId.of(user, gathering);
 		LocalDateTime joinedTime = LocalDateTime.now();
@@ -122,14 +123,23 @@ public class GatheringService {
 		gathering.joinParticipant();
 	}
 
-	public void leaveGathering(Long id) {
+	public void leaveGathering(Long id, LocalDateTime leaveTime) {
 		Gathering gathering = getGatheringsFrom(id);
 		User user = getUserFrom(1L);
+
+		checkIsNotPastGathering(gathering, leaveTime);
+
 		UserGatheringId userGatheringId = UserGatheringId.of(user, gathering);
 		userGatheringRepository.deleteById(userGatheringId);
 
 		gathering.leaveParticipant();
 		gatheringRepository.save(gathering);
+	}
+
+	private void checkIsNotPastGathering(Gathering gathering, LocalDateTime leaveTime) {
+		if (leaveTime.isAfter(gathering.getDateTime())) {
+			throw new AppException(PAST_GATHERING);
+		}
 	}
 
 	public List<JoinedGatheringsResponse> getJoinedGatherings(Boolean completed, Boolean reviewed, Pageable pageable) {
@@ -170,18 +180,38 @@ public class GatheringService {
 	}
 
 	public List<GatheringParticipantsResponse> getGatheringParticipants(Long id, Pageable pageable) {
-		List<UserGathering> gatherings = userGatheringRepository.findByIdGatheringId(id, pageable).getContent();
+		Gathering gathering = getGatheringsFrom(id);
+		List<UserGathering> gatherings = userGatheringRepository.findByIdGathering(gathering, pageable).getContent();
 		return gatherings.stream()
 			.map(GatheringParticipantsResponse::of)
 			.toList();
 	}
 
+
 	private Gathering getGatheringsFrom(Long id) {
-		return gatheringRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 모임입니다."));
+		return gatheringRepository.findById(id).orElseThrow(() -> new AppException(NOT_FOUND));
 	}
 
 
 	private User getUserFrom(Long id) {
 		return userRepository.findById(id).orElse(null);
+	}
+
+	private void checkIsCanceledGathering(Gathering gathering) {
+		if (gathering.isCanceledGathering()) {
+			throw new AppException(GATHERING_CANCELED);
+		}
+	}
+
+	private void checkIsJoinedGathering(Gathering gathering) {
+		if (!gathering.isJoinableGathering()) {
+			throw new AppException(MAXIMUM_PARTICIPANTS);
+		}
+	}
+
+	private void checkCancelAuthority(Gathering gathering, User user) {
+		if (!gathering.isCancelAuthorization(user)) {
+			throw new AppException(FORBIDDEN);
+		}
 	}
 }
