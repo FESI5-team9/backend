@@ -1,6 +1,8 @@
 package com.fesi.mukitlist.api.domain;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
 
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -11,13 +13,25 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements UserDetails {
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of();
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
