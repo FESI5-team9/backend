@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.api.domain;
+package com.fesi.mukitlist.domain.auth;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

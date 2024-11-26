@@ -1,6 +1,6 @@
 package com.fesi.mukitlist.domain.usergathering;
 
-import com.fesi.mukitlist.domain.User;
+import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.domain.gathering.Gathering;
 
 import jakarta.persistence.Embeddable;

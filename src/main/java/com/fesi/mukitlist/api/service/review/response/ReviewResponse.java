@@ -3,8 +3,8 @@ package com.fesi.mukitlist.api.service.review.response;
 import java.time.LocalDateTime;
 
 import com.fesi.mukitlist.domain.Review;
-import com.fesi.mukitlist.domain.User;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringResponse;
+import com.fesi.mukitlist.domain.auth.User;
 
 import lombok.Builder;
 

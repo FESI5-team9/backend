@@ -13,11 +13,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fesi.mukitlist.api.repository.usergathering.UserGatheringSpecifications;
+import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.domain.gathering.Gathering;
 import com.fesi.mukitlist.domain.gathering.Keyword;
-import com.fesi.mukitlist.domain.Review;
-import com.fesi.mukitlist.domain.User;
 import com.fesi.mukitlist.domain.usergathering.UserGathering;
 import com.fesi.mukitlist.domain.usergathering.UserGatheringId;
 import com.fesi.mukitlist.api.exception.AppException;
@@ -32,8 +30,6 @@ import com.fesi.mukitlist.api.service.gathering.response.GatheringParticipantsRe
 import com.fesi.mukitlist.api.service.gathering.response.GatheringResponse;
 import com.fesi.mukitlist.api.service.gathering.response.JoinedGatheringsResponse;
 
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 

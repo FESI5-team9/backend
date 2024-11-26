@@ -4,7 +4,6 @@ import static com.fesi.mukitlist.domain.gathering.GatheringType.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.fesi.mukitlist.api.repository.usergathering.UserGatheringRepository;
-import com.fesi.mukitlist.domain.User;
+import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.domain.gathering.Gathering;
 import com.fesi.mukitlist.domain.usergathering.UserGathering;
 import com.fesi.mukitlist.domain.usergathering.UserGatheringId;
@@ -39,7 +38,7 @@ class UserGatheringRepositoryTest {
 			.email("test@test.com")
 			.password("test1234")
 			.name("name")
-			.companyName("company")
+			.nickname("company")
 			.createdAt(LocalDateTime.now())
 			.updatedAt(LocalDateTime.now())
 			.deletedAt(null)

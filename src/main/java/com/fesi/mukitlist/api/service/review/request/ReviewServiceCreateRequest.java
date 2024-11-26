@@ -1,8 +1,8 @@
 package com.fesi.mukitlist.api.service.review.request;
 
+import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.domain.gathering.Gathering;
 import com.fesi.mukitlist.domain.Review;
-import com.fesi.mukitlist.domain.User;
 
 import lombok.Builder;
 

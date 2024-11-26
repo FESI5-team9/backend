@@ -1,6 +1,5 @@
-package com.fesi.mukitlist.api.domain;
+package com.fesi.mukitlist.domain.auth;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -17,22 +16,14 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fesi.mukitlist.api.controller.auth.request.UserCreateRequest;
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
-    }
-
-    @Override
-    public String getUsername() {
-        return email;
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -47,7 +38,7 @@ public class User implements UserDetails {
     private String name;
 
     @Column(nullable = false)
-    private String companyName;
+    private String nickname;
 
     private String image;
 
@@ -65,16 +56,35 @@ public class User implements UserDetails {
     private List<Token> tokens;
 
     @Builder
-    private User(String email, String password, String name, String companyName, String image, LocalDateTime createdAt,
+    private User(String email, String password, String name, String nickname, String image, LocalDateTime createdAt,
                  LocalDateTime updatedAt, LocalDateTime deletedAt) {
         this.email = email;
         this.password = password;
         this.name = name;
-        this.companyName = companyName;
+        this.nickname = nickname;
         this.image = image;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
+    }
+
+    public static User of(UserCreateRequest request, String password) {
+        return User.builder()
+            .email(request.email())
+            .password(password)
+            .nickname(request.nickname())
+            .name(request.name())
+            .build();
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of();
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
     }
 
 }

@@ -1,21 +1,24 @@
-package com.fesi.mukitlist.api.service;
+package com.fesi.mukitlist.api.service.auth;
 
-import com.fesi.mukitlist.api.controller.dto.request.UserCreateRequest;
-import com.fesi.mukitlist.api.controller.dto.response.AuthenticationResponse;
-import com.fesi.mukitlist.api.domain.Token;
-import com.fesi.mukitlist.api.domain.TokenType;
-import com.fesi.mukitlist.api.domain.User;
+import com.fesi.mukitlist.api.controller.auth.request.UserCreateRequest;
+import com.fesi.mukitlist.api.controller.auth.response.AuthenticationResponse;
+import com.fesi.mukitlist.domain.auth.Token;
+import com.fesi.mukitlist.domain.auth.TokenType;
+import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.api.repository.TokenRepository;
 import com.fesi.mukitlist.api.repository.UserRepository;
-import com.fesi.mukitlist.api.service.request.AuthenticationServiceRequest;
+import com.fesi.mukitlist.api.service.auth.request.AuthenticationServiceRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-@Service
 @RequiredArgsConstructor
+@Service
+@Slf4j
 public class AuthenticationService {
     private final UserRepository repository;
     private final TokenRepository tokenRepository;
@@ -28,8 +31,8 @@ public class AuthenticationService {
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
                 .name(request.name())
-                .companyName(request.companyName())
-                .image(request.image())
+                .nickname(request.nickname())
+                // .image(request.image())
                 .build();
 
         var savedUser = repository.save(user);
@@ -48,7 +51,8 @@ public class AuthenticationService {
                 .tokenType(TokenType.BEARER)
                 .build();
         tokenRepository.save(token);
-        System.out.println("Token saved: " + token.getToken());
+
+        log.info("Token saved:: {}", token.getToken());
     }
 
     public AuthenticationResponse authenticate(AuthenticationServiceRequest request) {
@@ -58,9 +62,9 @@ public class AuthenticationService {
                         request.password()
                 )
         );
-        var user = repository.findByEmail(request.email())
+        User user = repository.findByEmail(request.email())
                 .orElseThrow();
-        var jwtToken = jwtService.generateToken(user);
+        String jwtToken = jwtService.generateToken(user);
         saveUserToken(user, jwtToken);
         return AuthenticationResponse.builder()
                 .token(jwtToken)

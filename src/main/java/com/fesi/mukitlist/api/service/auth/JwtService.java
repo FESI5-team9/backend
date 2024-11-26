@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.api.service;
+package com.fesi.mukitlist.api.service.auth;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -18,9 +18,9 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    @Value("${application.security.jwt.secret-key}")
+    @Value("${security.jwt.secret-key}")
     private String secretKey;
-    @Value("${application.security.jwt.expiration}")
+    @Value("${security.jwt.expiration}")
     private long jwtExpiration;
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);

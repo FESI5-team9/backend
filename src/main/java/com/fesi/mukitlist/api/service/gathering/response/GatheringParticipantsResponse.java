@@ -2,7 +2,7 @@ package com.fesi.mukitlist.api.service.gathering.response;
 
 import java.time.LocalDateTime;
 
-import com.fesi.mukitlist.domain.User;
+import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.domain.usergathering.UserGathering;
 
 import lombok.Builder;

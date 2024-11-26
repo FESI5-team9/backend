@@ -1,10 +1,9 @@
-package com.fesi.mukitlist.api.controller;
+package com.fesi.mukitlist.api.controller.auth;
 
-import com.fesi.mukitlist.api.controller.dto.request.AuthenticationRequest;
-import com.fesi.mukitlist.api.controller.dto.request.UserCreateRequest;
-import com.fesi.mukitlist.api.controller.dto.response.AuthenticationResponse;
-import com.fesi.mukitlist.api.service.AuthenticationService;
-import com.fesi.mukitlist.api.service.request.AuthenticationServiceRequest;
+import com.fesi.mukitlist.api.controller.auth.request.UserCreateRequest;
+import com.fesi.mukitlist.api.controller.auth.response.AuthenticationResponse;
+import com.fesi.mukitlist.api.service.auth.AuthenticationService;
+import com.fesi.mukitlist.api.service.auth.request.AuthenticationServiceRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

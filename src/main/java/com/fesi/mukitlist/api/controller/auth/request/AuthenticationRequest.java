@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.api.controller.dto.request;
+package com.fesi.mukitlist.api.controller.auth.request;
 
 import lombok.Builder;
 

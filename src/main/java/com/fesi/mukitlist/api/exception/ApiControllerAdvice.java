@@ -1,5 +1,8 @@
 package com.fesi.mukitlist.api.exception;
 
+import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -8,7 +11,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -19,13 +21,10 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import lombok.extern.slf4j.Slf4j;
 
 @RestControllerAdvice
+@Slf4j
 public class ApiControllerAdvice {
 
 	@ExceptionHandler(HttpMessageNotReadableException.class)
@@ -71,17 +70,23 @@ public class ApiControllerAdvice {
 					: responseMessage(parameter)
 			), HttpStatus.BAD_REQUEST);
 		}
-
 		return new ResponseEntity<>(ValidationErrorResponse.of(
 			"VALIDATION_ERROR",
 			"unknown",
 			"유효하지 않은 요청입니다."
 		), HttpStatus.BAD_REQUEST);
+
 	}
 
 	@ExceptionHandler(AppException.class)
 	public ResponseEntity<AppErrorResponse> handle (AppException e) {
 		return new ResponseEntity<>(AppErrorResponse.of(e.getExceptionCode()),e.getExceptionCode().getStatus());
+	}
+
+	@ExceptionHandler(SQLIntegrityConstraintViolationException.class)
+	protected ResponseEntity handleSQLException(SQLIntegrityConstraintViolationException e){
+		log.error("ERROR : {}", e.getMessage(), e);
+		return new ResponseEntity(Map.of("code",e.getCause()), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	private String responseMessage(String parameter) {
@@ -94,4 +99,6 @@ public class ApiControllerAdvice {
 		}
 		return message;
 	}
+
+
 }
