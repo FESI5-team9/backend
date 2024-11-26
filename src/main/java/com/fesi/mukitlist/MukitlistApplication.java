@@ -6,13 +6,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
 
-@OpenAPIDefinition(
-	info = @Info(
-		title = "먹킷리스트",
-		version = "v1",
-		description = "먹킷리스트 API"
-	)
-)
 @SpringBootApplication
 public class MukitlistApplication {
 
