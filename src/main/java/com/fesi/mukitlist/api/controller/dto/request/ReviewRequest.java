@@ -16,6 +16,7 @@ public record ReviewRequest(
 	LocalDateTime registrationEnd
 
 ) {
+
 	@Builder
 	public ReviewServiceRequest toServiceRequest() {
 		return ReviewServiceRequest.builder()
@@ -26,5 +27,10 @@ public record ReviewRequest(
 			.date(date)
 			.registrationEnd(registrationEnd)
 			.build();
+	}
+
+	public static ReviewRequest of(Long gatheringId, Long userId, GatheringType type, String location,
+		LocalDateTime date, LocalDateTime registrationEnd) {
+		return new ReviewRequest(gatheringId, userId, type, location, date, registrationEnd);
 	}
 }

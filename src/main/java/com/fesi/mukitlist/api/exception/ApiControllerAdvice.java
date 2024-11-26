@@ -5,11 +5,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
+
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RestControllerAdvice
 public class ApiControllerAdvice {
@@ -33,6 +40,14 @@ public class ApiControllerAdvice {
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "400", description = "요청 오류",
+			content = @Content(mediaType = "application/json",
+				schema = @Schema(implementation = ValidationErrorResponse.class))),
+		@ApiResponse(responseCode = "404", description = "요청 오류",
+			content = @Content(mediaType = "application/json",
+				schema = @Schema(implementation = AppErrorResponse.class)))
+	})
 	public ResponseEntity<ValidationErrorResponse> handle(MethodArgumentNotValidException e) {
 		BindingResult bindingResult = e.getBindingResult();
 		FieldError fieldError = bindingResult.getFieldError();
