@@ -1,4 +1,6 @@
-package com.fesi.mukitlist.api.service;
+package com.fesi.mukitlist.api.service.review;
+
+import static com.fesi.mukitlist.api.exception.ExceptionCode.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +14,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fesi.mukitlist.api.exception.AppException;
+import com.fesi.mukitlist.api.repository.UserGatheringRepository;
 import com.fesi.mukitlist.domain.gathering.Gathering;
 import com.fesi.mukitlist.domain.gathering.GatheringType;
 import com.fesi.mukitlist.domain.Review;
@@ -24,6 +28,7 @@ import com.fesi.mukitlist.api.service.review.request.ReviewServiceRequest;
 import com.fesi.mukitlist.api.service.review.response.ReviewResponse;
 import com.fesi.mukitlist.api.service.review.response.ReviewScoreResponse;
 import com.fesi.mukitlist.api.service.review.response.ReviewWithGatheringAndUserResponse;
+import com.fesi.mukitlist.domain.usergathering.UserGatheringId;
 
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
