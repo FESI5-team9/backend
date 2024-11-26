@@ -1,6 +1,7 @@
 package com.fesi.mukitlist.api.controller.gathering.request;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -8,6 +9,8 @@ import com.fesi.mukitlist.domain.gathering.GatheringType;
 import com.fesi.mukitlist.domain.gathering.Gathering;
 import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceRequest;
 
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
 /**
