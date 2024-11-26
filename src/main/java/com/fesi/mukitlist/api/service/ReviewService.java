@@ -1,5 +1,7 @@
 package com.fesi.mukitlist.api.service;
 
+import static com.fesi.mukitlist.api.exception.ExceptionCode.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -16,8 +18,12 @@ import com.fesi.mukitlist.api.domain.Gathering;
 import com.fesi.mukitlist.api.domain.GatheringType;
 import com.fesi.mukitlist.api.domain.Review;
 import com.fesi.mukitlist.api.domain.User;
+import com.fesi.mukitlist.api.domain.UserGathering;
+import com.fesi.mukitlist.api.domain.UserGatheringId;
+import com.fesi.mukitlist.api.exception.AppException;
 import com.fesi.mukitlist.api.repository.GatheringRepository;
 import com.fesi.mukitlist.api.repository.ReviewRepository;
+import com.fesi.mukitlist.api.repository.UserGatheringRepository;
 import com.fesi.mukitlist.api.repository.UserRepository;
 import com.fesi.mukitlist.api.service.request.ReviewServiceCreateRequest;
 import com.fesi.mukitlist.api.service.request.ReviewServiceRequest;
@@ -38,6 +44,7 @@ public class ReviewService {
 	private final ReviewRepository reviewRepository;
 	private final GatheringRepository gatheringRepository;
 	private final UserRepository userRepository;
+	private final UserGatheringRepository userGatheringRepository;
 
 	@Transactional(readOnly = true)
 	public List<ReviewWithGatheringAndUserResponse> getReviews(ReviewServiceRequest request, Pageable pageable) {
@@ -86,8 +93,10 @@ public class ReviewService {
 
 
 	public ReviewResponse createReview(ReviewServiceCreateRequest request) {
-		Gathering gathering = gatheringRepository.findById(request.gatheringId()).orElse(null);
-		User user = userRepository.findById(1L).orElse(null);
+		Gathering gathering = getGatheringsFrom(request.gatheringId());
+		User user = userRepository.findById(2L).orElse(null);
+
+		checkIsUserParticipant(user, gathering);
 
 		Review savedReview = reviewRepository.save(request.toEntity(gathering, user));
 		return ReviewResponse.of(savedReview);
@@ -142,5 +151,16 @@ public class ReviewService {
 				return ReviewScoreResponse.of(gathering, averageScore, scoreCounts);
 			})
 			.toList();
+	}
+
+	private void checkIsUserParticipant(User user, Gathering gathering) {
+		UserGatheringId userGatheringId = UserGatheringId.of(user, gathering);
+		if (!userGatheringRepository.existsById(userGatheringId)) {
+			throw new AppException(NOT_FOUND);
+		}
+	}
+
+	private Gathering getGatheringsFrom(Long id) {
+		return gatheringRepository.findById(id).orElseThrow(() -> new AppException(NOT_FOUND));
 	}
 }
