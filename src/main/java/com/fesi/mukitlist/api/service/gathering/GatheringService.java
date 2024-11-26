@@ -2,6 +2,7 @@ package com.fesi.mukitlist.api.service.gathering;
 
 import static com.fesi.mukitlist.api.exception.ExceptionCode.*;
 
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,7 @@ import com.fesi.mukitlist.api.service.gathering.response.GatheringParticipantsRe
 import com.fesi.mukitlist.api.service.gathering.response.GatheringResponse;
 import com.fesi.mukitlist.api.service.gathering.response.JoinedGatheringsResponse;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
@@ -80,6 +82,7 @@ public class GatheringService {
 		});
 
 		Page<Gathering> gatheringPage = gatheringRepository.findAll(specification, pageable);
+
 		return gatheringPage.stream()
 			.map(g -> GatheringResponse.forList(g, keywordRepository.findAllByGathering(g)))
 			.toList();
@@ -204,6 +207,7 @@ public class GatheringService {
 	private Gathering getGatheringsFrom(Long id) {
 		return gatheringRepository.findById(id).orElseThrow(() -> new AppException(NOT_FOUND));
 	}
+
 
 	private User getUserFrom(Long id) {
 		return userRepository.findById(id).orElse(null);

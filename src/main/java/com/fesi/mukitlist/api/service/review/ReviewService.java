@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.api.service.review;
+package com.fesi.mukitlist.api.service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +38,7 @@ public class ReviewService {
 	private final ReviewRepository reviewRepository;
 	private final GatheringRepository gatheringRepository;
 	private final UserRepository userRepository;
+	private final UserGatheringRepository userGatheringRepository;
 
 	@Transactional(readOnly = true)
 	public List<ReviewWithGatheringAndUserResponse> getReviews(ReviewServiceRequest request, Pageable pageable) {
@@ -86,8 +87,10 @@ public class ReviewService {
 
 
 	public ReviewResponse createReview(ReviewServiceCreateRequest request) {
-		Gathering gathering = gatheringRepository.findById(request.gatheringId()).orElse(null);
-		User user = userRepository.findById(1L).orElse(null);
+		Gathering gathering = getGatheringsFrom(request.gatheringId());
+		User user = userRepository.findById(2L).orElse(null);
+
+		checkIsUserParticipant(user, gathering);
 
 		Review savedReview = reviewRepository.save(request.toEntity(gathering, user));
 		return ReviewResponse.of(savedReview);
@@ -142,5 +145,16 @@ public class ReviewService {
 				return ReviewScoreResponse.of(gathering, averageScore, scoreCounts);
 			})
 			.toList();
+	}
+
+	private void checkIsUserParticipant(User user, Gathering gathering) {
+		UserGatheringId userGatheringId = UserGatheringId.of(user, gathering);
+		if (!userGatheringRepository.existsById(userGatheringId)) {
+			throw new AppException(NOT_FOUND);
+		}
+	}
+
+	private Gathering getGatheringsFrom(Long id) {
+		return gatheringRepository.findById(id).orElseThrow(() -> new AppException(NOT_FOUND));
 	}
 }

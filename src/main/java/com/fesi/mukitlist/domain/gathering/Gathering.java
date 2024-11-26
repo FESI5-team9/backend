@@ -3,6 +3,7 @@ package com.fesi.mukitlist.domain.gathering;
 import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.fesi.mukitlist.domain.User;
