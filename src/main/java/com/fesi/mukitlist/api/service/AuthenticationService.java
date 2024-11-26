@@ -46,10 +46,9 @@ public class AuthenticationService {
                 .user(user)
                 .token(jwtToken)
                 .tokenType(TokenType.BEARER)
-                .expired(false)
-                .revoked(false)
                 .build();
         tokenRepository.save(token);
+        System.out.println("Token saved: " + token.getToken());
     }
 
     public AuthenticationResponse authenticate(AuthenticationServiceRequest request) {

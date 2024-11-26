@@ -1,7 +1,9 @@
 package com.fesi.mukitlist.api.service;
 
+import com.fesi.mukitlist.api.controller.dto.response.AuthenticationResponse;
 import com.fesi.mukitlist.api.domain.User;
 import com.fesi.mukitlist.api.repository.UserRepository;
+import com.fesi.mukitlist.api.service.request.AuthenticationServiceRequest;
 import com.fesi.mukitlist.exception.EmailExistedException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,4 +40,6 @@ public class UserService {
                 .build();
         return userRepository.save(user);
     }
+
+
 }
