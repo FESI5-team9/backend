@@ -18,11 +18,20 @@ spring:
         format_sql: true
 
     defer-datasource-initialization: true # (2.5~) Hibernate 초기화 이후 data.sql 실행
+
+
 logging:
   level:
     org.hibernate.SQL: debug
 
     org.hibernate.type.descriptor.sql: trace
 
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
 
 
