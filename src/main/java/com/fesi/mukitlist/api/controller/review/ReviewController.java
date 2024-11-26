@@ -76,7 +76,7 @@ public class ReviewController {
 		@RequestParam(required = false) LocalDateTime registrationEnd,
 		@RequestParam(defaultValue = "10") int size,
 		@RequestParam(defaultValue = "0") int page,
-		@RequestParam(defaultValue = "dateTime") String sort,
+		@RequestParam(defaultValue = "date") String sort,
 		@RequestParam(defaultValue = "ASC") String direction
 	) {
 		Sort sortOrder = Sort.by(Sort.Order.by(sort).with(Sort.Direction.fromString(direction)));

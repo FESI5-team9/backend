@@ -33,4 +33,11 @@ springdoc:
     path: /swagger-ui.html
     tags-sorter: alpha
 
-
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+  sql:
+    init:
+      mode: never

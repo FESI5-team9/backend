@@ -86,7 +86,6 @@ public class Gathering {
 		String createdBy,
 		User user,
 		LocalDateTime canceledAt) {
-
 		this.location = location;
 		this.type = type;
 		this.name = name;

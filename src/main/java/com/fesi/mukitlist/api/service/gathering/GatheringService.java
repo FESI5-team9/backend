@@ -2,7 +2,6 @@ package com.fesi.mukitlist.api.service.gathering;
 
 import static com.fesi.mukitlist.api.exception.ExceptionCode.*;
 
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +13,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fesi.mukitlist.api.repository.usergathering.UserGatheringSpecifications;
 import com.fesi.mukitlist.domain.gathering.Gathering;
 import com.fesi.mukitlist.domain.gathering.Keyword;
 import com.fesi.mukitlist.domain.Review;
@@ -24,7 +24,7 @@ import com.fesi.mukitlist.api.exception.AppException;
 import com.fesi.mukitlist.api.repository.GatheringRepository;
 import com.fesi.mukitlist.api.repository.KeywordRepository;
 import com.fesi.mukitlist.api.repository.ReviewRepository;
-import com.fesi.mukitlist.api.repository.UserGatheringRepository;
+import com.fesi.mukitlist.api.repository.usergathering.UserGatheringRepository;
 import com.fesi.mukitlist.api.repository.UserRepository;
 import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceCreateRequest;
 import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceRequest;
@@ -32,7 +32,6 @@ import com.fesi.mukitlist.api.service.gathering.response.GatheringParticipantsRe
 import com.fesi.mukitlist.api.service.gathering.response.GatheringResponse;
 import com.fesi.mukitlist.api.service.gathering.response.JoinedGatheringsResponse;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
@@ -149,45 +148,11 @@ public class GatheringService {
 		gatheringRepository.save(gathering);
 	}
 
-	private void checkIsNotPastGathering(Gathering gathering, LocalDateTime leaveTime) {
-		if (leaveTime.isAfter(gathering.getDateTime())) {
-			throw new AppException(PAST_GATHERING);
-		}
-	}
+	public List<JoinedGatheringsResponse> getJoinedGatherings(Long userId, Boolean completed, Boolean reviewed, Pageable pageable) {
+		User user = getUserFrom(userId);
+		Page<UserGathering> userGatheringPage = userGatheringRepository.findWithFilters(user,completed,reviewed, pageable);
 
-	public List<JoinedGatheringsResponse> getJoinedGatherings(Boolean completed, Boolean reviewed, Pageable pageable) {
-		User user = getUserFrom(1L);
-
-		Specification<UserGathering> specification = (root, query, criteriaBuilder) -> {
-			List<Predicate> predicates = new ArrayList<>();
-
-			Join<UserGatheringId, UserGathering> userGatheringIdJoin = root.join("id", JoinType.INNER);
-
-			predicates.add(criteriaBuilder.equal(userGatheringIdJoin.get("user"), user));
-
-			Join<UserGatheringId, Gathering> gatheringJoin = userGatheringIdJoin.join("gathering", JoinType.INNER);
-
-			if (completed != null) {
-				LocalDateTime now = LocalDateTime.now();
-				if (completed) {
-					predicates.add(criteriaBuilder.lessThan(gatheringJoin.get("dateTime"), now));
-				} else {
-					predicates.add(criteriaBuilder.greaterThanOrEqualTo(gatheringJoin.get("dateTime"), now));
-				}
-			}
-
-			if (reviewed != null) {
-				Join<Gathering, Review> reviewJoin = gatheringJoin.join("reviews", JoinType.LEFT);
-				if (reviewed) {
-					predicates.add(criteriaBuilder.isNotNull(reviewJoin.get("id")));
-				} else {
-					predicates.add(criteriaBuilder.isNull(reviewJoin.get("id")));
-				}
-			}
-			return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-		};
-		Page<UserGathering> userGatheringsPage = userGatheringRepository.findAll(specification, pageable);
-		return userGatheringsPage.stream()
+		return userGatheringPage.stream()
 			.map(userGathering -> JoinedGatheringsResponse.of(
 				userGathering,
 				keywordRepository.findAllByGathering(userGathering.getId()
@@ -203,11 +168,15 @@ public class GatheringService {
 			.toList();
 	}
 
+	private void checkIsNotPastGathering(Gathering gathering, LocalDateTime leaveTime) {
+		if (leaveTime.isAfter(gathering.getDateTime())) {
+			throw new AppException(PAST_GATHERING);
+		}
+	}
 
 	private Gathering getGatheringsFrom(Long id) {
 		return gatheringRepository.findById(id).orElseThrow(() -> new AppException(NOT_FOUND));
 	}
-
 
 	private User getUserFrom(Long id) {
 		return userRepository.findById(id).orElse(null);

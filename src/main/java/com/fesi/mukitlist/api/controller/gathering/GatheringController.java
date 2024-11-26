@@ -36,11 +36,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/gatherings")
 @Tag(name = "Gatherings", description = "모임 관련 API")
+@Slf4j
 public class GatheringController {
 	private final GatheringService gatheringService;
 
@@ -180,6 +182,7 @@ public class GatheringController {
 
 	@GetMapping("/joined")
 	public ResponseEntity<List<JoinedGatheringsResponse>> getGatheringsBySignInUser(
+		@RequestParam(required = false) Long userId,
 		@RequestParam(required = false) Boolean completed,
 		@RequestParam(required = false) Boolean reviews,
 		@RequestParam(defaultValue = "10") int size,
@@ -189,7 +192,7 @@ public class GatheringController {
 
 		Sort sortOrder = Sort.by(Sort.Order.by(sort).with(Sort.Direction.fromString(direction)));
 		Pageable pageable = PageRequest.of(page, size, sortOrder);
-		List<JoinedGatheringsResponse> repsonse = gatheringService.getJoinedGatherings(completed, reviews, pageable);
+		List<JoinedGatheringsResponse> repsonse = gatheringService.getJoinedGatherings(userId, completed, reviews, pageable);
 		return new ResponseEntity<>(repsonse, HttpStatus.OK);
 	}
 

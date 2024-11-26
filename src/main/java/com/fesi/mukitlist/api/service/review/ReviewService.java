@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fesi.mukitlist.api.exception.AppException;
-import com.fesi.mukitlist.api.repository.UserGatheringRepository;
+import com.fesi.mukitlist.api.repository.usergathering.UserGatheringRepository;
 import com.fesi.mukitlist.domain.gathering.Gathering;
 import com.fesi.mukitlist.domain.gathering.GatheringType;
 import com.fesi.mukitlist.domain.Review;
@@ -93,7 +93,7 @@ public class ReviewService {
 
 	public ReviewResponse createReview(ReviewServiceCreateRequest request) {
 		Gathering gathering = getGatheringsFrom(request.gatheringId());
-		User user = userRepository.findById(2L).orElse(null);
+		User user = userRepository.findById(1L).orElse(null);
 
 		checkIsUserParticipant(user, gathering);
 
@@ -155,7 +155,7 @@ public class ReviewService {
 	private void checkIsUserParticipant(User user, Gathering gathering) {
 		UserGatheringId userGatheringId = UserGatheringId.of(user, gathering);
 		if (!userGatheringRepository.existsById(userGatheringId)) {
-			throw new AppException(NOT_FOUND);
+			throw new AppException(NOT_PARTICIPANTS);
 		}
 	}
 
