@@ -1,6 +1,6 @@
 package com.fesi.mukitlist.config;
 
-import com.fesi.mukitlist.api.service.JwtService;
+import com.fesi.mukitlist.api.service.auth.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

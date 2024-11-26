@@ -3,8 +3,8 @@ package com.fesi.mukitlist.api.repository;
 import java.util.List;
 import java.util.Optional;
 
-import com.fesi.mukitlist.api.domain.Token;
-import com.fesi.mukitlist.api.domain.User;
+import com.fesi.mukitlist.domain.auth.Token;
+import com.fesi.mukitlist.domain.auth.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TokenRepository extends JpaRepository<Token, Integer> {
