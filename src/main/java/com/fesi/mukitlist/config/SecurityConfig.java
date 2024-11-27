@@ -27,7 +27,7 @@ public class SecurityConfig {
 	public WebSecurityCustomizer webSecurityCustomizer() {
 		return (web -> web.ignoring()
 			.requestMatchers(new AntPathRequestMatcher("/h2-console/**"))
-			.requestMatchers(new AntPathRequestMatcher("/auth/**"))
+			.requestMatchers(new AntPathRequestMatcher("api/auth/**"))
 			.requestMatchers(new AntPathRequestMatcher("/swagger-ui/**")));
 
 	}

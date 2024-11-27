@@ -31,6 +31,7 @@ public class AuthenticationService {
                 .user(user)
                 .token(jwtToken)
                 .tokenType(TokenType.BEARER)
+                .expired(false)
                 .build();
         tokenRepository.save(token);
 
@@ -44,12 +45,25 @@ public class AuthenticationService {
                         request.password()
                 )
         );
+
         User user = repository.findByEmail(request.email())
-                .orElseThrow();
-        String jwtToken = jwtService.generateToken(user);
-        saveUserToken(user, jwtToken);
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Token existingToken = tokenRepository.findByUser(user)
+                .filter(t -> !t.isExpired()) // 만료되지 않은 토큰을 찾습니다.
+                .orElse(null);
+
+        String jwtToken;
+        if (existingToken != null) {
+            jwtToken = existingToken.getToken();
+        } else {
+            jwtToken = jwtService.generateToken(user);  // 새 토큰 생성
+            saveUserToken(user, jwtToken);  // 새 토큰 저장
+        }
+
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
     }
+
 }

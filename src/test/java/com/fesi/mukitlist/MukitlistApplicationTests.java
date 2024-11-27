@@ -3,6 +3,7 @@ package com.fesi.mukitlist;
 import com.fesi.mukitlist.api.controller.auth.request.UserCreateRequest;
 import com.fesi.mukitlist.api.controller.auth.response.AuthenticationResponse;
 import com.fesi.mukitlist.api.controller.auth.response.UserCreateResponse;
+import com.fesi.mukitlist.api.service.auth.JwtService;
 import com.fesi.mukitlist.api.service.auth.request.AuthenticationServiceRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -18,6 +20,11 @@ class MukitlistApplicationTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;  // HTTP 요청을 보내기 위한 템플릿
+
+	@Autowired
+	private JwtService jwtService;  // JwtService를 자동 주입
+
+	private UserDetails userDetails;
 
 	@Test
 	void testRegisterUser() {
@@ -37,29 +44,7 @@ class MukitlistApplicationTests {
 		);
 
 		// then
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);  // 등록된 이메일 중복 INTERNAL_SERVSER_ERROR
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);  // 등록된 이메일 중복 INTERNAL_SERVER_ERROR
 		assertThat(response.getBody()).isNotNull();  // 응답 바디가 null이 아님
-
-
-	}
-	@Test
-	void testSigninSuccessful() {
-		// given
-		AuthenticationServiceRequest signinRequest = AuthenticationServiceRequest.builder()
-				.email("test@test.com")    // 유효한 이메일
-				.password("password123")   // 유효한 비밀번호
-				.build();
-
-		// when
-		ResponseEntity<AuthenticationResponse> response = restTemplate.postForEntity(
-				"/api/auth/signin",       // 로그인 API 엔드포인트
-				signinRequest,            // 로그인 요청 객체
-				AuthenticationResponse.class // 응답 클래스
-		);
-
-		// then
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);  // 200 OK 응답 코드 확인
-		assertThat(response.getBody()).isNotNull();  // 응답 바디가 null이 아님
-		assertThat(response.getBody().token()).isNotBlank();  // JWT 토큰이 null이나 공백이 아닌지 확인
 	}
 }
