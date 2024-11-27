@@ -3,41 +3,41 @@ package com.fesi.mukitlist.api.service.gathering;
 import static com.fesi.mukitlist.api.exception.ExceptionCode.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fesi.mukitlist.api.exception.AppException;
+import com.fesi.mukitlist.api.repository.KeywordRepository;
+import com.fesi.mukitlist.api.repository.ReviewRepository;
+import com.fesi.mukitlist.api.repository.UserRepository;
+import com.fesi.mukitlist.api.repository.gathering.GatheringRepository;
+import com.fesi.mukitlist.api.repository.usergathering.UserGatheringRepository;
+import com.fesi.mukitlist.api.service.PageService;
+import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceCreateRequest;
+import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceRequest;
+import com.fesi.mukitlist.api.service.gathering.response.GatheringListResponse;
+import com.fesi.mukitlist.api.service.gathering.response.GatheringParticipantsResponse;
+import com.fesi.mukitlist.api.service.gathering.response.GatheringResponse;
+import com.fesi.mukitlist.api.service.gathering.response.GatheringCreateResponse;
+import com.fesi.mukitlist.api.service.gathering.response.JoinedGatheringsResponse;
 import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.domain.gathering.Gathering;
 import com.fesi.mukitlist.domain.gathering.Keyword;
 import com.fesi.mukitlist.domain.usergathering.UserGathering;
 import com.fesi.mukitlist.domain.usergathering.UserGatheringId;
-import com.fesi.mukitlist.api.exception.AppException;
-import com.fesi.mukitlist.api.repository.GatheringRepository;
-import com.fesi.mukitlist.api.repository.KeywordRepository;
-import com.fesi.mukitlist.api.repository.ReviewRepository;
-import com.fesi.mukitlist.api.repository.usergathering.UserGatheringRepository;
-import com.fesi.mukitlist.api.repository.UserRepository;
-import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceCreateRequest;
-import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceRequest;
-import com.fesi.mukitlist.api.service.gathering.response.GatheringParticipantsResponse;
-import com.fesi.mukitlist.api.service.gathering.response.GatheringResponse;
-import com.fesi.mukitlist.api.service.gathering.response.JoinedGatheringsResponse;
 
-import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Transactional
 @Service
 public class GatheringService {
-
 	private final GatheringRepository gatheringRepository;
 	private final UserGatheringRepository userGatheringRepository;
 	private final UserRepository userRepository;
@@ -45,45 +45,18 @@ public class GatheringService {
 	private final ReviewRepository reviewRepository;
 
 	@Transactional(readOnly = true)
-	public List<GatheringResponse> getGatherings(GatheringServiceRequest request, Pageable pageable) {
+	public List<GatheringListResponse> getGatherings(GatheringServiceRequest request) {
 
-		Specification<Gathering> specification = ((root, query, criteriaBuilder) -> {
-			List<Predicate> predicates = new ArrayList<>();
-
-			predicates.add(criteriaBuilder.isNull(root.get("canceledAt")));
-
-			if (request.id() != null && !request.id().isEmpty()) {
-				predicates.add(root.get("id").in(request.id()));
-			}
-
-			if (request.type() != null) {
-				predicates.add(criteriaBuilder.equal(root.get("type"), request.type()));
-			}
-
-			if (request.location() != null) {
-				predicates.add(criteriaBuilder.equal(root.get("location"), request.location()));
-			}
-
-			if (request.dateTime() != null) {
-				predicates.add(criteriaBuilder.between(root.get("dateTime"), request.dateTime().toLocalDate()
-					.atStartOfDay(), request.dateTime().plusDays(1).toLocalDate().atStartOfDay()));
-			}
-
-			if (request.createdBy() != null) {
-				predicates.add(criteriaBuilder.equal(root.get("createdBy"), request.createdBy()));
-			}
-
-			return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-		});
-
-		Page<Gathering> gatheringPage = gatheringRepository.findAll(specification, pageable);
+		Pageable pageable = PageService.pageableBy(request.page(), request.size(), request.sort(),
+			request.direction());
+		Page<Gathering> gatheringPage = gatheringRepository.findWithFilters(request, pageable);
 
 		return gatheringPage.stream()
-			.map(g -> GatheringResponse.forList(g, keywordRepository.findAllByGathering(g)))
+			.map(GatheringListResponse::of)
 			.toList();
 	}
 
-	public GatheringResponse createGathering(GatheringServiceCreateRequest request) {
+	public GatheringCreateResponse createGathering(GatheringServiceCreateRequest request) {
 		User user = getUserFrom(1L);
 		Gathering gathering = Gathering.create(request, user);
 		Gathering savedGathering = gatheringRepository.save(gathering);
@@ -92,18 +65,19 @@ public class GatheringService {
 			.map(k -> Keyword.of(k, savedGathering))
 			.collect(Collectors.toList());
 		List<Keyword> savedKeywords = keywordRepository.saveAll(keywords);
-		return GatheringResponse.forList(savedGathering, savedKeywords);
+		return GatheringCreateResponse.of(savedGathering, savedKeywords);
 	}
 
 	@Transactional(readOnly = true)
-	public GatheringResponse getGatheringById(Long id) {
+	public GatheringResponse getGatheringById(Long id, Long userId) {
+		User user = getUserFrom(userId);
 		Gathering gathering = getGatheringsFrom(id);
 		List<Keyword> keywords = keywordRepository.findAllByGathering(gathering);
-		return GatheringResponse.forDetail(gathering, keywords);
+		return GatheringResponse.forDetail(gathering, user, keywords);
 	}
 
-	public GatheringResponse cancelGathering(Long id) {
-		User user = getUserFrom(1L);
+	public GatheringResponse cancelGathering(Long id, Long userId) {
+		User user = getUserFrom(userId);
 		Gathering gathering = getGatheringsFrom(id);
 
 		checkCancelAuthority(gathering, user);
@@ -113,12 +87,12 @@ public class GatheringService {
 		Gathering savedGathering = gatheringRepository.save(gathering);
 		List<Keyword> savedKeywords = keywordRepository.findAllByGathering(gathering);
 
-		return GatheringResponse.forDetail(savedGathering, savedKeywords);
+		return GatheringResponse.forDetail(savedGathering, user, savedKeywords);
 	}
 
-	public void joinGathering(Long id) {
+	public void joinGathering(Long id, Long userId) {
 		Gathering gathering = getGatheringsFrom(id);
-		User user = getUserFrom(1L);
+		User user = getUserFrom(userId);
 
 		checkIsCanceledGathering(gathering);
 		checkIsJoinedGathering(gathering);
@@ -131,26 +105,32 @@ public class GatheringService {
 		gathering.joinParticipant();
 	}
 
-	public void leaveGathering(Long id, LocalDateTime leaveTime) {
+	public void leaveGathering(Long id, Long userId, LocalDateTime leaveTime) {
 		Gathering gathering = getGatheringsFrom(id);
-		User user = getUserFrom(1L);
+		User user = getUserFrom(userId);
 
 		checkIsNotPastGathering(gathering, leaveTime);
 
 		UserGatheringId userGatheringId = UserGatheringId.of(user, gathering);
-		userGatheringRepository.deleteById(userGatheringId);
+		UserGathering userGathering = userGatheringRepository.findById(userGatheringId)
+			.orElseThrow(() -> new AppException(NOT_PARTICIPANTS));
+		userGatheringRepository.delete(userGathering);
 
 		gathering.leaveParticipant();
 		gatheringRepository.save(gathering);
 	}
 
-	public List<JoinedGatheringsResponse> getJoinedGatherings(Long userId, Boolean completed, Boolean reviewed, Pageable pageable) {
+	public List<JoinedGatheringsResponse> getJoinedGatherings(Long userId, Boolean completed, Boolean reviewed,
+		Pageable pageable) {
 		User user = getUserFrom(userId);
-		Page<UserGathering> userGatheringPage = userGatheringRepository.findWithFilters(user,completed,reviewed, pageable);
+		Page<UserGathering> userGatheringPage = userGatheringRepository.findWithFilters(user, completed, reviewed,
+			pageable);
 
 		return userGatheringPage.stream()
 			.map(userGathering -> JoinedGatheringsResponse.of(
 				userGathering,
+				completed,
+				reviewed,
 				keywordRepository.findAllByGathering(userGathering.getId()
 					.getGathering())))
 			.toList();
@@ -164,18 +144,18 @@ public class GatheringService {
 			.toList();
 	}
 
-	private void checkIsNotPastGathering(Gathering gathering, LocalDateTime leaveTime) {
-		if (leaveTime.isAfter(gathering.getDateTime())) {
-			throw new AppException(PAST_GATHERING);
-		}
-	}
-
 	private Gathering getGatheringsFrom(Long id) {
 		return gatheringRepository.findById(id).orElseThrow(() -> new AppException(NOT_FOUND));
 	}
 
 	private User getUserFrom(Long id) {
-		return userRepository.findById(id).orElse(null);
+		return userRepository.findById(id).orElseThrow(() -> new AppException(NOT_FOUND_USER));
+	}
+
+	private void checkIsNotPastGathering(Gathering gathering, LocalDateTime leaveTime) {
+		if (leaveTime.isAfter(gathering.getDateTime())) {
+			throw new AppException(PAST_GATHERING);
+		}
 	}
 
 	private void checkIsCanceledGathering(Gathering gathering) {

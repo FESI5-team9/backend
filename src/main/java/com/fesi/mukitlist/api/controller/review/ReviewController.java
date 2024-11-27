@@ -79,10 +79,9 @@ public class ReviewController {
 		@RequestParam(defaultValue = "date") String sort,
 		@RequestParam(defaultValue = "ASC") String direction
 	) {
-		Sort sortOrder = Sort.by(Sort.Order.by(sort).with(Sort.Direction.fromString(direction)));
-		Pageable pageable = PageRequest.of(page, size, sortOrder);
-		ReviewRequest request = ReviewRequest.of(gatheringId, userId, type, location, date, registrationEnd);
-		return new ResponseEntity<>(reviewService.getReviews(request.toServiceRequest(), pageable), HttpStatus.OK);
+
+		ReviewRequest request = ReviewRequest.of(gatheringId, userId, type, location, date, registrationEnd,size,page,sort,direction);
+		return new ResponseEntity<>(reviewService.getReviews(request.toServiceRequest()), HttpStatus.OK);
 	}
 
 	@Operation(summary = "리뷰 평점 목록 조회", description = "필터링에 따라 리뷰 평점 목록을 조회합니다",

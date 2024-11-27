@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.fesi.mukitlist.api.repository.gathering.GatheringRepository;
 import com.fesi.mukitlist.api.repository.usergathering.UserGatheringRepository;
 import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.domain.gathering.Gathering;
@@ -47,7 +48,7 @@ class UserGatheringRepositoryTest {
 
 		Gathering gathering = Gathering.builder()
 			.location("서울")
-			.type(DESSERT_CAFE)
+			.type(CAFE)
 			.name("성수동 카페")
 			.dateTime(LocalDateTime.now())
 			.capacity(5)
@@ -78,7 +79,7 @@ class UserGatheringRepositoryTest {
 		// given
 		Gathering gathering = Gathering.builder()
 			.location("서울")
-			.type(DESSERT_CAFE)
+			.type(CAFE)
 			.name("성수동 카페1")
 			.dateTime(LocalDateTime.now())
 			.capacity(5)
