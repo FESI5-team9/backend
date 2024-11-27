@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
+import com.fesi.mukitlist.api.service.auth.request.UserServiceCreateRequest;
 import jakarta.persistence.*;
 import lombok.Builder;
 import org.springframework.data.annotation.CreatedDate;
@@ -15,8 +16,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import com.fesi.mukitlist.api.controller.auth.request.UserCreateRequest;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -68,7 +67,7 @@ public class User implements UserDetails {
         this.deletedAt = deletedAt;
     }
 
-    public static User of(UserCreateRequest request, String password) {
+    public static User of(UserServiceCreateRequest request, String password) {
         return User.builder()
             .email(request.email())
             .password(password)
@@ -85,6 +84,11 @@ public class User implements UserDetails {
     @Override
     public String getUsername() {
         return email;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
     }
 
 }

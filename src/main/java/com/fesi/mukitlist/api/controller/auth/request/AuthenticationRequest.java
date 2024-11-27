@@ -12,7 +12,7 @@ public record AuthenticationRequest(
 
 
     public AuthenticationRequest toServiceRequest() {
-        return AuthenticationRequest.builder()  // Return AuthenticationRequest instead of AuthenticationServiceRequest
+        return AuthenticationRequest.builder()
                 .email(email)
                 .password(password)
                 .build();
