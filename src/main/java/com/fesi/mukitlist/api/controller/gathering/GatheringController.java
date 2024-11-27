@@ -1,6 +1,5 @@
 package com.fesi.mukitlist.api.controller.gathering;
 
-import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -10,8 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,13 +21,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fesi.mukitlist.api.controller.gathering.request.GatheringCreateRequest;
 import com.fesi.mukitlist.api.controller.gathering.request.GatheringRequest;
-import com.fesi.mukitlist.domain.auth.User;
-import com.fesi.mukitlist.domain.gathering.GatheringType;
 import com.fesi.mukitlist.api.exception.response.ValidationErrorResponse;
 import com.fesi.mukitlist.api.service.gathering.GatheringService;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringParticipantsResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringResponse;
 import com.fesi.mukitlist.api.service.gathering.response.JoinedGatheringsResponse;
+import com.fesi.mukitlist.domain.gathering.GatheringType;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -72,13 +68,9 @@ public class GatheringController {
 		@RequestParam(defaultValue = "dateTime") String sort,
 		@RequestParam(defaultValue = "ASC") String direction
 	) {
-
-		Sort sortOrder = Sort.by(Sort.Order.by(sort).with(Sort.Direction.fromString(direction)));
-		Pageable pageable = PageRequest.of(page, size, sortOrder);
-		GatheringRequest request = GatheringRequest.of(id, type, dateTime, location, createdBy);
-
-		List<GatheringResponse> gatheringResponseDtoList = gatheringService.getGatherings(request.toServiceRequest(),
-			pageable);
+		
+		GatheringRequest request = GatheringRequest.of(id, type, dateTime, location, createdBy,size, page, sort, direction);
+		List<GatheringResponse> gatheringResponseDtoList = gatheringService.getGatherings(request.toServiceRequest());
 
 		return new ResponseEntity<>(gatheringResponseDtoList, HttpStatus.OK);
 	}

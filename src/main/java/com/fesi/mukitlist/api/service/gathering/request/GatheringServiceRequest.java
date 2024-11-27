@@ -13,7 +13,11 @@ public record GatheringServiceRequest(
 	GatheringType type,
 	LocalDateTime dateTime,
 	String location,
-	String createdBy
+	String createdBy,
+	int size,
+	int page,
+	String sort,
+	String direction
 ) {
 
 }

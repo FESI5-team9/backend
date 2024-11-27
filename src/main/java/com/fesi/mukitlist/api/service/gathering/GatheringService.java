@@ -8,18 +8,21 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fesi.mukitlist.api.service.PageService;
 import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.domain.gathering.Gathering;
 import com.fesi.mukitlist.domain.gathering.Keyword;
 import com.fesi.mukitlist.domain.usergathering.UserGathering;
 import com.fesi.mukitlist.domain.usergathering.UserGatheringId;
 import com.fesi.mukitlist.api.exception.AppException;
-import com.fesi.mukitlist.api.repository.GatheringRepository;
+import com.fesi.mukitlist.api.repository.gathering.GatheringRepository;
 import com.fesi.mukitlist.api.repository.KeywordRepository;
 import com.fesi.mukitlist.api.repository.ReviewRepository;
 import com.fesi.mukitlist.api.repository.usergathering.UserGatheringRepository;
@@ -37,7 +40,6 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 @Service
 public class GatheringService {
-
 	private final GatheringRepository gatheringRepository;
 	private final UserGatheringRepository userGatheringRepository;
 	private final UserRepository userRepository;
@@ -45,38 +47,11 @@ public class GatheringService {
 	private final ReviewRepository reviewRepository;
 
 	@Transactional(readOnly = true)
-	public List<GatheringResponse> getGatherings(GatheringServiceRequest request, Pageable pageable) {
+	public List<GatheringResponse> getGatherings(GatheringServiceRequest request) {
 
-		Specification<Gathering> specification = ((root, query, criteriaBuilder) -> {
-			List<Predicate> predicates = new ArrayList<>();
-
-			predicates.add(criteriaBuilder.isNull(root.get("canceledAt")));
-
-			if (request.id() != null && !request.id().isEmpty()) {
-				predicates.add(root.get("id").in(request.id()));
-			}
-
-			if (request.type() != null) {
-				predicates.add(criteriaBuilder.equal(root.get("type"), request.type()));
-			}
-
-			if (request.location() != null) {
-				predicates.add(criteriaBuilder.equal(root.get("location"), request.location()));
-			}
-
-			if (request.dateTime() != null) {
-				predicates.add(criteriaBuilder.between(root.get("dateTime"), request.dateTime().toLocalDate()
-					.atStartOfDay(), request.dateTime().plusDays(1).toLocalDate().atStartOfDay()));
-			}
-
-			if (request.createdBy() != null) {
-				predicates.add(criteriaBuilder.equal(root.get("createdBy"), request.createdBy()));
-			}
-
-			return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-		});
-
-		Page<Gathering> gatheringPage = gatheringRepository.findAll(specification, pageable);
+		Pageable pageable = PageService.pageableBy(request.page(), request.size(), request.sort(),
+			request.direction());
+		Page<Gathering> gatheringPage = gatheringRepository.findWithFilters(request, pageable);
 
 		return gatheringPage.stream()
 			.map(g -> GatheringResponse.forList(g, keywordRepository.findAllByGathering(g)))

@@ -22,13 +22,17 @@ public record GatheringRequest(
 	GatheringType type,
 	LocalDateTime dateTime,
 	String location,
-	String createdBy
+	String createdBy,
+	int size,
+	int page,
+	String sort,
+	String direction
 )
 	implements Serializable {
 
 	public static GatheringRequest of(List<Long> id, GatheringType type, LocalDateTime dateTime, String location,
-		String createdBy) {
-		return new GatheringRequest(id, type, dateTime, location, createdBy);
+		String createdBy, int size, int page, String sort, String direction) {
+		return new GatheringRequest(id, type, dateTime, location, createdBy, size, page, sort, direction);
 	}
 
 	@Builder
@@ -39,6 +43,10 @@ public record GatheringRequest(
 			.dateTime(dateTime)
 			.location(location)
 			.createdBy(createdBy)
+			.size(size)
+			.page(page)
+			.sort(sort)
+			.direction(direction)
 			.build();
 	}
 }
