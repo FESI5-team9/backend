@@ -186,10 +186,10 @@ public class GatheringController {
 
 	@GetMapping("/joined")
 	public ResponseEntity<List<JoinedGatheringsResponse>> getGatheringsBySignInUser(
-		@AuthenticationPrincipal User user,
-		// @RequestParam(required = false) Long userId,
+		// @AuthenticationPrincipal User user,
+		@RequestParam(required = false) Long userId,
 		@RequestParam(required = false) Boolean completed,
-		@RequestParam(required = false) Boolean reviews,
+		@RequestParam(required = false) Boolean reviewed,
 		@RequestParam(defaultValue = "10") int size,
 		@RequestParam(defaultValue = "0") int page,
 		@RequestParam(defaultValue = "id.gathering.dateTime") String sort,
@@ -197,7 +197,7 @@ public class GatheringController {
 
 		Sort sortOrder = Sort.by(Sort.Order.by(sort).with(Sort.Direction.fromString(direction)));
 		Pageable pageable = PageRequest.of(page, size, sortOrder);
-		List<JoinedGatheringsResponse> repsonse = gatheringService.getJoinedGatherings(user.getId(), completed, reviews, pageable);
+		List<JoinedGatheringsResponse> repsonse = gatheringService.getJoinedGatherings(userId, completed, reviewed, pageable);
 		return new ResponseEntity<>(repsonse, HttpStatus.OK);
 	}
 

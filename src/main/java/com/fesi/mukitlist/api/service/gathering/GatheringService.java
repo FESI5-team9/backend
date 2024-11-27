@@ -151,6 +151,8 @@ public class GatheringService {
 		return userGatheringPage.stream()
 			.map(userGathering -> JoinedGatheringsResponse.of(
 				userGathering,
+				completed,
+				reviewed,
 				keywordRepository.findAllByGathering(userGathering.getId()
 					.getGathering())))
 			.toList();

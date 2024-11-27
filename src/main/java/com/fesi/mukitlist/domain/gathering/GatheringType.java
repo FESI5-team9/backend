@@ -1,8 +1,8 @@
 package com.fesi.mukitlist.domain.gathering;
 
 public enum GatheringType {
-	DESSERT_CAFE,
+	CAFE,
 	RESTAURANT,
-	SNACK_FOOD,
-	KOREAN;
+	PUB,
+	VEGAN;
 }

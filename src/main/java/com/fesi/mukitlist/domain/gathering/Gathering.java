@@ -62,6 +62,8 @@ public class Gathering {
 	@Column(nullable = false)
 	private int capacity;
 
+	private String image;
+
 	@CreatedBy
 	private String createdBy;
 
@@ -82,6 +84,7 @@ public class Gathering {
 		String description,
 		int participantCount,
 		int capacity,
+		String image,
 		String createdBy,
 		User user,
 		LocalDateTime canceledAt) {
@@ -95,6 +98,7 @@ public class Gathering {
 		this.description = description;
 		this.participantCount = participantCount;
 		this.capacity = capacity;
+		this.image = image;
 		this.createdBy = createdBy;
 		this.user = user;
 		this.canceledAt = canceledAt;
@@ -107,6 +111,7 @@ public class Gathering {
 			.name(request.name())
 			.dateTime(request.dateTime())
 			.capacity(request.minimumCapacity())
+			.image(request.image())
 			.registrationEnd(request.registrationEnd())
 			.address1(request.address1())
 			.address2(request.address2())
