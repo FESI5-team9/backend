@@ -1,5 +1,6 @@
 package com.fesi.mukitlist.api.controller.auth.request;
 
+import com.fesi.mukitlist.api.service.auth.request.UserServiceCreateRequest;
 import com.fesi.mukitlist.domain.auth.User;
 
 import lombok.Builder;
@@ -16,8 +17,8 @@ public record UserCreateRequest(
 	// String image
 ) {
 
-	public UserCreateRequest toServiceRequest() {
-		return UserCreateRequest.builder()
+	public UserServiceCreateRequest toServiceRequest() {
+		return UserServiceCreateRequest.builder()
 			.email(email)
 			.password(password)
 			.nickname(nickname)
