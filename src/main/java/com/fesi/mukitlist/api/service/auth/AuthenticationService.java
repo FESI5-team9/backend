@@ -26,24 +26,6 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationResponse register(UserCreateRequest request) {
-        var user = User.builder()
-                .email(request.email())
-                .password(passwordEncoder.encode(request.password()))
-                .name(request.name())
-                .nickname(request.nickname())
-                // .image(request.image())
-                .build();
-
-        var savedUser = repository.save(user);
-        var jwtToken = jwtService.generateToken(user);
-
-        saveUserToken(savedUser, jwtToken);
-        return AuthenticationResponse.builder()
-                .token(jwtToken)
-                .build();
-    }
-
     private void saveUserToken(User user, String jwtToken) {
         var token = Token.builder()
                 .user(user)

@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.api.controller;
+package com.fesi.mukitlist.api.controller.auth;
 
 import java.util.Map;
 
