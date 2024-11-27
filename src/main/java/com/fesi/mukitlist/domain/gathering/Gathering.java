@@ -125,6 +125,10 @@ public class Gathering {
 		return this.user.equals(user);
 	}
 
+	public boolean isHostUser(User user) {
+		return this.user.equals(user);
+	}
+
 	public boolean isCanceledGathering() {
 		return this.canceledAt != null;
 	}

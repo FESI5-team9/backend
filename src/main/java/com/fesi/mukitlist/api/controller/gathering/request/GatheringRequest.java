@@ -20,7 +20,7 @@ public record GatheringRequest(
 
 	List<Long> id,
 	GatheringType type,
-	LocalDateTime dateTime,
+	LocalDate dateTime,
 	String location,
 	String createdBy,
 	int size,
@@ -30,7 +30,7 @@ public record GatheringRequest(
 )
 	implements Serializable {
 
-	public static GatheringRequest of(List<Long> id, GatheringType type, LocalDateTime dateTime, String location,
+	public static GatheringRequest of(List<Long> id, GatheringType type, LocalDate dateTime, String location,
 		String createdBy, int size, int page, String sort, String direction) {
 		return new GatheringRequest(id, type, dateTime, location, createdBy, size, page, sort, direction);
 	}
