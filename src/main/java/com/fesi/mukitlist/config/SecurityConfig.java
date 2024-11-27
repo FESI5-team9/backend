@@ -27,7 +27,7 @@ public class SecurityConfig {
 	public WebSecurityCustomizer webSecurityCustomizer() {
 		return (web -> web.ignoring()
 			.requestMatchers(new AntPathRequestMatcher("/h2-console/**"))
-			.requestMatchers(new AntPathRequestMatcher("/auth/**"))
+			.requestMatchers(new AntPathRequestMatcher("api/auth/**"))
 			.requestMatchers(new AntPathRequestMatcher("/swagger-ui/**")));
 
 	}
@@ -41,6 +41,7 @@ public class SecurityConfig {
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authenticationProvider(authenticationProvider)
 			.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+			// TODO http basic 인증 방식 disable
 		return http.build();
 	}
 }

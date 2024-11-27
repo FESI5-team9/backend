@@ -1,6 +1,8 @@
 package com.fesi.mukitlist.api.service.auth;
 
 import com.fesi.mukitlist.api.controller.auth.request.UserCreateRequest;
+import com.fesi.mukitlist.api.service.auth.request.UserServiceCreateRequest;
+import com.fesi.mukitlist.api.service.gathering.response.GatheringResponse;
 import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.api.repository.UserRepository;
 import com.fesi.mukitlist.exception.EmailExistedException;
@@ -21,7 +23,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public User registerUser(UserCreateRequest request) {
+    public User createUser(UserServiceCreateRequest request) {
         String encodePassword = passwordEncoder.encode(request.password()); // 해싱하는 부분
         User user = User.of(request, encodePassword);
         return userRepository.save(user);
