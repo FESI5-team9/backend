@@ -1,6 +1,5 @@
 package com.fesi.mukitlist.api.repository;
 
-import static com.fesi.mukitlist.domain.gathering.GatheringType.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
@@ -12,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.fesi.mukitlist.api.repository.gathering.GatheringRepository;
 import com.fesi.mukitlist.domain.gathering.Gathering;
 import com.fesi.mukitlist.domain.gathering.Keyword;
 
