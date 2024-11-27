@@ -15,6 +15,7 @@ import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fesi.mukitlist.api.exception.response.AppErrorResponse;
@@ -80,6 +81,26 @@ public class ApiControllerAdvice {
 			"유효하지 않은 요청입니다."
 		), HttpStatus.BAD_REQUEST);
 
+	}
+
+	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "400", description = "요청 오류",
+			content = @Content(mediaType = "application/json",
+				schema = @Schema(implementation = ValidationErrorResponse.class))),
+		@ApiResponse(responseCode = "404", description = "요청 오류",
+			content = @Content(mediaType = "application/json",
+				schema = @Schema(implementation = AppErrorResponse.class)))
+	})
+	public ResponseEntity<ValidationErrorResponse> handle(MethodArgumentTypeMismatchException e) {
+
+		String parameterName = e.getName();
+
+		return new ResponseEntity<>(ValidationErrorResponse.of(
+			"VALIDATION_ERROR",
+			parameterName,
+			responseMessage(parameterName)
+		), HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(AppException.class)
