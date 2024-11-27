@@ -21,13 +21,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public User registerUser(UserCreateRequest request) throws EmailExistedException {
-        // 이메일 UK 걸려있으면
-        // Optional<User> existed = userRepository.findByEmail(email);
-        // if(existed.isPresent()){
-        //     throw new EmailExistedException(email);
-        // }
-
+    public User registerUser(UserCreateRequest request) {
         String encodePassword = passwordEncoder.encode(request.password()); // 해싱하는 부분
         User user = User.of(request, encodePassword);
         return userRepository.save(user);

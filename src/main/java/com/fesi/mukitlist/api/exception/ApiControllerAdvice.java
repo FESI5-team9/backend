@@ -2,7 +2,10 @@ package com.fesi.mukitlist.api.exception;
 
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -21,6 +24,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 
 @RestControllerAdvice
@@ -85,8 +89,8 @@ public class ApiControllerAdvice {
 
 	@ExceptionHandler(SQLIntegrityConstraintViolationException.class)
 	protected ResponseEntity handleSQLException(SQLIntegrityConstraintViolationException e){
-		log.error("ERROR : {}", e.getMessage(), e);
-		return new ResponseEntity(Map.of("code",e.getCause()), HttpStatus.INTERNAL_SERVER_ERROR);
+		log.error("ERROR: {}", e.getMessage(), e);
+		return new ResponseEntity(AppErrorResponse.of(ExceptionCode.EMAIL_EXIST), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	private String responseMessage(String parameter) {
@@ -99,6 +103,4 @@ public class ApiControllerAdvice {
 		}
 		return message;
 	}
-
-
 }
