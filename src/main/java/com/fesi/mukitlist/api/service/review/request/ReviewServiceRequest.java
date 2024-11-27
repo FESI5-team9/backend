@@ -13,7 +13,11 @@ public record ReviewServiceRequest(
 	GatheringType type,
 	String location,
 	LocalDateTime date,
-	LocalDateTime registrationEnd
+	LocalDateTime registrationEnd,
+	int size,
+	int page,
+	String sort,
+	String direction
 ) {
 
 }
