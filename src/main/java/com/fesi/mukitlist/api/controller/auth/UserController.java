@@ -3,7 +3,6 @@ package com.fesi.mukitlist.api.controller.auth;
 import java.security.Principal;
 import java.util.Map;
 
-import com.fesi.mukitlist.api.controller.auth.request.ChangePasswordRequest;
 import com.fesi.mukitlist.api.service.auth.UserService;
 import com.fesi.mukitlist.api.controller.auth.request.UserCreateRequest;
 import com.fesi.mukitlist.domain.auth.User;
@@ -26,14 +25,4 @@ public class UserController {
             User user = userService.createUser(userCreateRequest.toServiceRequest());
         return new ResponseEntity<>(Map.of("message","사용자 생성 성공"), HttpStatus.CREATED);
     }
-
-    @PatchMapping
-    public ResponseEntity<?> changePassword(
-            @RequestBody ChangePasswordRequest request,
-            Principal connectedUser
-    ) {
-        userService.changePassword(request, connectedUser);
-        return ResponseEntity.ok().build();
-    }
-
 }
