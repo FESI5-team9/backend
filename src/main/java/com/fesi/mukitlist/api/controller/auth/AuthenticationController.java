@@ -30,14 +30,5 @@ public class AuthenticationController {
         AuthenticationServiceResponse authenticate = authenticationService.authenticate(request);
         return new ResponseEntity<>(Map.of("message","로그인 성공"), HttpStatus.OK);
     }
-
-    @PostMapping("/refresh-token")
-    public ResponseEntity<Map<String,String>> refreshToken(
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) throws IOException {
-        authenticationService.refreshToken(request, response);
-        return new ResponseEntity<>(Map.of("message","로그인 성공"), HttpStatus.OK);
-    }
 }
 
