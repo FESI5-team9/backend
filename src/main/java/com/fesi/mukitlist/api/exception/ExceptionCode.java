@@ -9,6 +9,7 @@ public enum ExceptionCode {
 	//유저
 	EMAIL_EXIST(HttpStatus.BAD_REQUEST, "EMAIL_EXIST", "중복된 이메일입니다"),
 	NOT_FOUND_USER(HttpStatus.NOT_FOUND, "NOT_FOUND", "사용자를 찾을 수 없습니다."),
+	LOGIN_REQUIRED(HttpStatus.UNAUTHORIZED, "LOGIN_REQUIRED", "로그인이 필요합니다."),
 	//모임
 	AT_LEAST_ONE(HttpStatus.BAD_REQUEST, "AT_LEAST_ONE", "size는 최소 1이어야 합니다"),
 	NOT_FOUND(HttpStatus.NOT_FOUND, "NOT_FOUND", "모임을 찾을 수 없습니다"),

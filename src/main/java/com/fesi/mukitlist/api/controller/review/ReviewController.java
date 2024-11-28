@@ -3,12 +3,11 @@ package com.fesi.mukitlist.api.controller.review;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,12 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fesi.mukitlist.api.controller.review.request.ReviewCreateRequest;
 import com.fesi.mukitlist.api.controller.review.request.ReviewRequest;
-import com.fesi.mukitlist.domain.gathering.GatheringType;
 import com.fesi.mukitlist.api.exception.response.ValidationErrorResponse;
 import com.fesi.mukitlist.api.service.review.ReviewService;
 import com.fesi.mukitlist.api.service.review.response.ReviewResponse;
 import com.fesi.mukitlist.api.service.review.response.ReviewScoreResponse;
 import com.fesi.mukitlist.api.service.review.response.ReviewWithGatheringAndUserResponse;
+import com.fesi.mukitlist.domain.auth.User;
+import com.fesi.mukitlist.domain.gathering.GatheringType;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -40,7 +40,6 @@ public class ReviewController {
 
 	private final ReviewService reviewService;
 
-
 	@Operation(summary = "리뷰 추가", description = "모임에 대한 리뷰를 추가합니다. 사용자는 모임에 참석해야 하고, 해당 모임에 대해 리뷰를 작성한 적이 없어야 합니다.",
 		responses = {
 			@ApiResponse(responseCode = "201", description = "리뷰 추가 성공",
@@ -52,8 +51,10 @@ public class ReviewController {
 		}
 	)
 	@PostMapping
-	public ResponseEntity<ReviewResponse> createReview(@RequestBody ReviewCreateRequest request) {
-		return new ResponseEntity<>(reviewService.createReview(request.toServiceRequest()), HttpStatus.OK);
+	public ResponseEntity<ReviewResponse> createReview(@RequestBody ReviewCreateRequest request,
+		@AuthenticationPrincipal User user) {
+		return new ResponseEntity<>(reviewService.createReview(request.toServiceRequest(), user.getId()),
+			HttpStatus.OK);
 	}
 
 	@Operation(summary = "리뷰 목록 조회", description = "필터링 및 정렬 조건에 따라 리뷰 목록을 조회합니다.",
@@ -80,7 +81,8 @@ public class ReviewController {
 		@RequestParam(defaultValue = "ASC") String direction
 	) {
 
-		ReviewRequest request = ReviewRequest.of(gatheringId, userId, type, location, date, registrationEnd,size,page,sort,direction);
+		ReviewRequest request = ReviewRequest.of(gatheringId, userId, type, location, date, registrationEnd, size,
+			page, sort, direction);
 		return new ResponseEntity<>(reviewService.getReviews(request.toServiceRequest()), HttpStatus.OK);
 	}
 
@@ -107,6 +109,5 @@ public class ReviewController {
 		@RequestParam(required = false) List<Long> gatheringId,
 		@RequestParam(required = false) GatheringType type) {
 		return new ResponseEntity<>(reviewService.getReviewScores(gatheringId, type), HttpStatus.OK);
-
 	}
 }

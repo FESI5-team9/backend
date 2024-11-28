@@ -56,8 +56,8 @@ public class GatheringService {
 			.toList();
 	}
 
-	public GatheringCreateResponse createGathering(GatheringServiceCreateRequest request) {
-		User user = getUserFrom(1L);
+	public GatheringCreateResponse createGathering(GatheringServiceCreateRequest request, Long userId) {
+		User user = getUserFrom(userId);
 		Gathering gathering = Gathering.create(request, user);
 		Gathering savedGathering = gatheringRepository.save(gathering);
 
