@@ -1,5 +1,6 @@
 package com.fesi.mukitlist.api.repository;
 
+import static com.fesi.mukitlist.domain.gathering.GatheringType.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
@@ -15,12 +16,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 
-import com.fesi.mukitlist.api.repository.gathering.GatheringRepository;
 import com.fesi.mukitlist.api.repository.usergathering.UserGatheringRepository;
-import com.fesi.mukitlist.core.auth.User;
-import com.fesi.mukitlist.core.gathering.Gathering;
-import com.fesi.mukitlist.core.usergathering.UserGathering;
-import com.fesi.mukitlist.core.usergathering.UserGatheringId;
+import com.fesi.mukitlist.domain.auth.User;
+import com.fesi.mukitlist.domain.gathering.Gathering;
+import com.fesi.mukitlist.domain.usergathering.UserGathering;
+import com.fesi.mukitlist.domain.usergathering.UserGatheringId;
 
 @ActiveProfiles("test")
 @DataJpaTest
@@ -46,8 +46,8 @@ class UserGatheringRepositoryTest {
 		userRepository.save(user);
 
 		Gathering gathering = Gathering.builder()
-			.location(SEOUL)
-			.type(CAFE)
+			.location("서울")
+			.type(DESSERT_CAFE)
 			.name("성수동 카페")
 			.dateTime(LocalDateTime.now())
 			.capacity(5)
@@ -77,8 +77,8 @@ class UserGatheringRepositoryTest {
 	void findWithFilters() {
 		// given
 		Gathering gathering = Gathering.builder()
-			.location(SEOUL)
-			.type(CAFE)
+			.location("서울")
+			.type(DESSERT_CAFE)
 			.name("성수동 카페1")
 			.dateTime(LocalDateTime.now())
 			.capacity(5)

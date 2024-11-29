@@ -1,21 +1,18 @@
 package com.fesi.mukitlist.api.repository;
 
+import java.util.List;
+
+import com.fesi.mukitlist.domain.auth.Token;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.fesi.mukitlist.core.auth.Token;
-
-public interface TokenRepository extends JpaRepository<Token, Integer> {
-
+public interface TokenRepository extends JpaRepository<Token, Long> {
     @Query(value = """
-      select t from Token t inner join User u
-      on t.user.id = u.id
-      where u.id = :userId and t.token = :refreshToken and t.expired = false
+      select t from Token t inner join User u\s
+      on t.user.id = u.id\s
+      where u.id = :id and (t.expired = false or t.revoked = false)\s
       """)
-    Token findByUserAndToken(@Param("userId") Long userId, @Param("refreshToken") String refreshToken);
-
-    boolean existsTokenByUserIdAndToken(Long userI, String refreshToken);
-
-    Token findByToken(String token);
+    List<Token> findAllValidTokenByUser(@Param("id") Long userId);
 }
+

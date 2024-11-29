@@ -1,20 +1,28 @@
 spring:
-  profiles:
-    include: aws, social-login
-
-  servlet:
-    multipart:
+  h2:
+    console:
       enabled: true
-      file-size-threshold: 2MB
-      max-file-size: 5MB
-      max-request-size: 10MB
+      path: /h2-console
 
-feign:
-  client:
-    config:
-      default:
-        connectTimeout: 5000
-        readTimeout: 5000
+
+  datasource:
+    url: jdbc:h2:mem:~/mukitListApplication
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+    defer-datasource-initialization: true # (2.5~) Hibernate 초기화 이후 data.sql 실행
+logging:
+  level:
+    org.hibernate.SQL: debug
+
+    org.hibernate.type.descriptor.sql: trace
 
 springdoc:
   api-docs:
@@ -27,8 +35,24 @@ springdoc:
 
 security:
   jwt:
-    secret-key: "!@#$%ASDFZXCVBASDFZXCVBASDFZXCVBASDFZXCVBASDFZXCVBASDFZXCVBASDFZXCVB"
-    refresh-secret-key: "!@#$AASDLKSIIUREDKFJDFIYYWOIEPWODLFDLFKDLFKOIDOFIE"
+    secret-key: "!@#$%ASDFZXCVBASDFZXCVBASDFZXCVBASDFZXCVBASDFZXCVBASDFZXCVBASDFZXCVBASDFZXCVBASDFZXCVB"
     expiration: 1800000 # 30 minutes
     refresh-token:
       expiration: 604800000 # 7 days
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+  sql:
+    init:
+      mode: never
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  sql:
+    init:
+      mode: never

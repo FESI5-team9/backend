@@ -1,9 +1,6 @@
 package com.fesi.mukitlist.config;
 
-import com.fesi.mukitlist.api.exception.AppException;
 import com.fesi.mukitlist.api.repository.UserRepository;
-import com.fesi.mukitlist.core.auth.PrincipalDetails;
-import com.fesi.mukitlist.core.auth.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,11 +8,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import static com.fesi.mukitlist.api.exception.ExceptionCode.NOT_FOUND_USER;
 
 @Configuration
 @RequiredArgsConstructor
@@ -25,11 +22,13 @@ public class ApplicationConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> {
-            User user = userRepository.findByEmail(username)
-                    .orElseThrow(() -> new AppException(NOT_FOUND_USER));
-            return new PrincipalDetails(user);
-        };
+        return new UserDetailsService() {
+            @Override
+            public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+                return userRepository.findByEmail(username)
+                        .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+            }
+        }; // TODO 람다식으로 변경
     }
 
     @Bean

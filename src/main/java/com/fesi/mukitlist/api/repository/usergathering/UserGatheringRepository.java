@@ -1,17 +1,15 @@
 package com.fesi.mukitlist.api.repository.usergathering;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-import com.fesi.mukitlist.core.auth.User;
-import com.fesi.mukitlist.core.gathering.Gathering;
-import com.fesi.mukitlist.core.usergathering.UserGathering;
-import com.fesi.mukitlist.core.usergathering.UserGatheringId;
+import com.fesi.mukitlist.domain.auth.User;
+import com.fesi.mukitlist.domain.gathering.Gathering;
+import com.fesi.mukitlist.domain.usergathering.UserGathering;
+import com.fesi.mukitlist.domain.usergathering.UserGatheringId;
 
 public interface UserGatheringRepository
 	extends JpaRepository<UserGathering, UserGatheringId>, JpaSpecificationExecutor<UserGathering> {
@@ -24,9 +22,5 @@ public interface UserGatheringRepository
 	}
 
 	Page<UserGathering> findByIdGathering(Gathering gathering, Pageable pageable);
-
-	List<UserGathering> findByIdGathering(Gathering gathering);
-
-	List<UserGathering> findByIdUser(User user);
 
 }

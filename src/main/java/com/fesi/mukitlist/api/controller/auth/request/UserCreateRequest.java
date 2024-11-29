@@ -1,7 +1,7 @@
 package com.fesi.mukitlist.api.controller.auth.request;
 
-import com.fesi.mukitlist.domain.service.auth.request.UserServiceCreateRequest;
-import com.fesi.mukitlist.core.auth.User;
+import com.fesi.mukitlist.api.service.auth.request.UserServiceCreateRequest;
+import com.fesi.mukitlist.domain.auth.User;
 
 import lombok.Builder;
 
@@ -12,7 +12,8 @@ import lombok.Builder;
 public record UserCreateRequest(
 	String email,
 	String password,
-	String nickname
+	String nickname,
+	String name
 	// String image
 ) {
 
@@ -21,6 +22,7 @@ public record UserCreateRequest(
 			.email(email)
 			.password(password)
 			.nickname(nickname)
+			.name(name)
 			.build();
 	}
 }
