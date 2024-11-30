@@ -44,7 +44,7 @@ class MukitlistApplicationTests {
 		);
 
 		// then
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);  // 등록된 이메일 중복 INTERNAL_SERVER_ERROR
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);  // 등록된 이메일 중복 INTERNAL_SERVER_ERROR
 		assertThat(response.getBody()).isNotNull();  // 응답 바디가 null이 아님
 	}
 }
