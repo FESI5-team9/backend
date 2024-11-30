@@ -56,6 +56,15 @@ public class GatheringService {
 			.toList();
 	}
 
+	@Transactional(readOnly = true)
+	public List<GatheringListResponse> searchGathering(List<String> search, Pageable pageable) {
+		Page<Gathering> gatheringPage = gatheringRepository.searchByTerms(search, pageable);
+
+		return gatheringPage.stream()
+			.map(GatheringListResponse::of)
+			.toList();
+	}
+
 	public GatheringCreateResponse createGathering(GatheringServiceCreateRequest request, Long userId) {
 		User user = getUserFrom(userId);
 		Gathering gathering = Gathering.create(request, user);

@@ -68,8 +68,21 @@ public class GatheringController {
 	ResponseEntity<List<GatheringListResponse>> getGatherings(
 		@ParameterObject @ModelAttribute GatheringRequest request
 	) {
-		List<GatheringListResponse> gatheringResponseDtoList = gatheringService.getGatherings(request.toServiceRequest());
-		return new ResponseEntity<>(gatheringResponseDtoList, HttpStatus.OK);
+		return new ResponseEntity<>(gatheringService.getGatherings(request.toServiceRequest()), HttpStatus.OK);
+	}
+
+	@GetMapping("/search")
+	ResponseEntity<List<GatheringListResponse>> searchGatherings(
+		@RequestParam(required = true) List<String> search,
+		@RequestParam(defaultValue = "10") int size,
+		@RequestParam(defaultValue = "0") int page,
+		@RequestParam(defaultValue = "dateTime") String sort,
+		@RequestParam(defaultValue = "ASC") String direction
+	) {
+
+		Sort sortOrder = Sort.by(Sort.Order.by(sort).with(Sort.Direction.fromString(direction)));
+		Pageable pageable = PageRequest.of(page, size, sortOrder);
+		return new ResponseEntity<>(gatheringService.searchGathering(search, pageable), HttpStatus.OK);
 	}
 
 	@Operation(summary = "모임 상세 조회", description = "모임의 상제 정보를 조회합니다.",
@@ -153,8 +166,8 @@ public class GatheringController {
 	@PostMapping
 	public ResponseEntity<GatheringCreateResponse> createGathering(
 		@Valid @RequestBody GatheringCreateRequest gatheringCreateRequest, @AuthenticationPrincipal User user) {
-		GatheringCreateResponse gathering = gatheringService.createGathering(gatheringCreateRequest.toServiceRequest(), user.getId());
-		return new ResponseEntity<>(gathering, HttpStatus.CREATED);
+		return new ResponseEntity<>(gatheringService.createGathering(gatheringCreateRequest.toServiceRequest(),
+			user.getId()), HttpStatus.CREATED);
 	}
 
 	@Operation(summary = "로그인된 사용자가 참석한 모임 목록 조회", description = "로그인된 사용자가 참석한 모임의 목록을 조회합니다.",
@@ -186,9 +199,9 @@ public class GatheringController {
 
 		Sort sortOrder = Sort.by(Sort.Order.by(sort).with(Sort.Direction.fromString(direction)));
 		Pageable pageable = PageRequest.of(page, size, sortOrder);
-		List<JoinedGatheringsResponse> repsonse = gatheringService.getJoinedGatherings(user.getId(), completed, reviewed,
-			pageable);
-		return new ResponseEntity<>(repsonse, HttpStatus.OK);
+
+		return new ResponseEntity<>(gatheringService.getJoinedGatherings(user.getId(), completed,
+			reviewed, pageable), HttpStatus.OK);
 	}
 
 	@Operation(summary = "모임 취소", description = "모임을 취소합니다. 모임 생성자만 취소할 수 있습니다.",
@@ -221,7 +234,8 @@ public class GatheringController {
 		}
 	)
 	@PutMapping("/{id}/cancel")
-	public ResponseEntity<GatheringResponse> cancelGathering(@PathVariable("id") Long id, @AuthenticationPrincipal User user) {
+	public ResponseEntity<GatheringResponse> cancelGathering(@PathVariable("id") Long id,
+		@AuthenticationPrincipal User user) {
 		return new ResponseEntity<>(gatheringService.cancelGathering(id, user.getId()), HttpStatus.OK);
 	}
 
@@ -258,7 +272,8 @@ public class GatheringController {
 		}
 	)
 	@PostMapping("/{id}/join")
-	public ResponseEntity<Map<String, String>> joinGathering(@PathVariable("id") Long id, @AuthenticationPrincipal User user) {
+	public ResponseEntity<Map<String, String>> joinGathering(@PathVariable("id") Long id,
+		@AuthenticationPrincipal User user) {
 		gatheringService.joinGathering(id, user.getId());
 		return new ResponseEntity<>(Map.of("message", "모임에 참여했습니다."), HttpStatus.OK);
 	}
@@ -296,7 +311,8 @@ public class GatheringController {
 		}
 	)
 	@DeleteMapping("/{id}/leave")
-	public ResponseEntity<Map<String, String>> leaveGathering(@PathVariable("id") Long id, @AuthenticationPrincipal User user) {
+	public ResponseEntity<Map<String, String>> leaveGathering(@PathVariable("id") Long id,
+		@AuthenticationPrincipal User user) {
 		LocalDateTime leaveTime = LocalDateTime.now();
 		gatheringService.leaveGathering(id, user.getId(), leaveTime);
 		return new ResponseEntity(Map.of("message", "모임을 참여 취소했습니다"), HttpStatus.OK);
