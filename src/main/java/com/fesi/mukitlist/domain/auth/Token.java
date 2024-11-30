@@ -22,19 +22,16 @@ public class Token {
 
     public boolean expired;
 
-    public boolean revoked;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     public User user;
 
     @Builder
-    public Token(Long id, String token, TokenType tokenType, boolean expired, boolean revoked, User user) {
+    public Token(Long id, String token, TokenType tokenType, boolean expired, User user) {
         this.id = id;
         this.token = token;
         this.tokenType = tokenType;
         this.expired = expired;
-        this.revoked = revoked;
         this.user = user;
     }
 }

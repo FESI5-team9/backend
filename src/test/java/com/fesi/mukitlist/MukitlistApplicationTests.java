@@ -2,10 +2,10 @@ package com.fesi.mukitlist;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fesi.mukitlist.api.controller.auth.request.UserCreateRequest;
+import com.fesi.mukitlist.api.controller.auth.response.AuthenticationResponse;
 import com.fesi.mukitlist.api.controller.auth.response.UserCreateResponse;
 import com.fesi.mukitlist.api.service.auth.JwtService;
 import com.fesi.mukitlist.api.service.auth.request.AuthenticationServiceRequest;
-import com.fesi.mukitlist.api.service.auth.response.AuthenticationServiceResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -68,11 +68,11 @@ class MukitlistApplicationTests {
 		HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
 
 		// when: 로그인 요청을 POST로 보낼 때 body에 JSON 형식으로 requestBody를 넣어 보냄
-		ResponseEntity<AuthenticationServiceResponse> response = restTemplate.exchange(
+		ResponseEntity<AuthenticationResponse> response = restTemplate.exchange(
 				"/api/auth/signin",  // 로그인 API 엔드포인트
 				HttpMethod.POST,
 				entity,  // HttpEntity를 사용하여 body와 headers를 함께 보냄
-				AuthenticationServiceResponse.class
+				AuthenticationResponse.class
 		);
 
 		// then: 로그인 성공 시 응답 코드 200 OK 확인
