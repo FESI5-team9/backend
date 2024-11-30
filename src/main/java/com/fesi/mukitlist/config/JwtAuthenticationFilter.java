@@ -1,5 +1,6 @@
 package com.fesi.mukitlist.config;
 
+import com.fesi.mukitlist.api.repository.TokenRepository;
 import com.fesi.mukitlist.api.service.auth.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -25,6 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private final TokenRepository tokenRepository;
 
     @Override
     protected void doFilterInternal(

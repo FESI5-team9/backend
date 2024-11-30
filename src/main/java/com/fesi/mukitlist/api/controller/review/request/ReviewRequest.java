@@ -13,9 +13,17 @@ public record ReviewRequest(
 	GatheringType type,
 	String location,
 	LocalDateTime date,
-	LocalDateTime registrationEnd
-
+	LocalDateTime registrationEnd,
+	int size,
+	int page,
+	String sort,
+	String direction
 ) {
+
+	public static ReviewRequest of(Long gatheringId, Long userId, GatheringType type, String location,
+		LocalDateTime date, LocalDateTime registrationEnd, int size, int page, String sort, String direction) {
+		return new ReviewRequest(gatheringId, userId, type, location, date, registrationEnd, size, page, sort, direction);
+	}
 
 	@Builder
 	public ReviewServiceRequest toServiceRequest() {
@@ -26,11 +34,10 @@ public record ReviewRequest(
 			.location(location)
 			.date(date)
 			.registrationEnd(registrationEnd)
+			.size(size)
+			.page(page)
+			.sort(sort)
+			.direction(direction)
 			.build();
-	}
-
-	public static ReviewRequest of(Long gatheringId, Long userId, GatheringType type, String location,
-		LocalDateTime date, LocalDateTime registrationEnd) {
-		return new ReviewRequest(gatheringId, userId, type, location, date, registrationEnd);
 	}
 }

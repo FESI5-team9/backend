@@ -12,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.fesi.mukitlist.api.repository.gathering.GatheringRepository;
 import com.fesi.mukitlist.domain.gathering.Gathering;
+import com.fesi.mukitlist.domain.gathering.GatheringType;
 import com.fesi.mukitlist.domain.gathering.Keyword;
 
 @ActiveProfiles("test")
@@ -31,7 +33,7 @@ class KeywordRepositoryTest {
 		// given
 		Gathering gathering = Gathering.builder()
 			.location("서울")
-			.type(DESSERT_CAFE)
+			.type(CAFE)
 			.name("성수동 카페")
 			.dateTime(LocalDateTime.now())
 			.capacity(5)

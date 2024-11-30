@@ -17,11 +17,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fesi.mukitlist.api.exception.AppException;
 import com.fesi.mukitlist.api.repository.ReviewRepository;
 import com.fesi.mukitlist.api.repository.usergathering.UserGatheringRepository;
+import com.fesi.mukitlist.api.service.PageService;
 import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.domain.gathering.Gathering;
 import com.fesi.mukitlist.domain.gathering.GatheringType;
 import com.fesi.mukitlist.domain.Review;
-import com.fesi.mukitlist.api.repository.GatheringRepository;
+import com.fesi.mukitlist.api.repository.gathering.GatheringRepository;
 import com.fesi.mukitlist.api.repository.UserRepository;
 import com.fesi.mukitlist.api.service.review.request.ReviewServiceCreateRequest;
 import com.fesi.mukitlist.api.service.review.request.ReviewServiceRequest;
@@ -46,8 +47,10 @@ public class ReviewService {
 	private final UserGatheringRepository userGatheringRepository;
 
 	@Transactional(readOnly = true)
-	public List<ReviewWithGatheringAndUserResponse> getReviews(ReviewServiceRequest request, Pageable pageable) {
+	public List<ReviewWithGatheringAndUserResponse> getReviews(ReviewServiceRequest request) {
 
+		Pageable pageable = PageService.pageableBy(request.page(), request.size(), request.sort(),
+			request.direction());
 		Specification<Review> specification = (root, query, criteriaBuilder) -> {
 			List<Predicate> predicates = new ArrayList<>();
 
@@ -91,9 +94,9 @@ public class ReviewService {
 
 
 
-	public ReviewResponse createReview(ReviewServiceCreateRequest request) {
+	public ReviewResponse createReview(ReviewServiceCreateRequest request, Long userId) {
 		Gathering gathering = getGatheringsFrom(request.gatheringId());
-		User user = userRepository.findById(1L).orElse(null);
+		User user = userRepository.findById(userId).orElseThrow(() -> new AppException(NOT_FOUND_USER));
 
 		checkIsUserParticipant(user, gathering);
 
