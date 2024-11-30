@@ -1,6 +1,5 @@
 package com.fesi.mukitlist.api.controller.gathering;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +32,7 @@ import com.fesi.mukitlist.api.service.gathering.response.GatheringParticipantsRe
 import com.fesi.mukitlist.api.service.gathering.response.GatheringResponse;
 import com.fesi.mukitlist.api.service.gathering.response.JoinedGatheringsResponse;
 import com.fesi.mukitlist.domain.auth.User;
-import com.fesi.mukitlist.domain.gathering.GatheringType;
+import com.fesi.mukitlist.global.Authorize;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -165,7 +164,7 @@ public class GatheringController {
 	)
 	@PostMapping
 	public ResponseEntity<GatheringCreateResponse> createGathering(
-		@Valid @RequestBody GatheringCreateRequest gatheringCreateRequest, @AuthenticationPrincipal User user) {
+		@Valid @RequestBody GatheringCreateRequest gatheringCreateRequest, @Authorize User user) {
 		return new ResponseEntity<>(gatheringService.createGathering(gatheringCreateRequest.toServiceRequest(),
 			user.getId()), HttpStatus.CREATED);
 	}
