@@ -7,6 +7,7 @@ import lombok.Builder;
 
 import java.io.Serializable;
 
+
 public record TokenRequest(
         Long id,
         String token,
