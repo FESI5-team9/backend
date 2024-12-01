@@ -17,10 +17,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fesi.mukitlist.api.controller.gathering.request.GatheringCreateRequest;
 import com.fesi.mukitlist.api.controller.gathering.request.GatheringRequest;
@@ -32,7 +33,7 @@ import com.fesi.mukitlist.api.service.gathering.response.GatheringParticipantsRe
 import com.fesi.mukitlist.api.service.gathering.response.GatheringResponse;
 import com.fesi.mukitlist.api.service.gathering.response.JoinedGatheringsResponse;
 import com.fesi.mukitlist.domain.auth.User;
-import com.fesi.mukitlist.global.Authorize;
+import com.fesi.mukitlist.global.annotation.Authorize;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -170,8 +171,8 @@ public class GatheringController {
 	)
 	@PostMapping
 	public ResponseEntity<GatheringCreateResponse> createGathering(
-		@Valid @RequestBody GatheringCreateRequest gatheringCreateRequest,
-		@RequestParam("image") List<MultipartFile> image,
+		@Valid @RequestPart("request") GatheringCreateRequest gatheringCreateRequest,
+		@RequestPart(value = "image", required = false) List<MultipartFile> image,
 		@Authorize User user) {
 		return new ResponseEntity<>(gatheringService.createGathering(gatheringCreateRequest.toServiceRequest(),
 			user.getId()), HttpStatus.CREATED);
@@ -196,7 +197,7 @@ public class GatheringController {
 	)
 	@GetMapping("/joined")
 	public ResponseEntity<List<JoinedGatheringsResponse>> getGatheringsBySignInUser(
-		@AuthenticationPrincipal User user,
+		@Authorize User user,
 		@RequestParam(required = false) Boolean completed,
 		@RequestParam(required = false) Boolean reviewed,
 		@RequestParam(defaultValue = "10") int size,
@@ -242,7 +243,7 @@ public class GatheringController {
 	)
 	@PutMapping("/{id}/cancel")
 	public ResponseEntity<GatheringResponse> cancelGathering(@PathVariable("id") Long id,
-		@AuthenticationPrincipal User user) {
+		@Authorize User user) {
 		return new ResponseEntity<>(gatheringService.cancelGathering(id, user.getId()), HttpStatus.OK);
 	}
 
@@ -280,7 +281,7 @@ public class GatheringController {
 	)
 	@PostMapping("/{id}/join")
 	public ResponseEntity<Map<String, String>> joinGathering(@PathVariable("id") Long id,
-		@AuthenticationPrincipal User user) {
+		@Authorize User user) {
 		gatheringService.joinGathering(id, user.getId());
 		return new ResponseEntity<>(Map.of("message", "모임에 참여했습니다."), HttpStatus.OK);
 	}
@@ -319,7 +320,7 @@ public class GatheringController {
 	)
 	@DeleteMapping("/{id}/leave")
 	public ResponseEntity<Map<String, String>> leaveGathering(@PathVariable("id") Long id,
-		@AuthenticationPrincipal User user) {
+		@Authorize User user) {
 		LocalDateTime leaveTime = LocalDateTime.now();
 		gatheringService.leaveGathering(id, user.getId(), leaveTime);
 		return new ResponseEntity(Map.of("message", "모임을 참여 취소했습니다"), HttpStatus.OK);

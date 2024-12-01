@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.fesi.mukitlist.api.service.auth.response.UserResponse;
 import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.domain.gathering.Gathering;
 import com.fesi.mukitlist.domain.gathering.GatheringType;
@@ -11,6 +12,7 @@ import com.fesi.mukitlist.domain.gathering.Keyword;
 
 public record GatheringResponse(
 	Long id,
+	UserResponse user,
 	GatheringType type,
 	String name,
 	LocalDateTime dateTime,
@@ -27,9 +29,10 @@ public record GatheringResponse(
 	LocalDateTime canceledAt,
 	Boolean host
 ) {
-	public static GatheringResponse forDetail(Gathering gathering, User user, List<Keyword> keywords) {
+	public static GatheringResponse of(Gathering gathering, User user, List<Keyword> keywords) {
 		return new GatheringResponse(
 			gathering.getId(),
+			UserResponse.of(gathering.getUser()),
 			gathering.getType(),
 			gathering.getName(),
 			gathering.getDateTime(),

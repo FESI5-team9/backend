@@ -9,17 +9,23 @@ import lombok.Builder;
 
 @Builder
 public record GatheringParticipantsResponse(
-	Long userId,
 	Long gatheringId,
 	LocalDateTime joinedAt,
-	User user
-) {
+	Long userId,
+	String email,
+	String name,
+	String nickname,
+	String image
+	) {
 	public static GatheringParticipantsResponse of(UserGathering userGathering) {
 		return GatheringParticipantsResponse.builder()
-			.userId(userGathering.getId().getUser().getId())
 			.gatheringId(userGathering.getId().getGathering().getId())
 			.joinedAt(userGathering.getJoinedAt())
-			.user(userGathering.getId().getUser())
+			.userId(userGathering.getId().getUser().getId())
+			.email(userGathering.getId().getUser().getEmail())
+			.name(userGathering.getId().getUser().getName())
+			.nickname(userGathering.getId().getUser().getNickname())
+			.image(userGathering.getId().getUser().getImage())
 			.build();
 	}
 }

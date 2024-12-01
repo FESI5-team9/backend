@@ -49,9 +49,7 @@ public record JoinedGatheringsResponse(
 			.createdBy(userGathering.getId().getGathering().getCreatedBy())
 			.canceledAt(userGathering.getId().getGathering().getCanceledAt())
 			.joinedAt(userGathering.getJoinedAt())
-			// 모임이 완료됐다면 true를 반환 하는 로직 구현
 			.isCompleted(isCompleted)
-			// 로그인 한 유저가 리뷰를 남겼다면 true를 반환하는 로직 구현
 			.isReviewed(isReviewed)
 			.build();
 

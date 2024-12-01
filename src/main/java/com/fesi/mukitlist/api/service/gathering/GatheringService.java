@@ -4,7 +4,6 @@ import static com.fesi.mukitlist.api.exception.ExceptionCode.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -18,7 +17,6 @@ import com.fesi.mukitlist.api.repository.ReviewRepository;
 import com.fesi.mukitlist.api.repository.UserRepository;
 import com.fesi.mukitlist.api.repository.gathering.GatheringRepository;
 import com.fesi.mukitlist.api.repository.usergathering.UserGatheringRepository;
-import com.fesi.mukitlist.api.service.PageService;
 import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceCreateRequest;
 import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceRequest;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringListResponse;
@@ -80,7 +78,7 @@ public class GatheringService {
 		User user = getUserFrom(userId);
 		Gathering gathering = getGatheringsFrom(id);
 		List<Keyword> keywords = keywordRepository.findAllByGathering(gathering);
-		return GatheringResponse.forDetail(gathering, user, keywords);
+		return GatheringResponse.of(gathering, user, keywords);
 	}
 
 	public GatheringResponse cancelGathering(Long id, Long userId) {
@@ -94,7 +92,7 @@ public class GatheringService {
 		Gathering savedGathering = gatheringRepository.save(gathering);
 		List<Keyword> savedKeywords = keywordRepository.findAllByGathering(gathering);
 
-		return GatheringResponse.forDetail(savedGathering, user, savedKeywords);
+		return GatheringResponse.of(savedGathering, user, savedKeywords);
 	}
 
 	public void joinGathering(Long id, Long userId) {
