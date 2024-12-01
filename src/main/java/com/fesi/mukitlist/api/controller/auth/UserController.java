@@ -22,7 +22,7 @@ public class UserController {
     @PostMapping("/signup")
     public ResponseEntity<Map<String,String>> signup(
             @RequestBody UserCreateRequest userCreateRequest) {
-            User user = userService.createUser(userCreateRequest.toServiceRequest());
+            userService.createUser(userCreateRequest.toServiceRequest());
         return new ResponseEntity<>(Map.of("message","사용자 생성 성공"), HttpStatus.CREATED);
     }
 }
