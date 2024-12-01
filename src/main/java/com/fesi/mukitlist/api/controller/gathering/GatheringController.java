@@ -59,7 +59,7 @@ public class GatheringController {
 		responses = {
 			@ApiResponse(responseCode = "200", description = "모임 목록 조회 성공",
 				content = @Content(array = @ArraySchema(
-					schema = @Schema(implementation = GatheringResponse.class)
+					schema = @Schema(implementation = GatheringListResponse.class)
 				))),
 			@ApiResponse(responseCode = "400", description = "잘못된 요청",
 				content = @Content(mediaType = "application/json", schema = @Schema(implementation = ValidationErrorResponse.class))),
@@ -78,6 +78,16 @@ public class GatheringController {
 		return new ResponseEntity<>(gatheringService.getGatherings(request.toServiceRequest(), pageable), HttpStatus.OK);
 	}
 
+	@Operation(summary = "모임 목록 검색", description = "모임의 종류, 위치, 날짜 등 다양한 조건으로 모임 목록을 검색합니다.",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "모임 목록 조회 성공",
+				content = @Content(array = @ArraySchema(
+					schema = @Schema(implementation = GatheringListResponse.class)
+				))),
+			@ApiResponse(responseCode = "400", description = "잘못된 요청",
+				content = @Content(mediaType = "application/json", schema = @Schema(implementation = ValidationErrorResponse.class))),
+		}
+	)
 	@GetMapping("/search")
 	ResponseEntity<List<GatheringListResponse>> searchGatherings(
 		@RequestParam(required = true) List<String> search,
