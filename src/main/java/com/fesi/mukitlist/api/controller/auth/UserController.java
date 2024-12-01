@@ -35,6 +35,24 @@ public class UserController {
 
 	private final UserService userService;
 
+	@Operation(summary = "회원가입", description = "회원 가입을 진행합니다.",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "회원 가입 성공",
+				content = @Content(
+					mediaType = "application/json",
+					schema = @Schema(implementation = UserInfoResponse.class))),
+			@ApiResponse(
+				responseCode = "400",
+				description = "타입 오류",
+				content = @Content(
+					mediaType = "application/json",
+					schema = @Schema(
+						example = "{\"code\":\"VALIDATION_ERROR\", \"parameter\":\"email\", \"message\":\"이메일 양식을 지켜주세요.\"}"
+					)
+				)
+			),
+		}
+	)
 	@PostMapping("/signup")
 	public ResponseEntity<Map<String, String>> signup(
 		@RequestBody UserCreateRequest userCreateRequest) {

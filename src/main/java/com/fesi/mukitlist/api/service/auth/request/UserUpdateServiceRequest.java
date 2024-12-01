@@ -1,6 +1,4 @@
-package com.fesi.mukitlist.api.service;
-
-import com.fesi.mukitlist.api.controller.auth.UserUpdateRequest;
+package com.fesi.mukitlist.api.service.auth.request;
 
 public record UserUpdateServiceRequest(
 	String nickname

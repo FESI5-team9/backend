@@ -175,12 +175,13 @@ public class GatheringController {
 		security = @SecurityRequirement(name = "bearerAuth"),
 		responses = {
 			@ApiResponse(responseCode = "200", description = "모임 생성 성공",
-				content = @Content(schema = @Schema(implementation = GatheringResponse.class))),
+				content = @Content(
+					schema = @Schema(implementation = GatheringResponse.class))),
 			@ApiResponse(responseCode = "400", description = "잘못된 요청",
 				content = @Content(mediaType = "application/json", schema = @Schema(implementation = ValidationErrorResponse.class))),
 		}
 	)
-	@PostMapping
+	@PostMapping(consumes = "multipart/form-data")
 	public ResponseEntity<GatheringCreateResponse> createGathering(
 		@ParameterObject @Valid @RequestPart("request") GatheringCreateRequest gatheringCreateRequest,
 		@ParameterObject @RequestPart(value = "image", required = false) List<MultipartFile> image,

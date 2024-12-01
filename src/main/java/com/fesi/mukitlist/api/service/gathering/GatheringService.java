@@ -19,10 +19,10 @@ import com.fesi.mukitlist.api.repository.gathering.GatheringRepository;
 import com.fesi.mukitlist.api.repository.usergathering.UserGatheringRepository;
 import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceCreateRequest;
 import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceRequest;
+import com.fesi.mukitlist.api.service.gathering.response.GatheringCreateResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringListResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringParticipantsResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringResponse;
-import com.fesi.mukitlist.api.service.gathering.response.GatheringCreateResponse;
 import com.fesi.mukitlist.api.service.gathering.response.JoinedGatheringsResponse;
 import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.domain.gathering.Gathering;
@@ -63,6 +63,8 @@ public class GatheringService {
 
 	public GatheringCreateResponse createGathering(GatheringServiceCreateRequest request, Long userId) {
 		User user = getUserFrom(userId);
+
+
 		Gathering gathering = Gathering.create(request, user);
 		Gathering savedGathering = gatheringRepository.save(gathering);
 
