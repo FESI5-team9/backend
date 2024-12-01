@@ -4,12 +4,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fesi.mukitlist.domain.gathering.GatheringType;
 import com.fesi.mukitlist.domain.gathering.Keyword;
 import com.fesi.mukitlist.domain.usergathering.UserGathering;
 
 import lombok.Builder;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Builder
 public record JoinedGatheringsResponse(
 	Long id,
@@ -27,10 +29,11 @@ public record JoinedGatheringsResponse(
 	String createdBy,
 	LocalDateTime canceledAt,
 	LocalDateTime joinedAt,
-	boolean isCompleted,
-	boolean isReviewed
+	Boolean isCompleted,
+	Boolean isReviewed
 ) {
-	public static JoinedGatheringsResponse of(UserGathering userGathering, List<Keyword> keywords) {
+	public static JoinedGatheringsResponse of(UserGathering userGathering, Boolean isCompleted, Boolean isReviewed,
+		List<Keyword> keywords) {
 		return JoinedGatheringsResponse.builder()
 			.id(userGathering.getId().getGathering().getId())
 			.type(userGathering.getId().getGathering().getType())
@@ -47,9 +50,9 @@ public record JoinedGatheringsResponse(
 			.canceledAt(userGathering.getId().getGathering().getCanceledAt())
 			.joinedAt(userGathering.getJoinedAt())
 			// 모임이 완료됐다면 true를 반환 하는 로직 구현
-			.isCompleted(true)
+			.isCompleted(isCompleted)
 			// 로그인 한 유저가 리뷰를 남겼다면 true를 반환하는 로직 구현
-			.isReviewed(true)
+			.isReviewed(isReviewed)
 			.build();
 
 	}

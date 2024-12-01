@@ -17,7 +17,7 @@ public record GatheringServiceCreateRequest(
 	String name,
 	LocalDateTime dateTime,
 	int capacity,
-	// MultipartFile image
+	String image,
 	LocalDateTime registrationEnd,
 	String address1,
 	String address2,

@@ -1,5 +1,6 @@
 package com.fesi.mukitlist.config;
 
+import com.fesi.mukitlist.api.exception.AppException;
 import com.fesi.mukitlist.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +15,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import static com.fesi.mukitlist.api.exception.ExceptionCode.NOT_FOUND_USER;
+
 @Configuration
 @RequiredArgsConstructor
 public class ApplicationConfig {
@@ -26,7 +29,7 @@ public class ApplicationConfig {
             @Override
             public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
                 return userRepository.findByEmail(username)
-                        .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                        .orElseThrow(() -> new AppException(NOT_FOUND_USER));
             }
         }; // TODO 람다식으로 변경
     }

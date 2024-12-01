@@ -4,12 +4,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.domain.gathering.Gathering;
 import com.fesi.mukitlist.domain.gathering.GatheringType;
 import com.fesi.mukitlist.domain.gathering.Keyword;
 
-public record GatheringResponse(
+import lombok.Builder;
+
+public record GatheringListResponse(
 	Long id,
 	GatheringType type,
 	String name,
@@ -17,18 +20,14 @@ public record GatheringResponse(
 	LocalDateTime registrationEnd,
 	String location,
 	String address1,
-	String address2,
-	String description,
-	List<String> keyword,
 	int participantCount,
 	int capacity,
 	String image,
 	String createdBy,
-	LocalDateTime canceledAt,
-	Boolean host
+	LocalDateTime canceledAt
 ) {
-	public static GatheringResponse forDetail(Gathering gathering, User user, List<Keyword> keywords) {
-		return new GatheringResponse(
+	public static GatheringListResponse of(Gathering gathering) {
+		return new GatheringListResponse(
 			gathering.getId(),
 			gathering.getType(),
 			gathering.getName(),
@@ -36,15 +35,11 @@ public record GatheringResponse(
 			gathering.getRegistrationEnd(),
 			gathering.getLocation(),
 			gathering.getAddress1(),
-			gathering.getAddress2(),
-			gathering.getDescription(),
-			keywords.stream().map(Keyword::toString).collect(Collectors.toList()),
 			gathering.getParticipantCount(),
 			gathering.getCapacity(),
-			gathering.getUser().getImage(),
-			gathering.getUser().getName(),
-			gathering.getCanceledAt(),
-			gathering.isHostUser(user)
+			gathering.getImage(),
+			gathering.getCreatedBy(),
+			gathering.getCanceledAt()
 		);
 	}
 }
