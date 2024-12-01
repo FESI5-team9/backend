@@ -18,6 +18,10 @@ spring:
         format_sql: true
 
     defer-datasource-initialization: true # (2.5~) Hibernate 초기화 이후 data.sql 실행
+
+  profiles:
+    include: aws
+
 logging:
   level:
     org.hibernate.SQL: debug
