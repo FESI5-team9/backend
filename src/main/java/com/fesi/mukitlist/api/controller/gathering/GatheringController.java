@@ -36,6 +36,7 @@ import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.global.annotation.Authorize;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -171,9 +172,9 @@ public class GatheringController {
 	)
 	@PostMapping
 	public ResponseEntity<GatheringCreateResponse> createGathering(
-		@Valid @RequestPart("request") GatheringCreateRequest gatheringCreateRequest,
-		@RequestPart(value = "image", required = false) List<MultipartFile> image,
-		@Authorize User user) {
+		@ParameterObject @Valid @RequestPart("request") GatheringCreateRequest gatheringCreateRequest,
+		@ParameterObject @RequestPart(value = "image", required = false) List<MultipartFile> image,
+		@Parameter(hidden = true) @Authorize User user) {
 		return new ResponseEntity<>(gatheringService.createGathering(gatheringCreateRequest.toServiceRequest(),
 			user.getId()), HttpStatus.CREATED);
 	}
@@ -197,7 +198,7 @@ public class GatheringController {
 	)
 	@GetMapping("/joined")
 	public ResponseEntity<List<JoinedGatheringsResponse>> getGatheringsBySignInUser(
-		@Authorize User user,
+		@Parameter(hidden = true) @Authorize User user,
 		@RequestParam(required = false) Boolean completed,
 		@RequestParam(required = false) Boolean reviewed,
 		@RequestParam(defaultValue = "10") int size,
@@ -243,7 +244,7 @@ public class GatheringController {
 	)
 	@PutMapping("/{id}/cancel")
 	public ResponseEntity<GatheringResponse> cancelGathering(@PathVariable("id") Long id,
-		@Authorize User user) {
+		@Parameter(hidden = true) @Authorize User user) {
 		return new ResponseEntity<>(gatheringService.cancelGathering(id, user.getId()), HttpStatus.OK);
 	}
 
@@ -281,7 +282,7 @@ public class GatheringController {
 	)
 	@PostMapping("/{id}/join")
 	public ResponseEntity<Map<String, String>> joinGathering(@PathVariable("id") Long id,
-		@Authorize User user) {
+		@Parameter(hidden = true) @Authorize User user) {
 		gatheringService.joinGathering(id, user.getId());
 		return new ResponseEntity<>(Map.of("message", "모임에 참여했습니다."), HttpStatus.OK);
 	}
@@ -320,7 +321,7 @@ public class GatheringController {
 	)
 	@DeleteMapping("/{id}/leave")
 	public ResponseEntity<Map<String, String>> leaveGathering(@PathVariable("id") Long id,
-		@Authorize User user) {
+		@Parameter(hidden = true) @Authorize User user) {
 		LocalDateTime leaveTime = LocalDateTime.now();
 		gatheringService.leaveGathering(id, user.getId(), leaveTime);
 		return new ResponseEntity(Map.of("message", "모임 참여 취소를 성공했습니다."), HttpStatus.OK);

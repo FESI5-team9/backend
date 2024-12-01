@@ -15,11 +15,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/auth")
+@Tag(name = "Auth", description = "인증 관련 API")
 public class UserController {
 
 	private final UserService userService;
@@ -38,7 +41,7 @@ public class UserController {
 
 	@PutMapping("user")
 	public ResponseEntity<UserInfoResponse> updateUser(
-        @Authorize User user,
+		@Parameter(hidden = true) @Authorize User user,
         @RequestPart("request") UserUpdateRequest request,
 		@RequestPart(value = "image", required = false)
 		MultipartFile image) {

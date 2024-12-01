@@ -26,6 +26,7 @@ import com.fesi.mukitlist.domain.gathering.GatheringType;
 import com.fesi.mukitlist.global.annotation.Authorize;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -53,7 +54,7 @@ public class ReviewController {
 	)
 	@PostMapping
 	public ResponseEntity<ReviewResponse> createReview(@RequestBody ReviewCreateRequest request,
-		@Authorize User user) {
+		@Parameter(hidden = true) @Authorize User user) {
 		return new ResponseEntity<>(reviewService.createReview(request.toServiceRequest(), user.getId()),
 			HttpStatus.OK);
 	}
