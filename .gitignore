@@ -44,3 +44,4 @@ out/
 .vscode/
 
 /application.yml
+/src/main/resources/application-aws.yml
