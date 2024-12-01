@@ -23,6 +23,7 @@ import com.fesi.mukitlist.api.service.review.response.ReviewScoreResponse;
 import com.fesi.mukitlist.api.service.review.response.ReviewWithGatheringAndUserResponse;
 import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.domain.gathering.GatheringType;
+import com.fesi.mukitlist.global.annotation.Authorize;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -52,7 +53,7 @@ public class ReviewController {
 	)
 	@PostMapping
 	public ResponseEntity<ReviewResponse> createReview(@RequestBody ReviewCreateRequest request,
-		@AuthenticationPrincipal User user) {
+		@Authorize User user) {
 		return new ResponseEntity<>(reviewService.createReview(request.toServiceRequest(), user.getId()),
 			HttpStatus.OK);
 	}

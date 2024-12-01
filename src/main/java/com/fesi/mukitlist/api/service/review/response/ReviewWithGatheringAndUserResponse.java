@@ -2,6 +2,8 @@ package com.fesi.mukitlist.api.service.review.response;
 
 import java.time.LocalDateTime;
 
+import com.fesi.mukitlist.api.service.auth.response.UserResponse;
+import com.fesi.mukitlist.api.service.gathering.response.GatheringReviewResponse;
 import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.domain.gathering.Gathering;
 import com.fesi.mukitlist.domain.Review;
@@ -14,8 +16,8 @@ public record ReviewWithGatheringAndUserResponse(
 	int score,
 	String comment,
 	LocalDateTime createdAt,
-	Gathering gathering,
-	User user
+	GatheringReviewResponse gathering,
+	UserResponse user
 	)
 {
 	public static ReviewWithGatheringAndUserResponse of(Review review) {
@@ -24,8 +26,8 @@ public record ReviewWithGatheringAndUserResponse(
 			.score(review.getScore())
 			.comment(review.getComment())
 			.createdAt(review.getCreatedAt())
-			.user(review.getUser())
-			.gathering(review.getGathering())
+			.user(UserResponse.of(review.getUser()))
+			.gathering(GatheringReviewResponse.of(review.getGathering()))
 			.build();
 	}
 }
