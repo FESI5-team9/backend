@@ -43,4 +43,5 @@ out/
 ### VS Code ###
 .vscode/
 
-/application.yml
+### yml ###
+application-aws.yml

@@ -23,15 +23,11 @@ import java.util.Date;
 @RequiredArgsConstructor
 @Service
 public class S3Service {
-    @Value("${cloud.aws.s3.bucket}")
+    @Value("${application.bucket.name}")
     private String bucketName;
 
     @Autowired
     private AmazonS3 s3Client;
-
-    private String preSignUrl;
-
-    private final AmazonS3 amazonS3;
 
     public String uploadFile(MultipartFile file) {
         File fileObj = convertMultiPartFileToFile(file);
@@ -54,28 +50,5 @@ public class S3Service {
     public String deleteFile(String fileName) {
         s3Client.deleteObject(bucketName, fileName);
         return fileName + " removed ...";
-    }
-
-    /*
-    * 파일의 presigned URL 반환
-    */
-    public String getPresignedUrl(String keyName) {
-        // presigned URL이 유효하게 동작할 만료기한 설정 (2분)
-        Date expiration = new Date();
-        Long expirationTimeMillis = expiration.getTime();
-        expirationTimeMillis += 1000 * 60 * 2; // 2분
-        expiration.setTime(expirationTimeMillis);
-
-        try {
-            // presigned URL 발급
-            GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucketName, keyName) // bucketName 사용
-                    .withMethod(HttpMethod.GET)
-                    .withExpiration(expiration);
-            URL url = amazonS3.generatePresignedUrl(generatePresignedUrlRequest);
-            preSignUrl = url.toString();
-        } catch (Exception e) {
-            log.error(e.toString());
-        }
-        return preSignUrl;
     }
 }

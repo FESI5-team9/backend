@@ -44,6 +44,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @RestController
@@ -164,7 +165,9 @@ public class GatheringController {
 	)
 	@PostMapping
 	public ResponseEntity<GatheringCreateResponse> createGathering(
-		@Valid @RequestBody GatheringCreateRequest gatheringCreateRequest, @Authorize User user) {
+		@Valid @RequestBody GatheringCreateRequest gatheringCreateRequest,
+		@RequestParam("image") List<MultipartFile> image,
+		@Authorize User user) {
 		return new ResponseEntity<>(gatheringService.createGathering(gatheringCreateRequest.toServiceRequest(),
 			user.getId()), HttpStatus.CREATED);
 	}

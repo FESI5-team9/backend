@@ -10,20 +10,21 @@ import com.fesi.mukitlist.domain.gathering.GatheringType;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * DTO for {@link Gathering}
  */
 public record GatheringRequest(
-	List<Long> id,
-	GatheringType type,
-	LocalDate dateTime,
-	String location,
-	String createdBy,
-	@Schema(description = "페이지 크기", defaultValue = "10") int size,
-	@Schema(description = "페이지 번호", defaultValue = "0") int page,
-	@Schema(description = "정렬 기준", defaultValue = "dateTime") String sort,
-	@Schema(description = "정렬 방향", defaultValue = "ASC") String direction
+		List<Long> id,
+		GatheringType type,
+		LocalDate dateTime,
+		String location,
+		String createdBy,
+		@Schema(description = "페이지 크기", defaultValue = "10") int size,
+		@Schema(description = "페이지 번호", defaultValue = "0") int page,
+		@Schema(description = "정렬 기준", defaultValue = "dateTime") String sort,
+		@Schema(description = "정렬 방향", defaultValue = "ASC") String direction
 ) implements Serializable {
 
 	public GatheringRequest {
