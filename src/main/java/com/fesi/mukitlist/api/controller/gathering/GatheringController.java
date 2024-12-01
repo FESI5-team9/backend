@@ -65,9 +65,15 @@ public class GatheringController {
 	)
 	@GetMapping
 	ResponseEntity<List<GatheringListResponse>> getGatherings(
-		@ParameterObject @ModelAttribute GatheringRequest request
+		@ParameterObject @ModelAttribute GatheringRequest request,
+		@RequestParam(defaultValue = "10") int size,
+		@RequestParam(defaultValue = "0") int page,
+		@RequestParam(defaultValue = "dateTime") String sort,
+		@RequestParam(defaultValue = "desc") String direction
 	) {
-		return new ResponseEntity<>(gatheringService.getGatherings(request.toServiceRequest()), HttpStatus.OK);
+		Sort sortOrder = Sort.by(Sort.Order.by(sort).with(Sort.Direction.fromString(direction)));
+		Pageable pageable = PageRequest.of(page, size, sortOrder);
+		return new ResponseEntity<>(gatheringService.getGatherings(request.toServiceRequest(), pageable), HttpStatus.OK);
 	}
 
 	@GetMapping("/search")
@@ -164,7 +170,7 @@ public class GatheringController {
 	)
 	@PostMapping
 	public ResponseEntity<GatheringCreateResponse> createGathering(
-		@Valid @RequestBody GatheringCreateRequest gatheringCreateRequest, @Authorize User user) {
+		@Valid @RequestBody GatheringCreateRequest gatheringCreateRequest, @AuthenticationPrincipal User user) {
 		return new ResponseEntity<>(gatheringService.createGathering(gatheringCreateRequest.toServiceRequest(),
 			user.getId()), HttpStatus.CREATED);
 	}

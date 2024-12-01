@@ -45,10 +45,8 @@ public class GatheringService {
 	private final ReviewRepository reviewRepository;
 
 	@Transactional(readOnly = true)
-	public List<GatheringListResponse> getGatherings(GatheringServiceRequest request) {
+	public List<GatheringListResponse> getGatherings(GatheringServiceRequest request, Pageable pageable) {
 
-		Pageable pageable = PageService.pageableBy(request.page(), request.size(), request.sort(),
-			request.direction());
 		Page<Gathering> gatheringPage = gatheringRepository.findWithFilters(request, pageable);
 
 		return gatheringPage.stream()

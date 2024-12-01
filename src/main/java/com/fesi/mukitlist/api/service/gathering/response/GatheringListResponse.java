@@ -1,16 +1,9 @@
 package com.fesi.mukitlist.api.service.gathering.response;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.domain.gathering.Gathering;
 import com.fesi.mukitlist.domain.gathering.GatheringType;
-import com.fesi.mukitlist.domain.gathering.Keyword;
-
-import lombok.Builder;
 
 public record GatheringListResponse(
 	Long id,

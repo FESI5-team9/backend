@@ -19,22 +19,12 @@ public record GatheringRequest(
 	GatheringType type,
 	LocalDate dateTime,
 	String location,
-	String createdBy,
-	@Schema(description = "페이지 크기", defaultValue = "10") int size,
-	@Schema(description = "페이지 번호", defaultValue = "0") int page,
-	@Schema(description = "정렬 기준", defaultValue = "dateTime") String sort,
-	@Schema(description = "정렬 방향", defaultValue = "ASC") String direction
+	String createdBy
 ) implements Serializable {
 
-	public GatheringRequest {
-		size = (size == 0) ? 10 : size;  // 기본값 설정
-		sort = (sort == null) ? "dateTime" : sort;  // 기본값 설정
-		direction = (direction == null) ? "ASC" : direction;  // 기본값 설정
-	}
-
 	public static GatheringRequest of(List<Long> id, GatheringType type, LocalDate dateTime, String location,
-		String createdBy, int size, int page, String sort, String direction) {
-		return new GatheringRequest(id, type, dateTime, location, createdBy, size, page, sort, direction);
+		String createdBy) {
+		return new GatheringRequest(id, type, dateTime, location, createdBy);
 	}
 
 	@Builder
@@ -45,10 +35,6 @@ public record GatheringRequest(
 			.dateTime(dateTime)
 			.location(location)
 			.createdBy(createdBy)
-			.size(size)
-			.page(page)
-			.sort(sort)
-			.direction(direction)
 			.build();
 	}
 }

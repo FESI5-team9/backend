@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 
 public record GatheringCreateRequest(
-	@Schema(description = "모임 서비스 종류", example = "식당,카페,주점,비건")
+	@Schema(description = "모임 서비스 종류", example = "RESTAURANT,CAFE,PUB,VEGAN")
 	GatheringType type,
 
 	@Schema(description = "모임 장소", example = "서울 강남구")
