@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class Token {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Integer id;
+    public Long id;
 
     @Column(unique = true)
     public String token;
@@ -27,10 +27,11 @@ public class Token {
     public User user;
 
     @Builder
-    public Token(Integer id, String token, TokenType tokenType, boolean expired, boolean revoked, User user) {
+    public Token(Long id, String token, TokenType tokenType, boolean expired, User user) {
         this.id = id;
         this.token = token;
         this.tokenType = tokenType;
+        this.expired = expired;
         this.user = user;
     }
 }

@@ -1,10 +1,8 @@
 package com.fesi.mukitlist;
 
 import com.fesi.mukitlist.api.controller.auth.request.UserCreateRequest;
-import com.fesi.mukitlist.api.controller.auth.response.AuthenticationResponse;
 import com.fesi.mukitlist.api.controller.auth.response.UserCreateResponse;
 import com.fesi.mukitlist.api.service.auth.JwtService;
-import com.fesi.mukitlist.api.service.auth.request.AuthenticationServiceRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
