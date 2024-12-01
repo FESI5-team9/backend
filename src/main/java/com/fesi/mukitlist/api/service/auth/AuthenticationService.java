@@ -1,6 +1,7 @@
 package com.fesi.mukitlist.api.service.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fesi.mukitlist.api.exception.AppException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
@@ -20,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+
+import static com.fesi.mukitlist.api.exception.ExceptionCode.NOT_FOUND_USER;
 
 @RequiredArgsConstructor
 @Service
@@ -49,7 +52,7 @@ public class AuthenticationService {
         );
 
         User user = repository.findByEmail(request.email())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new AppException(NOT_FOUND_USER));
         String accessToken = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
         saveUserToken(user, refreshToken);
@@ -71,7 +74,7 @@ public class AuthenticationService {
 
         if (userEmail != null) {
             var user = this.repository.findByEmail(userEmail)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+                    .orElseThrow(() -> new AppException(NOT_FOUND_USER));
 
             // Refresh token 만료 여부 체크
             if (!jwtService.isTokenValid(refreshToken, user)) {
