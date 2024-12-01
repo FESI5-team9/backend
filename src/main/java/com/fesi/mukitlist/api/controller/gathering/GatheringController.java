@@ -170,7 +170,9 @@ public class GatheringController {
 	)
 	@PostMapping
 	public ResponseEntity<GatheringCreateResponse> createGathering(
-		@Valid @RequestBody GatheringCreateRequest gatheringCreateRequest, @AuthenticationPrincipal User user) {
+		@Valid @RequestBody GatheringCreateRequest gatheringCreateRequest,
+		@RequestParam("image") List<MultipartFile> image,
+		@Authorize User user) {
 		return new ResponseEntity<>(gatheringService.createGathering(gatheringCreateRequest.toServiceRequest(),
 			user.getId()), HttpStatus.CREATED);
 	}

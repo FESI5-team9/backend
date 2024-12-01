@@ -8,6 +8,7 @@ import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceCreateRe
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import org.springframework.web.multipart.MultipartFile;
 
 public record GatheringCreateRequest(
 	@Schema(description = "모임 서비스 종류", example = "RESTAURANT,CAFE,PUB,VEGAN")
@@ -27,7 +28,9 @@ public record GatheringCreateRequest(
 	@Schema(description = "모집 정원 (최소 5인 이상)", example = "10", minimum = "5")
 	int capacity,
 
-	// MultipartFile image
+	@Schema(description = "모임 이미지 파일", type = "string", format = "binary")
+	MultipartFile image,
+
 	@Schema(description = "모임 등록 마감일 (YYYY-MM-DDTHH:MM:SS)", example = "2024-11-30T23:59:59", type = "string", format = "date-time")
 	LocalDateTime registrationEnd,
 	String address1,
