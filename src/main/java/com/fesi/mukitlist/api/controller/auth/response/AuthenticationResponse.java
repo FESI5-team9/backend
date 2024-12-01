@@ -4,11 +4,13 @@ import lombok.Builder;
 
 @Builder
 public record AuthenticationResponse(
-        String token
+        String accessToken,
+        String refreshToken
 ) {
-    public static AuthenticationResponse of(String token) {
+    public static AuthenticationResponse of(String accessToken, String refreshToken) {
         return AuthenticationResponse.builder()
-                .token(token)
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .build();
     }
 }
