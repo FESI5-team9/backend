@@ -89,4 +89,7 @@ public class User implements UserDetails {
         return password;
     }
 
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
 }
