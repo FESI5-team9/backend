@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.global;
+package com.fesi.mukitlist.global.annotation;
 
 import static com.fesi.mukitlist.api.exception.ExceptionCode.*;
 

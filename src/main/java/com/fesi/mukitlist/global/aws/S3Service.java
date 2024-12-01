@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.api.service.aws;
+package com.fesi.mukitlist.global.aws;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.HttpMethod;
@@ -26,7 +26,6 @@ public class S3Service {
     @Value("${application.bucket.name}")
     private String bucketName;
 
-    @Autowired
     private AmazonS3 s3Client;
 
     public String uploadFile(MultipartFile file) {
