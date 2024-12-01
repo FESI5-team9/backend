@@ -78,7 +78,7 @@ public class ReviewController {
 		@RequestParam(required = false) LocalDateTime registrationEnd,
 		@RequestParam(defaultValue = "10") int size,
 		@RequestParam(defaultValue = "0") int page,
-		@RequestParam(defaultValue = "date") String sort,
+		@RequestParam(defaultValue = "createdAt") String sort,
 		@RequestParam(defaultValue = "ASC") String direction
 	) {
 

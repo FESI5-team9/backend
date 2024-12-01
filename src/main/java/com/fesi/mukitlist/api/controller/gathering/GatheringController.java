@@ -323,7 +323,7 @@ public class GatheringController {
 		@Authorize User user) {
 		LocalDateTime leaveTime = LocalDateTime.now();
 		gatheringService.leaveGathering(id, user.getId(), leaveTime);
-		return new ResponseEntity(Map.of("message", "모임을 참여 취소했습니다"), HttpStatus.OK);
+		return new ResponseEntity(Map.of("message", "모임 참여 취소를 성공했습니다."), HttpStatus.OK);
 	}
 
 }
