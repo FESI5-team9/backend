@@ -1,14 +1,12 @@
 package com.fesi.mukitlist.api.controller.auth;
 
-import java.security.Principal;
+import java.io.IOException;
 import java.util.Map;
 
-import com.fesi.mukitlist.api.exception.response.ValidationErrorResponse;
+import com.fesi.mukitlist.api.controller.auth.request.UserUpdateRequest;
 import com.fesi.mukitlist.api.service.auth.UserService;
 import com.fesi.mukitlist.api.controller.auth.request.UserCreateRequest;
 import com.fesi.mukitlist.api.service.auth.response.UserInfoResponse;
-import com.fesi.mukitlist.api.service.auth.response.UserResponse;
-import com.fesi.mukitlist.api.service.gathering.response.GatheringResponse;
 import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.global.annotation.Authorize;
 
@@ -19,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -101,7 +98,7 @@ public class UserController {
 	)
 	@GetMapping("user")
 	public ResponseEntity<UserInfoResponse> getUser(@Parameter(hidden = true) @Authorize User user) {
-		return new ResponseEntity<>(userService.getUserInfo(user.getId()), HttpStatus.OK);
+		return new ResponseEntity<>(userService.getUserInfo(user), HttpStatus.OK);
 	}
 
 	@Operation(summary = "유저 정보 수정", description = "유저 정보를 수정 합니다.",
@@ -143,13 +140,11 @@ public class UserController {
 			),
 		}
 	)
-	@PutMapping("user")
+	@PutMapping(value = "user", consumes = "multipart/form-data")
 	public ResponseEntity<UserInfoResponse> updateUser(
 		@Parameter(hidden = true) @Authorize User user,
-        @RequestPart("request") UserUpdateRequest request,
-		@RequestPart(value = "image", required = false)
-		MultipartFile image) {
-        UserInfoResponse response = userService.updateUser(user.getId(), request, image);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+		@ModelAttribute UserUpdateRequest request) throws IOException {
+		UserInfoResponse response = userService.updateUser(user, request);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
 }

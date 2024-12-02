@@ -55,7 +55,7 @@ public class ReviewController {
 	@PostMapping
 	public ResponseEntity<ReviewResponse> createReview(@RequestBody ReviewCreateRequest request,
 		@Parameter(hidden = true) @Authorize User user) {
-		return new ResponseEntity<>(reviewService.createReview(request.toServiceRequest(), user.getId()),
+		return new ResponseEntity<>(reviewService.createReview(request.toServiceRequest(), user),
 			HttpStatus.OK);
 	}
 
@@ -80,7 +80,7 @@ public class ReviewController {
 		@RequestParam(defaultValue = "10") int size,
 		@RequestParam(defaultValue = "0") int page,
 		@RequestParam(defaultValue = "createdAt") String sort,
-		@RequestParam(defaultValue = "ASC") String direction
+		@RequestParam(defaultValue = "desc") String direction
 	) {
 
 		ReviewRequest request = ReviewRequest.of(gatheringId, userId, type, location, date, registrationEnd, size,

@@ -94,9 +94,8 @@ public class ReviewService {
 
 
 
-	public ReviewResponse createReview(ReviewServiceCreateRequest request, Long userId) {
+	public ReviewResponse createReview(ReviewServiceCreateRequest request, User user) {
 		Gathering gathering = getGatheringsFrom(request.gatheringId());
-		User user = userRepository.findById(userId).orElseThrow(() -> new AppException(NOT_FOUND_USER));
 
 		checkIsUserParticipant(user, gathering);
 

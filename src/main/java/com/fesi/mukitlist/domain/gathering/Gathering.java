@@ -104,14 +104,14 @@ public class Gathering {
 		this.canceledAt = canceledAt;
 	}
 
-	public static Gathering create(GatheringServiceCreateRequest request, User user) {
+	public static Gathering create(GatheringServiceCreateRequest request, String storedName, User user) {
 		return Gathering.builder()
 			.location(request.location())
 			.type(request.type())
 			.name(request.name())
 			.dateTime(request.dateTime())
 			.capacity(request.minimumCapacity())
-			.image(request.image())
+			.image(storedName)
 			.registrationEnd(request.registrationEnd())
 			.address1(request.address1())
 			.address2(request.address2())

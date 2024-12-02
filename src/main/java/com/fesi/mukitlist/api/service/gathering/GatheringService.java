@@ -2,6 +2,7 @@ package com.fesi.mukitlist.api.service.gathering;
 
 import static com.fesi.mukitlist.api.exception.ExceptionCode.*;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,6 +30,7 @@ import com.fesi.mukitlist.domain.gathering.Gathering;
 import com.fesi.mukitlist.domain.gathering.Keyword;
 import com.fesi.mukitlist.domain.usergathering.UserGathering;
 import com.fesi.mukitlist.domain.usergathering.UserGatheringId;
+import com.fesi.mukitlist.global.aws.S3Service;
 
 import lombok.RequiredArgsConstructor;
 
@@ -40,7 +42,7 @@ public class GatheringService {
 	private final UserGatheringRepository userGatheringRepository;
 	private final UserRepository userRepository;
 	private final KeywordRepository keywordRepository;
-	private final ReviewRepository reviewRepository;
+	private final S3Service s3Service;
 
 	@Transactional(readOnly = true)
 	public List<GatheringListResponse> getGatherings(GatheringServiceRequest request, Pageable pageable) {
@@ -61,11 +63,13 @@ public class GatheringService {
 			.toList();
 	}
 
-	public GatheringCreateResponse createGathering(GatheringServiceCreateRequest request, Long userId) {
-		User user = getUserFrom(userId);
-
-
-		Gathering gathering = Gathering.create(request, user);
+	public GatheringCreateResponse createGathering(GatheringServiceCreateRequest request, User user) throws
+		IOException {
+		String storedName = "";
+		if (request.image() != null) {
+			storedName = s3Service.upload(request.image(), request.image().getOriginalFilename());
+		}
+		Gathering gathering = Gathering.create(request, storedName, user);
 		Gathering savedGathering = gatheringRepository.save(gathering);
 
 		List<Keyword> keywords = request.keyword().stream()
@@ -83,8 +87,7 @@ public class GatheringService {
 		return GatheringResponse.of(gathering, user, keywords);
 	}
 
-	public GatheringResponse cancelGathering(Long id, Long userId) {
-		User user = getUserFrom(userId);
+	public GatheringResponse cancelGathering(Long id, User user) {
 		Gathering gathering = getGatheringsFrom(id);
 
 		checkCancelAuthority(gathering, user);
@@ -97,9 +100,8 @@ public class GatheringService {
 		return GatheringResponse.of(savedGathering, user, savedKeywords);
 	}
 
-	public void joinGathering(Long id, Long userId) {
+	public void joinGathering(Long id, User user) {
 		Gathering gathering = getGatheringsFrom(id);
-		User user = getUserFrom(userId);
 
 		checkIsCanceledGathering(gathering);
 		checkIsJoinedGathering(gathering);
@@ -112,9 +114,8 @@ public class GatheringService {
 		gathering.joinParticipant();
 	}
 
-	public void leaveGathering(Long id, Long userId, LocalDateTime leaveTime) {
+	public void leaveGathering(Long id, User user, LocalDateTime leaveTime) {
 		Gathering gathering = getGatheringsFrom(id);
-		User user = getUserFrom(userId);
 
 		checkIsNotPastGathering(gathering, leaveTime);
 
@@ -127,9 +128,8 @@ public class GatheringService {
 		gatheringRepository.save(gathering);
 	}
 
-	public List<JoinedGatheringsResponse> getJoinedGatherings(Long userId, Boolean completed, Boolean reviewed,
+	public List<JoinedGatheringsResponse> getJoinedGatherings(User user, Boolean completed, Boolean reviewed,
 		Pageable pageable) {
-		User user = getUserFrom(userId);
 		Page<UserGathering> userGatheringPage = userGatheringRepository.findWithFilters(user, completed, reviewed,
 			pageable);
 
