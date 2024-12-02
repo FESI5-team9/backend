@@ -89,7 +89,7 @@ public class GatheringController {
 	)
 	@GetMapping("/search")
 	ResponseEntity<List<GatheringListResponse>> searchGatherings(
-		@RequestParam(required = true) List<String> search,
+		@RequestParam List<String> search,
 		@RequestParam(defaultValue = "10") int size,
 		@RequestParam(defaultValue = "0") int page,
 		@RequestParam(defaultValue = "dateTime") String sort,
@@ -185,7 +185,7 @@ public class GatheringController {
 		@ModelAttribute @Valid GatheringCreateRequest request,
 		@Parameter(hidden = true) @Authorize User user) throws IOException {
 		return new ResponseEntity<>(gatheringService.createGathering(request.toServiceRequest(),
-			user.getId()), HttpStatus.CREATED);
+			user), HttpStatus.CREATED);
 	}
 
 	@Operation(summary = "로그인된 사용자가 참석한 모임 목록 조회", description = "로그인된 사용자가 참석한 모임의 목록을 조회합니다.",
@@ -218,7 +218,7 @@ public class GatheringController {
 		Sort sortOrder = Sort.by(Sort.Order.by(sort).with(Sort.Direction.fromString(direction)));
 		Pageable pageable = PageRequest.of(page, size, sortOrder);
 
-		return new ResponseEntity<>(gatheringService.getJoinedGatherings(user.getId(), completed,
+		return new ResponseEntity<>(gatheringService.getJoinedGatherings(user, completed,
 			reviewed, pageable), HttpStatus.OK);
 	}
 
@@ -254,13 +254,13 @@ public class GatheringController {
 	@PutMapping("/{id}/cancel")
 	public ResponseEntity<GatheringResponse> cancelGathering(@PathVariable("id") Long id,
 		@Parameter(hidden = true) @Authorize User user) {
-		return new ResponseEntity<>(gatheringService.cancelGathering(id, user.getId()), HttpStatus.OK);
+		return new ResponseEntity<>(gatheringService.cancelGathering(id, user), HttpStatus.OK);
 	}
 
 	@Operation(summary = "모임 참여", description = "로그인한 사용자가 모임에 참여합니다",
 		security = @SecurityRequirement(name = "bearerAuth"),
 		responses = {
-			@ApiResponse(responseCode = "200", description = "모임 목록 조회 성공",
+			@ApiResponse(responseCode = "200", description = "모임 참여 성공",
 				content = @Content(
 					mediaType = "application/json",
 					schema = @Schema(
