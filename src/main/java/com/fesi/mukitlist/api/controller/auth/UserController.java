@@ -1,5 +1,6 @@
 package com.fesi.mukitlist.api.controller.auth;
 
+import java.io.IOException;
 import java.util.Map;
 
 import com.fesi.mukitlist.api.controller.auth.request.UserUpdateRequest;
@@ -139,13 +140,11 @@ public class UserController {
 			),
 		}
 	)
-	@PutMapping("user")
+	@PutMapping(value = "user", consumes = "multipart/form-data")
 	public ResponseEntity<UserInfoResponse> updateUser(
 		@Parameter(hidden = true) @Authorize User user,
-        @RequestPart("request") UserUpdateRequest request,
-		@RequestPart(value = "image", required = false)
-		MultipartFile image) {
-        UserInfoResponse response = userService.updateUser(user.getId(), request, image);
+        @ModelAttribute UserUpdateRequest request) throws IOException {
+        UserInfoResponse response = userService.updateUser(user.getId(), request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
