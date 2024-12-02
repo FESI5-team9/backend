@@ -63,10 +63,12 @@ public class GatheringService {
 			.toList();
 	}
 
-	public GatheringCreateResponse createGathering(GatheringServiceCreateRequest request, Long userId) throws
+	public GatheringCreateResponse createGathering(GatheringServiceCreateRequest request, User user) throws
 		IOException {
-		User user = getUserFrom(userId);
-		String storedName = s3Service.upload(request.image(), request.image().getOriginalFilename());
+		String storedName = "";
+		if (request.image() != null) {
+			storedName = s3Service.upload(request.image(), request.image().getOriginalFilename());
+		}
 		Gathering gathering = Gathering.create(request, storedName, user);
 		Gathering savedGathering = gatheringRepository.save(gathering);
 
@@ -85,8 +87,7 @@ public class GatheringService {
 		return GatheringResponse.of(gathering, user, keywords);
 	}
 
-	public GatheringResponse cancelGathering(Long id, Long userId) {
-		User user = getUserFrom(userId);
+	public GatheringResponse cancelGathering(Long id, User user) {
 		Gathering gathering = getGatheringsFrom(id);
 
 		checkCancelAuthority(gathering, user);
@@ -129,9 +130,8 @@ public class GatheringService {
 		gatheringRepository.save(gathering);
 	}
 
-	public List<JoinedGatheringsResponse> getJoinedGatherings(Long userId, Boolean completed, Boolean reviewed,
+	public List<JoinedGatheringsResponse> getJoinedGatherings(User user, Boolean completed, Boolean reviewed,
 		Pageable pageable) {
-		User user = getUserFrom(userId);
 		Page<UserGathering> userGatheringPage = userGatheringRepository.findWithFilters(user, completed, reviewed,
 			pageable);
 
