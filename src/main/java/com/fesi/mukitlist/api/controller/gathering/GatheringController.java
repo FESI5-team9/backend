@@ -1,5 +1,6 @@
 package com.fesi.mukitlist.api.controller.gathering;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -75,7 +77,8 @@ public class GatheringController {
 	) {
 		Sort sortOrder = Sort.by(Sort.Order.by(sort).with(Sort.Direction.fromString(direction)));
 		Pageable pageable = PageRequest.of(page, size, sortOrder);
-		return new ResponseEntity<>(gatheringService.getGatherings(request.toServiceRequest(), pageable), HttpStatus.OK);
+		return new ResponseEntity<>(gatheringService.getGatherings(request.toServiceRequest(), pageable),
+			HttpStatus.OK);
 	}
 
 	@Operation(summary = "모임 목록 검색", description = "모임의 종류, 위치, 날짜 등 다양한 조건으로 모임 목록을 검색합니다.",
@@ -174,19 +177,18 @@ public class GatheringController {
 	@Operation(summary = "모임 생성", description = "새로운 모임 생성",
 		security = @SecurityRequirement(name = "bearerAuth"),
 		responses = {
-			@ApiResponse(responseCode = "200", description = "모임 생성 성공",
+			@ApiResponse(responseCode = "201", description = "모임 생성 성공",
 				content = @Content(
 					schema = @Schema(implementation = GatheringResponse.class))),
 			@ApiResponse(responseCode = "400", description = "잘못된 요청",
 				content = @Content(mediaType = "application/json", schema = @Schema(implementation = ValidationErrorResponse.class))),
 		}
 	)
-	@PostMapping(consumes = "multipart/form-data")
+	@PostMapping(consumes = {"multipart/form-data"})
 	public ResponseEntity<GatheringCreateResponse> createGathering(
-		@ParameterObject @Valid @RequestPart("request") GatheringCreateRequest gatheringCreateRequest,
-		@ParameterObject @RequestPart(value = "image", required = false) List<MultipartFile> image,
-		@Parameter(hidden = true) @Authorize User user) {
-		return new ResponseEntity<>(gatheringService.createGathering(gatheringCreateRequest.toServiceRequest(),
+		@ModelAttribute @Valid GatheringCreateRequest request,
+		@Parameter(hidden = true) @Authorize User user) throws IOException {
+		return new ResponseEntity<>(gatheringService.createGathering(request.toServiceRequest(),
 			user.getId()), HttpStatus.CREATED);
 	}
 

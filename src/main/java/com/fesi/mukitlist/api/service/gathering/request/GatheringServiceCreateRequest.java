@@ -5,6 +5,8 @@ import static com.fesi.mukitlist.api.exception.ExceptionCode.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.fesi.mukitlist.domain.gathering.GatheringType;
 import com.fesi.mukitlist.api.exception.AppException;
 
@@ -17,7 +19,7 @@ public record GatheringServiceCreateRequest(
 	String name,
 	LocalDateTime dateTime,
 	int capacity,
-	String image,
+	MultipartFile image,
 	LocalDateTime registrationEnd,
 	String address1,
 	String address2,

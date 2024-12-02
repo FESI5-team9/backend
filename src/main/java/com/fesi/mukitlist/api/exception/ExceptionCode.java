@@ -18,7 +18,10 @@ public enum ExceptionCode {
 	GATHERING_CANCELED(HttpStatus.BAD_REQUEST, "GATHERING_CANCELED", "취소된 모임입니다."),
 	MAXIMUM_PARTICIPANTS(HttpStatus.BAD_REQUEST, "MAXIMUM_PARTICIPANTS", "정원 초과 입니다."),
 	PAST_GATHERING(HttpStatus.BAD_REQUEST, "PAST_GATHERING", "이미 지난 모임입니다"),
-	NOT_PARTICIPANTS(HttpStatus.FORBIDDEN, "FORBIDDEN", "모임에 참석하지 않았습니다.");
+	NOT_PARTICIPANTS(HttpStatus.FORBIDDEN, "FORBIDDEN", "모임에 참석하지 않았습니다."),
+
+	//
+	RESOURCE_SIZE_LIMIT(HttpStatus.BAD_REQUEST, "SIZE_LIMIT", "파일의 용량은 10mb 이하여야 합니다.");
 
 	private HttpStatus status;
 	private String code;

@@ -2,6 +2,7 @@ package com.fesi.mukitlist.api.service.gathering;
 
 import static com.fesi.mukitlist.api.exception.ExceptionCode.*;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,6 +30,7 @@ import com.fesi.mukitlist.domain.gathering.Gathering;
 import com.fesi.mukitlist.domain.gathering.Keyword;
 import com.fesi.mukitlist.domain.usergathering.UserGathering;
 import com.fesi.mukitlist.domain.usergathering.UserGatheringId;
+import com.fesi.mukitlist.global.aws.S3Service;
 
 import lombok.RequiredArgsConstructor;
 
@@ -40,7 +42,7 @@ public class GatheringService {
 	private final UserGatheringRepository userGatheringRepository;
 	private final UserRepository userRepository;
 	private final KeywordRepository keywordRepository;
-	private final ReviewRepository reviewRepository;
+	private final S3Service s3Service;
 
 	@Transactional(readOnly = true)
 	public List<GatheringListResponse> getGatherings(GatheringServiceRequest request, Pageable pageable) {
@@ -61,11 +63,11 @@ public class GatheringService {
 			.toList();
 	}
 
-	public GatheringCreateResponse createGathering(GatheringServiceCreateRequest request, Long userId) {
+	public GatheringCreateResponse createGathering(GatheringServiceCreateRequest request, Long userId) throws
+		IOException {
 		User user = getUserFrom(userId);
-
-
-		Gathering gathering = Gathering.create(request, user);
+		String storedName = s3Service.upload(request.image(), request.image().getOriginalFilename());
+		Gathering gathering = Gathering.create(request, storedName, user);
 		Gathering savedGathering = gatheringRepository.save(gathering);
 
 		List<Keyword> keywords = request.keyword().stream()
