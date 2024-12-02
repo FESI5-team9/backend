@@ -98,7 +98,7 @@ public class UserController {
 	)
 	@GetMapping("user")
 	public ResponseEntity<UserInfoResponse> getUser(@Parameter(hidden = true) @Authorize User user) {
-		return new ResponseEntity<>(userService.getUserInfo(user.getId()), HttpStatus.OK);
+		return new ResponseEntity<>(userService.getUserInfo(user), HttpStatus.OK);
 	}
 
 	@Operation(summary = "유저 정보 수정", description = "유저 정보를 수정 합니다.",
@@ -143,8 +143,8 @@ public class UserController {
 	@PutMapping(value = "user", consumes = "multipart/form-data")
 	public ResponseEntity<UserInfoResponse> updateUser(
 		@Parameter(hidden = true) @Authorize User user,
-        @ModelAttribute UserUpdateRequest request) throws IOException {
-        UserInfoResponse response = userService.updateUser(user.getId(), request);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+		@ModelAttribute UserUpdateRequest request) throws IOException {
+		UserInfoResponse response = userService.updateUser(user, request);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
 }

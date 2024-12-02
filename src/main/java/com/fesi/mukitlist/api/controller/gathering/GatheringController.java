@@ -292,7 +292,7 @@ public class GatheringController {
 	@PostMapping("/{id}/join")
 	public ResponseEntity<Map<String, String>> joinGathering(@PathVariable("id") Long id,
 		@Parameter(hidden = true) @Authorize User user) {
-		gatheringService.joinGathering(id, user.getId());
+		gatheringService.joinGathering(id, user);
 		return new ResponseEntity<>(Map.of("message", "모임에 참여했습니다."), HttpStatus.OK);
 	}
 
@@ -332,7 +332,7 @@ public class GatheringController {
 	public ResponseEntity<Map<String, String>> leaveGathering(@PathVariable("id") Long id,
 		@Parameter(hidden = true) @Authorize User user) {
 		LocalDateTime leaveTime = LocalDateTime.now();
-		gatheringService.leaveGathering(id, user.getId(), leaveTime);
+		gatheringService.leaveGathering(id, user, leaveTime);
 		return new ResponseEntity(Map.of("message", "모임 참여 취소를 성공했습니다."), HttpStatus.OK);
 	}
 

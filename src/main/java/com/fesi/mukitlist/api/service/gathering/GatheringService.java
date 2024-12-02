@@ -100,9 +100,8 @@ public class GatheringService {
 		return GatheringResponse.of(savedGathering, user, savedKeywords);
 	}
 
-	public void joinGathering(Long id, Long userId) {
+	public void joinGathering(Long id, User user) {
 		Gathering gathering = getGatheringsFrom(id);
-		User user = getUserFrom(userId);
 
 		checkIsCanceledGathering(gathering);
 		checkIsJoinedGathering(gathering);
@@ -115,9 +114,8 @@ public class GatheringService {
 		gathering.joinParticipant();
 	}
 
-	public void leaveGathering(Long id, Long userId, LocalDateTime leaveTime) {
+	public void leaveGathering(Long id, User user, LocalDateTime leaveTime) {
 		Gathering gathering = getGatheringsFrom(id);
-		User user = getUserFrom(userId);
 
 		checkIsNotPastGathering(gathering, leaveTime);
 

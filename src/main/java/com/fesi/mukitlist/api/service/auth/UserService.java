@@ -34,13 +34,11 @@ public class UserService {
 		return userRepository.save(user);
 	}
 
-	public UserInfoResponse getUserInfo(Long userId) {
-		return UserInfoResponse.of(
-			userRepository.findById(userId).orElseThrow(() -> new AppException(ExceptionCode.NOT_FOUND_USER)));
+	public UserInfoResponse getUserInfo(User user) {
+		return UserInfoResponse.of(user);
 	}
 
-    public UserInfoResponse updateUser(Long id, UserUpdateRequest request) throws IOException {
-        User user = userRepository.findById(id).orElseThrow(() -> new AppException(ExceptionCode.NOT_FOUND_USER));
+	public UserInfoResponse updateUser(User user, UserUpdateRequest request) throws IOException {
 
 		Optional.ofNullable(request.nickname()).ifPresent(user::updateNickname);
 		if (request.image() != null) {
@@ -48,6 +46,6 @@ public class UserService {
 			user.updateImage(storedName);
 		}
 
-        return UserInfoResponse.of(user);
-    }
+		return UserInfoResponse.of(user);
+	}
 }
