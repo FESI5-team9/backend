@@ -32,8 +32,9 @@ public class Gathering {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	private String location;
+	private LocationType location;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
@@ -74,7 +75,7 @@ public class Gathering {
 
 	@Builder
 	private Gathering(
-		String location,
+		LocationType location,
 		GatheringType type,
 		String name,
 		LocalDateTime dateTime,

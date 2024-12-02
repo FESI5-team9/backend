@@ -9,6 +9,7 @@ import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.domain.gathering.Gathering;
 import com.fesi.mukitlist.domain.gathering.GatheringType;
 import com.fesi.mukitlist.domain.gathering.Keyword;
+import com.fesi.mukitlist.domain.gathering.LocationType;
 
 public record GatheringResponse(
 	Long id,
@@ -17,7 +18,7 @@ public record GatheringResponse(
 	String name,
 	LocalDateTime dateTime,
 	LocalDateTime registrationEnd,
-	String location,
+	LocationType location,
 	String address1,
 	String address2,
 	String description,

@@ -6,6 +6,7 @@ import java.util.List;
 import com.fesi.mukitlist.domain.gathering.Gathering;
 import com.fesi.mukitlist.domain.gathering.GatheringType;
 import com.fesi.mukitlist.domain.gathering.Keyword;
+import com.fesi.mukitlist.domain.gathering.LocationType;
 
 public record GatheringCreateResponse(
 	Long id,
@@ -13,7 +14,7 @@ public record GatheringCreateResponse(
 	String name,
 	LocalDateTime dateTime,
 	LocalDateTime registrationEnd,
-	String location,
+	LocationType location,
 	String address1,
 	String address2,
 	List<String> keywords,

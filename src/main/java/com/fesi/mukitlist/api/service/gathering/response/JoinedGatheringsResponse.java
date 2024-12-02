@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fesi.mukitlist.domain.gathering.GatheringType;
 import com.fesi.mukitlist.domain.gathering.Keyword;
+import com.fesi.mukitlist.domain.gathering.LocationType;
 import com.fesi.mukitlist.domain.usergathering.UserGathering;
 
 import lombok.Builder;
@@ -19,7 +20,7 @@ public record JoinedGatheringsResponse(
 	String name,
 	LocalDateTime dateTime,
 	LocalDateTime registrationEnd,
-	String location,
+	LocationType location,
 	String address1,
 	String address2,
 	List<String> keywords,

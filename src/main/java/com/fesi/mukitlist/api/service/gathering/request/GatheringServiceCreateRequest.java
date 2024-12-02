@@ -9,12 +9,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fesi.mukitlist.domain.gathering.GatheringType;
 import com.fesi.mukitlist.api.exception.AppException;
+import com.fesi.mukitlist.domain.gathering.LocationType;
 
 import lombok.Builder;
 
 @Builder
 public record GatheringServiceCreateRequest(
-	String location,
+	LocationType location,
 	GatheringType type,
 	String name,
 	LocalDateTime dateTime,

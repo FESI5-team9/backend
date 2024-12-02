@@ -199,7 +199,7 @@ public class GatheringController {
 				content = @Content(
 					mediaType = "application/json",
 					schema = @Schema(
-						example = "{\"code\":\"VALIDATION_ERROR\",\"parameter\":\"size\",\"message\":\"size는 최소 1이어야 합니다.\"}"
+						example = "{\"code\":\"VALIDATION_ERROR\",\"parameter\":\"size\",\"message\":\"size 는 최소 1이어야 합니다.\"}"
 					)
 				)
 			),
@@ -333,7 +333,7 @@ public class GatheringController {
 		@Parameter(hidden = true) @Authorize User user) {
 		LocalDateTime leaveTime = LocalDateTime.now();
 		gatheringService.leaveGathering(id, user, leaveTime);
-		return new ResponseEntity(Map.of("message", "모임 참여 취소를 성공했습니다."), HttpStatus.OK);
+		return new ResponseEntity<>(Map.of("message", "모임 참여 취소를 성공했습니다."), HttpStatus.OK);
 	}
 
 }
