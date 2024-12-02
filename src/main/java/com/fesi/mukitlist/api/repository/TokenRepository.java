@@ -3,6 +3,7 @@ package com.fesi.mukitlist.api.repository;
 import java.util.Optional;
 
 import com.fesi.mukitlist.domain.auth.Token;
+import com.fesi.mukitlist.domain.auth.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -15,4 +16,5 @@ public interface TokenRepository extends JpaRepository<Token, Integer> {
       """)
     Optional<Token> findByToken(String token);
 
+    Token findByUserAndToken(User user, String refreshToken);
 }

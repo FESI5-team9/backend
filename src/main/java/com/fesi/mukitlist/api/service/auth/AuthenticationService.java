@@ -34,13 +34,25 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     private void saveUserToken(User user, String refreshToken) {
-        Token token = Token.builder()
-                .user(user)
-                .token(refreshToken)
-                .tokenType(TokenType.BEARER)
-                .expired(false)
-                .build();
-        tokenRepository.save(token);
+        Token existingToken = tokenRepository.findByUserAndToken(user, refreshToken);
+        if (existingToken != null) {
+            existingToken = Token.builder()
+                    .id(existingToken.getId())
+                    .user(user)
+                    .token(refreshToken)
+                    .tokenType(TokenType.BEARER)
+                    .expired(false)
+                    .build();
+            tokenRepository.save(existingToken);
+        } else {
+            Token token = Token.builder()
+                    .user(user)
+                    .token(refreshToken)
+                    .tokenType(TokenType.BEARER)
+                    .expired(false)
+                    .build();
+            tokenRepository.save(token);
+        }
     }
 
     public AuthenticationResponse authenticate(AuthenticationServiceRequest request) {
