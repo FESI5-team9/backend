@@ -1,14 +1,11 @@
 package com.fesi.mukitlist.api.controller.auth;
 
-import java.security.Principal;
 import java.util.Map;
 
-import com.fesi.mukitlist.api.exception.response.ValidationErrorResponse;
+import com.fesi.mukitlist.api.controller.auth.request.UserUpdateRequest;
 import com.fesi.mukitlist.api.service.auth.UserService;
 import com.fesi.mukitlist.api.controller.auth.request.UserCreateRequest;
 import com.fesi.mukitlist.api.service.auth.response.UserInfoResponse;
-import com.fesi.mukitlist.api.service.auth.response.UserResponse;
-import com.fesi.mukitlist.api.service.gathering.response.GatheringResponse;
 import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.global.annotation.Authorize;
 
@@ -19,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.api.controller.auth;
+package com.fesi.mukitlist.api.controller.auth.request;
 
 import com.fesi.mukitlist.api.service.auth.request.UserUpdateServiceRequest;
 
