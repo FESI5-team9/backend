@@ -184,7 +184,7 @@ public class GatheringController {
 				content = @Content(mediaType = "application/json", schema = @Schema(implementation = ValidationErrorResponse.class))),
 		}
 	)
-	@PostMapping(consumes = {"multipart/form-data"})
+	@PostMapping(consumes = "multipart/form-data")
 	public ResponseEntity<GatheringCreateResponse> createGathering(
 		@ModelAttribute @Valid GatheringCreateRequest request,
 		@Parameter(hidden = true) @Authorize User user) throws IOException {
