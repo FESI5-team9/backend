@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.domain.gathering;
+package com.fesi.mukitlist.domain.gathering.constant;
 
 public enum LocationType {
 	SEOUL,
