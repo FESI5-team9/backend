@@ -7,8 +7,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceCreateRequest;
-import com.fesi.mukitlist.domain.gathering.GatheringType;
-import com.fesi.mukitlist.domain.gathering.LocationType;
+import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
+import com.fesi.mukitlist.domain.gathering.constant.LocationType;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -18,7 +18,6 @@ public record GatheringCreateRequest(
 	GatheringType type,
 
 	@Schema(description = "모임 장소", example = "SEOUL")
-	@NotBlank(message = "모임 장소를 입력해주세요.")
 	LocationType location,
 
 	@Schema(description = "식당 이름", example = "런던 베이글")

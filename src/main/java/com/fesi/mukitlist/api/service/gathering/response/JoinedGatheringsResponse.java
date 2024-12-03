@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fesi.mukitlist.domain.gathering.GatheringType;
+import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
 import com.fesi.mukitlist.domain.gathering.Keyword;
-import com.fesi.mukitlist.domain.gathering.LocationType;
+import com.fesi.mukitlist.domain.gathering.constant.LocationType;
 import com.fesi.mukitlist.domain.usergathering.UserGathering;
 
 import lombok.Builder;
