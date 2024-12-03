@@ -7,9 +7,9 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fesi.mukitlist.domain.gathering.GatheringType;
+import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
 import com.fesi.mukitlist.api.exception.AppException;
-import com.fesi.mukitlist.domain.gathering.LocationType;
+import com.fesi.mukitlist.domain.gathering.constant.LocationType;
 
 import lombok.Builder;
 

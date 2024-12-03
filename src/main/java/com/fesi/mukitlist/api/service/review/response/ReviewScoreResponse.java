@@ -3,7 +3,7 @@ package com.fesi.mukitlist.api.service.review.response;
 import java.util.Map;
 
 import com.fesi.mukitlist.domain.gathering.Gathering;
-import com.fesi.mukitlist.domain.gathering.GatheringType;
+import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
 
 import lombok.Builder;
 

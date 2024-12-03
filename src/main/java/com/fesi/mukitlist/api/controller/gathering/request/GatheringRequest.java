@@ -6,9 +6,9 @@ import java.util.List;
 
 import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceRequest;
 import com.fesi.mukitlist.domain.gathering.Gathering;
-import com.fesi.mukitlist.domain.gathering.GatheringType;
+import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
+import com.fesi.mukitlist.domain.gathering.constant.LocationType;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
 /**
@@ -18,11 +18,11 @@ public record GatheringRequest(
 	List<Long> id,
 	GatheringType type,
 	LocalDate dateTime,
-	String location,
+	LocationType location,
 	String createdBy
 ) implements Serializable {
 
-	public static GatheringRequest of(List<Long> id, GatheringType type, LocalDate dateTime, String location,
+	public static GatheringRequest of(List<Long> id, GatheringType type, LocalDate dateTime, LocationType location,
 		String createdBy) {
 		return new GatheringRequest(id, type, dateTime, location, createdBy);
 	}

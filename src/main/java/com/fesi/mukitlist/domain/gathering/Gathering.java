@@ -7,6 +7,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceCreateRequest;
 import com.fesi.mukitlist.domain.auth.User;
+import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
+import com.fesi.mukitlist.domain.gathering.constant.LocationType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

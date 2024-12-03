@@ -4,9 +4,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fesi.mukitlist.domain.gathering.Gathering;
-import com.fesi.mukitlist.domain.gathering.GatheringType;
+import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
 import com.fesi.mukitlist.domain.gathering.Keyword;
-import com.fesi.mukitlist.domain.gathering.LocationType;
+import com.fesi.mukitlist.domain.gathering.constant.LocationType;
 
 public record GatheringCreateResponse(
 	Long id,
