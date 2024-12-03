@@ -123,8 +123,8 @@ public class GatheringController {
 		}
 	)
 	@GetMapping("/{id}")
-	ResponseEntity<GatheringWithParticipantsResponse> getGatheringById(@PathVariable("id") Long id, @RequestParam Long userId) {
-		return new ResponseEntity<>(gatheringService.getGatheringById(id, userId), HttpStatus.OK);
+	ResponseEntity<GatheringWithParticipantsResponse> getGatheringById(@PathVariable("id") Long id, @Authorize User user) {
+		return new ResponseEntity<>(gatheringService.getGatheringById(id, user), HttpStatus.OK);
 	}
 
 	@Operation(summary = "특정 모임의 참가자 목록 조회", description = "특정 모임의 참가자 목록을 페이지네이션 하여 조회합니다.",

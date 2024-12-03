@@ -151,7 +151,6 @@ public class Gathering {
 	public void leaveParticipant() {
 		this.participantCount--;
 	}
-
 	// User
 	// participants
 	// Review

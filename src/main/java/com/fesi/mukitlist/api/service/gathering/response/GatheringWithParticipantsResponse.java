@@ -33,7 +33,7 @@ public record GatheringWithParticipantsResponse(
 	List<GatheringParticipantsResponse> participants
 ) {
 	public static GatheringWithParticipantsResponse of(Gathering gathering, User user, List<Keyword> keywords,
-		List<GatheringParticipantsResponse> participants) {
+		boolean isFavorite, List<GatheringParticipantsResponse> participants) {
 		return new GatheringWithParticipantsResponse(
 			gathering.getId(),
 			UserResponse.of(gathering.getUser()),
@@ -51,8 +51,8 @@ public record GatheringWithParticipantsResponse(
 			gathering.getUser().getImage(),
 			gathering.getUser().getName(),
 			gathering.getCanceledAt(),
-			gathering.isHostUser(user),
-			true,
+			gathering.getUser().equals(user),
+			user != null && isFavorite,
 			participants
 		);
 	}

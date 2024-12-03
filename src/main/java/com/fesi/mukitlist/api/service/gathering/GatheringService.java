@@ -27,9 +27,9 @@ import com.fesi.mukitlist.api.service.gathering.response.GatheringResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringWithParticipantsResponse;
 import com.fesi.mukitlist.api.service.gathering.response.JoinedGatheringsResponse;
 import com.fesi.mukitlist.domain.auth.User;
-import com.fesi.mukitlist.domain.gathering.favorite.FavoriteGathering;
 import com.fesi.mukitlist.domain.gathering.Gathering;
 import com.fesi.mukitlist.domain.gathering.Keyword;
+import com.fesi.mukitlist.domain.gathering.favorite.FavoriteGathering;
 import com.fesi.mukitlist.domain.gathering.favorite.FavoriteGatheringId;
 import com.fesi.mukitlist.domain.usergathering.UserGathering;
 import com.fesi.mukitlist.domain.usergathering.UserGatheringId;
@@ -43,7 +43,6 @@ import lombok.RequiredArgsConstructor;
 public class GatheringService {
 	private final GatheringRepository gatheringRepository;
 	private final UserGatheringRepository userGatheringRepository;
-	private final UserRepository userRepository;
 	private final KeywordRepository keywordRepository;
 	private final FavoriteGatheringRepository favoriteGatheringRepository;
 	private final S3Service s3Service;
@@ -84,22 +83,14 @@ public class GatheringService {
 	}
 
 	@Transactional(readOnly = true)
-	public GatheringWithParticipantsResponse getGatheringById(Long id, Long userId) {
-		User user = getUserFrom(userId);
+	public GatheringWithParticipantsResponse getGatheringById(Long id, User user) {
+
 		Gathering gathering = getGatheringsFrom(id);
 		List<GatheringParticipantsResponse> participants = getGatheringsWithParticpantsFrom(gathering);
-
 		List<Keyword> keywords = keywordRepository.findAllByGathering(gathering);
+		boolean isFavorite = checkIsFavoriteGathering(gathering, user);
 
-		return GatheringWithParticipantsResponse.of(gathering, user, keywords, participants);
-	}
-
-	private List<GatheringParticipantsResponse> getGatheringsWithParticpantsFrom(Gathering gathering) {
-		List<UserGathering> userGathering = userGatheringRepository.findByIdGathering(gathering);
-		return userGathering.stream()
-			.map(GatheringParticipantsResponse::of
-			)
-			.collect(Collectors.toList());
+		return GatheringWithParticipantsResponse.of(gathering, user, keywords, isFavorite,participants);
 	}
 
 	public GatheringResponse cancelGathering(Long id, User user) {
@@ -191,12 +182,20 @@ public class GatheringService {
 			FavoriteGathering.of(FavoriteGatheringId.of(user.getId(), gathering.getId())));
 	}
 
-	private Gathering getGatheringsFrom(Long id) {
-		return gatheringRepository.findById(id).orElseThrow(() -> new AppException(NOT_FOUND));
+	private boolean checkIsFavoriteGathering(Gathering gathering, User user) {
+		return favoriteGatheringRepository.existsById(FavoriteGatheringId.of(user.getId(), gathering.getId()));
 	}
 
-	private User getUserFrom(Long id) {
-		return userRepository.findById(id).orElseThrow(() -> new AppException(NOT_FOUND_USER));
+	private List<GatheringParticipantsResponse> getGatheringsWithParticpantsFrom(Gathering gathering) {
+		List<UserGathering> userGathering = userGatheringRepository.findByIdGathering(gathering);
+		return userGathering.stream()
+			.map(GatheringParticipantsResponse::of
+			)
+			.collect(Collectors.toList());
+	}
+
+	private Gathering getGatheringsFrom(Long id) {
+		return gatheringRepository.findById(id).orElseThrow(() -> new AppException(NOT_FOUND));
 	}
 
 	private void checkIsNotPastGathering(Gathering gathering, LocalDateTime leaveTime) {
