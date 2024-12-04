@@ -31,8 +31,14 @@ spring:
 logging:
   level:
     org.hibernate.SQL: debug
-
     org.hibernate.type.descriptor.sql: trace
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
 
 springdoc:
   api-docs:
