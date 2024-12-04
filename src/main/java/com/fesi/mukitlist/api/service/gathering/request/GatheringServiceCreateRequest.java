@@ -19,6 +19,7 @@ public record GatheringServiceCreateRequest(
 	GatheringType type,
 	String name,
 	LocalDateTime dateTime,
+	int minCapacity,
 	int capacity,
 	MultipartFile image,
 	LocalDateTime registrationEnd,

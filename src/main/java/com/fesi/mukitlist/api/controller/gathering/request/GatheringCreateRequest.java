@@ -28,6 +28,9 @@ public record GatheringCreateRequest(
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	LocalDateTime dateTime,
 
+	@Schema(description = "최소 모집 인원 (자동 개설 확정)", example = "3")
+	int minCapacity,
+
 	@Schema(description = "모집 정원 (최소 5인 이상)", example = "10", minimum = "5")
 	int capacity,
 
@@ -50,6 +53,7 @@ public record GatheringCreateRequest(
 			.type(type)
 			.name(name)
 			.dateTime(dateTime)
+			.minCapacity(minCapacity)
 			.capacity(capacity)
 			.image(image)
 			.registrationEnd(registrationEnd)

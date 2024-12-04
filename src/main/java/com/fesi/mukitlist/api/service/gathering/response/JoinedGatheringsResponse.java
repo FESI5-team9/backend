@@ -26,7 +26,7 @@ public record JoinedGatheringsResponse(
 	List<String> keywords,
 	int participantCount,
 	int capacity,
-	//image
+	String image,
 	String createdBy,
 	LocalDateTime canceledAt,
 	LocalDateTime joinedAt,
@@ -47,6 +47,7 @@ public record JoinedGatheringsResponse(
 			.keywords(keywords.stream().map(Keyword::toString).collect(Collectors.toList()))
 			.participantCount(userGathering.getId().getGathering().getParticipantCount())
 			.capacity(userGathering.getId().getGathering().getCapacity())
+			.image(userGathering.getId().getGathering().getImage())
 			.createdBy(userGathering.getId().getGathering().getCreatedBy())
 			.canceledAt(userGathering.getId().getGathering().getCanceledAt())
 			.joinedAt(userGathering.getJoinedAt())

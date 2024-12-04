@@ -69,7 +69,7 @@ public class GatheringController {
 		@ParameterObject @ModelAttribute GatheringRequest request,
 		@RequestParam(defaultValue = "10") int size,
 		@RequestParam(defaultValue = "0") int page,
-		@RequestParam(defaultValue = "dateTime") String sort,
+		@Schema(description = "정렬 기준", example = "dateTime(모임일), registrationEnd(모집 마감일), participantCount(참여 인원)", minimum = "5") @RequestParam(defaultValue = "dateTime") String sort,
 		@RequestParam(defaultValue = "desc") String direction
 	) {
 		Sort sortOrder = Sort.by(Sort.Order.by(sort).with(Sort.Direction.fromString(direction)));
@@ -123,7 +123,8 @@ public class GatheringController {
 		}
 	)
 	@GetMapping("/{id}")
-	ResponseEntity<GatheringWithParticipantsResponse> getGatheringById(@PathVariable("id") Long id, @Authorize User user) {
+	ResponseEntity<GatheringWithParticipantsResponse> getGatheringById(@PathVariable("id") Long id,
+		@Authorize User user) {
 		return new ResponseEntity<>(gatheringService.getGatheringById(id, user), HttpStatus.OK);
 	}
 
@@ -193,7 +194,12 @@ public class GatheringController {
 		security = @SecurityRequirement(name = "bearerAuth"),
 		responses = {
 			@ApiResponse(responseCode = "200", description = "모임 목록 조회 성공",
-				content = @Content(schema = @Schema(implementation = JoinedGatheringsResponse.class))),
+				content = @Content(
+					mediaType = "application/json",
+					array = @ArraySchema(
+						schema = @Schema(implementation = JoinedGatheringsResponse.class)
+					)
+				)),
 			@ApiResponse(
 				responseCode = "400",
 				description = "요청 오류",
