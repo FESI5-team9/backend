@@ -74,3 +74,9 @@ spring:
     init:
       mode: never
 
+---
+
+spring:
+  config:
+    import: classpath:/application-social-login.yml
+
