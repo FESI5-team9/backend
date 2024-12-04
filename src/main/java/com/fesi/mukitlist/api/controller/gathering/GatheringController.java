@@ -124,7 +124,7 @@ public class GatheringController {
 	)
 	@GetMapping("/{id}")
 	ResponseEntity<GatheringWithParticipantsResponse> getGatheringById(@PathVariable("id") Long id,
-		@Authorize User user) {
+		@Parameter(hidden = true) @Authorize User user) {
 		return new ResponseEntity<>(gatheringService.getGatheringById(id, user), HttpStatus.OK);
 	}
 
