@@ -7,6 +7,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceCreateRequest;
 import com.fesi.mukitlist.domain.auth.User;
+import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
+import com.fesi.mukitlist.domain.gathering.constant.LocationType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,8 +34,9 @@ public class Gathering {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	private String location;
+	private LocationType location;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
@@ -74,7 +77,7 @@ public class Gathering {
 
 	@Builder
 	private Gathering(
-		String location,
+		LocationType location,
 		GatheringType type,
 		String name,
 		LocalDateTime dateTime,
@@ -148,7 +151,6 @@ public class Gathering {
 	public void leaveParticipant() {
 		this.participantCount--;
 	}
-
 	// User
 	// participants
 	// Review

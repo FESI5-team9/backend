@@ -3,7 +3,8 @@ package com.fesi.mukitlist.api.service.gathering.response;
 import java.time.LocalDateTime;
 
 import com.fesi.mukitlist.domain.gathering.Gathering;
-import com.fesi.mukitlist.domain.gathering.GatheringType;
+import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
+import com.fesi.mukitlist.domain.gathering.constant.LocationType;
 
 public record GatheringListResponse(
 	Long id,
@@ -11,7 +12,7 @@ public record GatheringListResponse(
 	String name,
 	LocalDateTime dateTime,
 	LocalDateTime registrationEnd,
-	String location,
+	LocationType location,
 	String address1,
 	int participantCount,
 	int capacity,

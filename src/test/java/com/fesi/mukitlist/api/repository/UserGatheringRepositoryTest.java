@@ -1,6 +1,7 @@
 package com.fesi.mukitlist.api.repository;
 
-import static com.fesi.mukitlist.domain.gathering.GatheringType.*;
+import static com.fesi.mukitlist.domain.gathering.constant.GatheringType.*;
+import static com.fesi.mukitlist.domain.gathering.constant.LocationType.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
@@ -20,6 +21,7 @@ import com.fesi.mukitlist.api.repository.gathering.GatheringRepository;
 import com.fesi.mukitlist.api.repository.usergathering.UserGatheringRepository;
 import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.domain.gathering.Gathering;
+import com.fesi.mukitlist.domain.gathering.constant.LocationType;
 import com.fesi.mukitlist.domain.usergathering.UserGathering;
 import com.fesi.mukitlist.domain.usergathering.UserGatheringId;
 
@@ -47,7 +49,7 @@ class UserGatheringRepositoryTest {
 		userRepository.save(user);
 
 		Gathering gathering = Gathering.builder()
-			.location("서울")
+			.location(SEOUL)
 			.type(CAFE)
 			.name("성수동 카페")
 			.dateTime(LocalDateTime.now())
@@ -78,7 +80,7 @@ class UserGatheringRepositoryTest {
 	void findWithFilters() {
 		// given
 		Gathering gathering = Gathering.builder()
-			.location("서울")
+			.location(SEOUL)
 			.type(CAFE)
 			.name("성수동 카페1")
 			.dateTime(LocalDateTime.now())

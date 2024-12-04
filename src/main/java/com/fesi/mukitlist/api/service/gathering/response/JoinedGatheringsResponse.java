@@ -5,8 +5,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fesi.mukitlist.domain.gathering.GatheringType;
+import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
 import com.fesi.mukitlist.domain.gathering.Keyword;
+import com.fesi.mukitlist.domain.gathering.constant.LocationType;
 import com.fesi.mukitlist.domain.usergathering.UserGathering;
 
 import lombok.Builder;
@@ -19,13 +20,13 @@ public record JoinedGatheringsResponse(
 	String name,
 	LocalDateTime dateTime,
 	LocalDateTime registrationEnd,
-	String location,
+	LocationType location,
 	String address1,
 	String address2,
 	List<String> keywords,
 	int participantCount,
 	int capacity,
-	//image
+	String image,
 	String createdBy,
 	LocalDateTime canceledAt,
 	LocalDateTime joinedAt,
@@ -46,6 +47,7 @@ public record JoinedGatheringsResponse(
 			.keywords(keywords.stream().map(Keyword::toString).collect(Collectors.toList()))
 			.participantCount(userGathering.getId().getGathering().getParticipantCount())
 			.capacity(userGathering.getId().getGathering().getCapacity())
+			.image(userGathering.getId().getGathering().getImage())
 			.createdBy(userGathering.getId().getGathering().getCreatedBy())
 			.canceledAt(userGathering.getId().getGathering().getCanceledAt())
 			.joinedAt(userGathering.getJoinedAt())

@@ -1,5 +1,7 @@
 package com.fesi.mukitlist.api.repository.usergathering;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -22,5 +24,7 @@ public interface UserGatheringRepository
 	}
 
 	Page<UserGathering> findByIdGathering(Gathering gathering, Pageable pageable);
+
+	List<UserGathering> findByIdGathering(Gathering gathering);
 
 }

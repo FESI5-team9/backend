@@ -1,6 +1,7 @@
 package com.fesi.mukitlist.api.repository;
 
-import static com.fesi.mukitlist.domain.gathering.GatheringType.*;
+import static com.fesi.mukitlist.domain.gathering.constant.GatheringType.*;
+import static com.fesi.mukitlist.domain.gathering.constant.LocationType.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
@@ -14,7 +15,6 @@ import org.springframework.test.context.ActiveProfiles;
 
 import com.fesi.mukitlist.api.repository.gathering.GatheringRepository;
 import com.fesi.mukitlist.domain.gathering.Gathering;
-import com.fesi.mukitlist.domain.gathering.GatheringType;
 import com.fesi.mukitlist.domain.gathering.Keyword;
 
 @ActiveProfiles("test")
@@ -32,7 +32,7 @@ class KeywordRepositoryTest {
 	void findAllByGathering() {
 		// given
 		Gathering gathering = Gathering.builder()
-			.location("서울")
+			.location(SEOUL)
 			.type(CAFE)
 			.name("성수동 카페")
 			.dateTime(LocalDateTime.now())
