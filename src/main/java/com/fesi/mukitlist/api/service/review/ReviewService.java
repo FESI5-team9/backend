@@ -20,7 +20,7 @@ import com.fesi.mukitlist.api.repository.usergathering.UserGatheringRepository;
 import com.fesi.mukitlist.api.service.PageService;
 import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.domain.gathering.Gathering;
-import com.fesi.mukitlist.domain.gathering.GatheringType;
+import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
 import com.fesi.mukitlist.domain.Review;
 import com.fesi.mukitlist.api.repository.gathering.GatheringRepository;
 import com.fesi.mukitlist.api.repository.UserRepository;

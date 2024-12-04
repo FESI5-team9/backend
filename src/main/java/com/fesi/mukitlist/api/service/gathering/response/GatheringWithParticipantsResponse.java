@@ -7,11 +7,11 @@ import java.util.stream.Collectors;
 import com.fesi.mukitlist.api.service.auth.response.UserResponse;
 import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.domain.gathering.Gathering;
-import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
 import com.fesi.mukitlist.domain.gathering.Keyword;
+import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
 import com.fesi.mukitlist.domain.gathering.constant.LocationType;
 
-public record GatheringResponse(
+public record GatheringWithParticipantsResponse(
 	Long id,
 	UserResponse user,
 	GatheringType type,
@@ -28,10 +28,13 @@ public record GatheringResponse(
 	String image,
 	String createdBy,
 	LocalDateTime canceledAt,
-	Boolean host
+	Boolean host,
+	Boolean favorite,
+	List<GatheringParticipantsResponse> participants
 ) {
-	public static GatheringResponse of(Gathering gathering, User user, List<Keyword> keywords) {
-		return new GatheringResponse(
+	public static GatheringWithParticipantsResponse of(Gathering gathering, User user, List<Keyword> keywords,
+		boolean isFavorite, List<GatheringParticipantsResponse> participants) {
+		return new GatheringWithParticipantsResponse(
 			gathering.getId(),
 			UserResponse.of(gathering.getUser()),
 			gathering.getType(),
@@ -48,6 +51,9 @@ public record GatheringResponse(
 			gathering.getUser().getImage(),
 			gathering.getUser().getName(),
 			gathering.getCanceledAt(),
-			gathering.isHostUser(user));
+			gathering.getUser().equals(user),
+			user != null && isFavorite,
+			participants
+		);
 	}
 }

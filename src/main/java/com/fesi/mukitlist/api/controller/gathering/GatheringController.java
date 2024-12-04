@@ -29,6 +29,7 @@ import com.fesi.mukitlist.api.service.gathering.response.GatheringCreateResponse
 import com.fesi.mukitlist.api.service.gathering.response.GatheringListResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringParticipantsResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringResponse;
+import com.fesi.mukitlist.api.service.gathering.response.GatheringWithParticipantsResponse;
 import com.fesi.mukitlist.api.service.gathering.response.JoinedGatheringsResponse;
 import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.global.annotation.Authorize;
@@ -68,7 +69,7 @@ public class GatheringController {
 		@ParameterObject @ModelAttribute GatheringRequest request,
 		@RequestParam(defaultValue = "10") int size,
 		@RequestParam(defaultValue = "0") int page,
-		@RequestParam(defaultValue = "dateTime") String sort,
+		@Schema(description = "정렬 기준", example = "dateTime(모임일), registrationEnd(모집 마감일), participantCount(참여 인원)", minimum = "5") @RequestParam(defaultValue = "dateTime") String sort,
 		@RequestParam(defaultValue = "desc") String direction
 	) {
 		Sort sortOrder = Sort.by(Sort.Order.by(sort).with(Sort.Direction.fromString(direction)));
@@ -122,8 +123,9 @@ public class GatheringController {
 		}
 	)
 	@GetMapping("/{id}")
-	ResponseEntity<GatheringResponse> getGatheringById(@PathVariable("id") Long id, @RequestParam Long userId) {
-		return new ResponseEntity<>(gatheringService.getGatheringById(id, userId), HttpStatus.OK);
+	ResponseEntity<GatheringWithParticipantsResponse> getGatheringById(@PathVariable("id") Long id,
+		@Authorize User user) {
+		return new ResponseEntity<>(gatheringService.getGatheringById(id, user), HttpStatus.OK);
 	}
 
 	@Operation(summary = "특정 모임의 참가자 목록 조회", description = "특정 모임의 참가자 목록을 페이지네이션 하여 조회합니다.",
@@ -192,14 +194,19 @@ public class GatheringController {
 		security = @SecurityRequirement(name = "bearerAuth"),
 		responses = {
 			@ApiResponse(responseCode = "200", description = "모임 목록 조회 성공",
-				content = @Content(schema = @Schema(implementation = JoinedGatheringsResponse.class))),
+				content = @Content(
+					mediaType = "application/json",
+					array = @ArraySchema(
+						schema = @Schema(implementation = JoinedGatheringsResponse.class)
+					)
+				)),
 			@ApiResponse(
 				responseCode = "400",
 				description = "요청 오류",
 				content = @Content(
 					mediaType = "application/json",
 					schema = @Schema(
-						example = "{\"code\":\"VALIDATION_ERROR\",\"parameter\":\"size\",\"message\":\"size는 최소 1이어야 합니다.\"}"
+						example = "{\"code\":\"VALIDATION_ERROR\",\"parameter\":\"size\",\"message\":\"size 는 최소 1이어야 합니다.\"}"
 					)
 				)
 			),
@@ -299,7 +306,7 @@ public class GatheringController {
 	@Operation(summary = "모임 참여 취소", description = "사용자가 모임에서 참여 취소합니다.이미 지난 모임은 참여 취소가 불가합니다.",
 		security = @SecurityRequirement(name = "bearerAuth"),
 		responses = {
-			@ApiResponse(responseCode = "200", description = "모임 목록 조회 성공",
+			@ApiResponse(responseCode = "200", description = "모임 참여 취소 성공",
 				content = @Content(
 					mediaType = "application/json",
 					schema = @Schema(
@@ -333,7 +340,105 @@ public class GatheringController {
 		@Parameter(hidden = true) @Authorize User user) {
 		LocalDateTime leaveTime = LocalDateTime.now();
 		gatheringService.leaveGathering(id, user, leaveTime);
-		return new ResponseEntity(Map.of("message", "모임 참여 취소를 성공했습니다."), HttpStatus.OK);
+		return new ResponseEntity<>(Map.of("message", "모임 참여 취소를 성공했습니다."), HttpStatus.OK);
+	}
+
+	@Operation(summary = "찜한 모임 목록 조회", description = "찜한 모임 목록을 조회합니다.",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "모임 목록 조회 성공",
+				content = @Content(array = @ArraySchema(
+					schema = @Schema(implementation = GatheringListResponse.class)
+				))),
+			@ApiResponse(responseCode = "400", description = "잘못된 요청",
+				content = @Content(mediaType = "application/json", schema = @Schema(implementation = ValidationErrorResponse.class))),
+		}
+	)
+	@GetMapping("/favorite")
+	public ResponseEntity<List<GatheringListResponse>> getFavoriteGatherings(
+		@Parameter(hidden = true) @Authorize User user) {
+
+		List<GatheringListResponse> response = gatheringService.findFavoriteGatheringsBy(user);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+
+	@Operation(summary = "모임 찜하기", description = "사용자가 모임을 찜합니다.이미 지난 모임은 찜하기가 불가합니다.",
+		security = @SecurityRequirement(name = "bearerAuth"),
+		responses = {
+			@ApiResponse(responseCode = "200", description = "모임 찜하기 성공",
+				content = @Content(
+					mediaType = "application/json",
+					schema = @Schema(
+						example = "{\"message\":\"모임 찜하기를 성공했습니다.\"}"
+					)
+				)),
+			@ApiResponse(
+				responseCode = "400",
+				description = "찜하기 불가 오류",
+				content = @Content(
+					mediaType = "application/json",
+					schema = @Schema(
+						example = "{\"code\":\"PAST_GATHERING\",\"message\":\"이미 지난 모임입니다\"}"
+					)
+				)
+			),
+			@ApiResponse(
+				responseCode = "404",
+				description = "모임 없음",
+				content = @Content(
+					mediaType = "application/json",
+					schema = @Schema(
+						example = "{\"code\":\"NOT_FOUND\",\"message\":\"모임을 찾을 수 없습니다.\"}"
+					)
+				)
+			),
+		}
+	)
+	@PostMapping("/{id}/favorite")
+	public ResponseEntity<Map<String, String>> choiceFavoriteGathering(@PathVariable("id") Long id,
+		@Parameter(hidden = true) @Authorize User user) {
+
+		gatheringService.choiceFavorite(id, user);
+		return new ResponseEntity<>(Map.of("message", "모임 찜하기를 성공했습니다."), HttpStatus.OK);
+	}
+
+	@Operation(summary = "모임 찜하기 취소하기", description = "사용자가 찜한 모임을 취소 합니다 .이미 지난 모임은 찜하기가 불가합니다.",
+		security = @SecurityRequirement(name = "bearerAuth"),
+		responses = {
+			@ApiResponse(responseCode = "200", description = "모임 찜 취소 성공",
+				content = @Content(
+					mediaType = "application/json",
+					schema = @Schema(
+						example = "{\"message\":\"모임 찜하기를 취소했습니다.\"}"
+					)
+				)),
+			@ApiResponse(
+				responseCode = "400",
+				description = "찜하기 불가 오류",
+				content = @Content(
+					mediaType = "application/json",
+					schema = @Schema(
+						example = "{\"code\":\"PAST_GATHERING\",\"message\":\"이미 지난 모임입니다\"}"
+					)
+				)
+			),
+			@ApiResponse(
+				responseCode = "404",
+				description = "모임 없음",
+				content = @Content(
+					mediaType = "application/json",
+					schema = @Schema(
+						example = "{\"code\":\"NOT_FOUND\",\"message\":\"모임을 찾을 수 없습니다.\"}"
+					)
+				)
+			),
+		}
+	)
+	@DeleteMapping("/{id}/favorite")
+	public ResponseEntity<Map<String, String>> cancelFavoriteGathering(@PathVariable("id") Long id,
+		@Parameter(hidden = true) @Authorize User user) {
+
+		gatheringService.cancelFavorite(id, user);
+		return new ResponseEntity<>(Map.of("message", "모임 찜하기를 취소했습니다."), HttpStatus.OK);
 	}
 
 }

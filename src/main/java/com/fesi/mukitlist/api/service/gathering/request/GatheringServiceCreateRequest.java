@@ -7,17 +7,19 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fesi.mukitlist.domain.gathering.GatheringType;
+import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
 import com.fesi.mukitlist.api.exception.AppException;
+import com.fesi.mukitlist.domain.gathering.constant.LocationType;
 
 import lombok.Builder;
 
 @Builder
 public record GatheringServiceCreateRequest(
-	String location,
+	LocationType location,
 	GatheringType type,
 	String name,
 	LocalDateTime dateTime,
+	int minCapacity,
 	int capacity,
 	MultipartFile image,
 	LocalDateTime registrationEnd,
