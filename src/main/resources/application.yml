@@ -21,6 +21,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        default_batch_fetch_size: 500
 
     defer-datasource-initialization: true # (2.5~) Hibernate 초기화 이후 data.sql 실행
 
@@ -48,8 +49,6 @@ security:
     expiration: 1800000 # 30 minutes
     refresh-token:
       expiration: 604800000 # 7 days
-
-
 
 ---
 spring:
