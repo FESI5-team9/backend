@@ -29,7 +29,7 @@ public record GatheringCreateRequest(
 	LocalDateTime dateTime,
 
 	@Schema(description = "최소 모집 인원 (자동 개설 확정)", example = "3")
-	int minCapacity,
+	int openParticipantCount,
 
 	@Schema(description = "모집 정원 (최소 5인 이상)", example = "10", minimum = "5")
 	int capacity,
@@ -53,7 +53,7 @@ public record GatheringCreateRequest(
 			.type(type)
 			.name(name)
 			.dateTime(dateTime)
-			.minCapacity(minCapacity)
+			.openParticipantCount(openParticipantCount)
 			.capacity(capacity)
 			.image(image)
 			.registrationEnd(registrationEnd)
