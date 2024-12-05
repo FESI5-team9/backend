@@ -10,16 +10,14 @@ public record TokenServiceRequest(
         String token,
         TokenType tokenType,
         boolean expired,
-        boolean revoked,
         User user
 ) {
-    public TokenServiceRequest withUpdatedStatus(boolean expired, boolean revoked) {
+    public TokenServiceRequest withUpdatedStatus(boolean expired) {
         return new TokenServiceRequest(
                 this.id,
                 this.token,
                 this.tokenType,
                 expired,
-                revoked,
                 this.user
         );
     }

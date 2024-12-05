@@ -7,17 +7,15 @@ import lombok.Builder;
 
 import java.io.Serializable;
 
-
 public record TokenRequest(
         Long id,
         String token,
         TokenType tokenType,
         boolean expired,
-        boolean revoked,
         User user
 ) implements Serializable {
-    public static TokenRequest of(Long id, String token, TokenType tokenType, boolean expired, boolean revoked, User user) {
-        return new TokenRequest(id, token, tokenType, expired, revoked, user);
+    public static TokenRequest of(Long id, String token, TokenType tokenType, boolean expired, User user) {
+        return new TokenRequest(id, token, tokenType, expired, user);
     }
 
     @Builder
@@ -27,7 +25,6 @@ public record TokenRequest(
                 .token(token)
                 .tokenType(tokenType)
                 .expired(expired)
-                .revoked(revoked)
                 .build();
     }
 }
