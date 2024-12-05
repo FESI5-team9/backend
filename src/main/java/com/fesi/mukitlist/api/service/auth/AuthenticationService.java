@@ -2,6 +2,7 @@ package com.fesi.mukitlist.api.service.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fesi.mukitlist.api.exception.AppException;
+import com.fesi.mukitlist.domain.auth.GrantType;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
@@ -40,7 +41,8 @@ public class AuthenticationService {
                     .id(existingToken.getId())
                     .user(user)
                     .token(refreshToken)
-                    .tokenType(TokenType.BEARER)
+                    .grantType(GrantType.BEARER)
+                    .tokenType(TokenType.REFRESH)
                     .expired(false)
                     .build();
             tokenRepository.save(existingToken);
@@ -48,7 +50,8 @@ public class AuthenticationService {
             Token token = Token.builder()
                     .user(user)
                     .token(refreshToken)
-                    .tokenType(TokenType.BEARER)
+                    .grantType(GrantType.BEARER)
+                    .tokenType(TokenType.REFRESH)
                     .expired(false)
                     .build();
             tokenRepository.save(token);

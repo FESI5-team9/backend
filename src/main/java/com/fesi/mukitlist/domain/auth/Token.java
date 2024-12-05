@@ -18,7 +18,10 @@ public class Token {
     public String token;
 
     @Enumerated(EnumType.STRING)
-    public TokenType tokenType = TokenType.BEARER;
+    public GrantType grantType;
+
+    @Enumerated(EnumType.STRING)
+    public TokenType tokenType;
 
     public boolean expired;
 
@@ -27,9 +30,10 @@ public class Token {
     public User user;
 
     @Builder
-    public Token(Long id, String token, TokenType tokenType, boolean expired, User user) {
+    public Token(Long id, String token, GrantType grantType,TokenType tokenType, boolean expired, User user) {
         this.id = id;
         this.token = token;
+        this.grantType = grantType;
         this.tokenType = tokenType;
         this.expired = expired;
         this.user = user;
