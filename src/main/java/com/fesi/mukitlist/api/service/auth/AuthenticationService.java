@@ -2,7 +2,7 @@ package com.fesi.mukitlist.api.service.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fesi.mukitlist.api.exception.AppException;
-import com.fesi.mukitlist.domain.auth.GrantType;
+import com.fesi.mukitlist.domain.auth.constant.GrantType;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
@@ -15,7 +15,7 @@ import com.fesi.mukitlist.api.repository.TokenRepository;
 import com.fesi.mukitlist.api.repository.UserRepository;
 import com.fesi.mukitlist.api.service.auth.request.AuthenticationServiceRequest;
 import com.fesi.mukitlist.domain.auth.Token;
-import com.fesi.mukitlist.domain.auth.TokenType;
+import com.fesi.mukitlist.domain.auth.constant.TokenType;
 import com.fesi.mukitlist.domain.auth.User;
 
 import lombok.RequiredArgsConstructor;

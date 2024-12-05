@@ -1,7 +1,7 @@
 package com.fesi.mukitlist.api.service.auth.request;
 
-import com.fesi.mukitlist.domain.auth.GrantType;
-import com.fesi.mukitlist.domain.auth.TokenType;
+import com.fesi.mukitlist.domain.auth.constant.GrantType;
+import com.fesi.mukitlist.domain.auth.constant.TokenType;
 import com.fesi.mukitlist.domain.auth.User;
 import lombok.Builder;
 
