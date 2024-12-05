@@ -25,13 +25,12 @@ import com.fesi.mukitlist.api.controller.gathering.request.GatheringCreateReques
 import com.fesi.mukitlist.api.controller.gathering.request.GatheringRequest;
 import com.fesi.mukitlist.api.exception.response.ValidationErrorResponse;
 import com.fesi.mukitlist.api.service.gathering.GatheringService;
-import com.fesi.mukitlist.api.service.gathering.response.GatheringCreateResponse;
-import com.fesi.mukitlist.api.service.gathering.response.v2.inherit.GatheringCreateResponse2;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringListResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringParticipantsResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringWithParticipantsResponse;
 import com.fesi.mukitlist.api.service.gathering.response.JoinedGatheringsResponse;
+import com.fesi.mukitlist.api.service.gathering.response.v2.composition.GatheringCreateResponse;
 import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.global.annotation.Authorize;
 

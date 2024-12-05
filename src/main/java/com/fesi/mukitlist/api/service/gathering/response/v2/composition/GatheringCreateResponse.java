@@ -2,11 +2,12 @@ package com.fesi.mukitlist.api.service.gathering.response.v2.composition;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fesi.mukitlist.domain.gathering.Gathering;
 import com.fesi.mukitlist.domain.gathering.Keyword;
 
 public record GatheringCreateResponse(
-	GatheringBaseResponse gatheringBaseResponse,
+	@JsonUnwrapped GatheringBaseResponse gatheringBaseResponse,
 	List<String> keywords
 
 ) {

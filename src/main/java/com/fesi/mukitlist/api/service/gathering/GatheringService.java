@@ -5,7 +5,6 @@ import static com.fesi.mukitlist.api.exception.ExceptionCode.*;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,13 +18,12 @@ import com.fesi.mukitlist.api.repository.gathering.GatheringRepository;
 import com.fesi.mukitlist.api.repository.usergathering.UserGatheringRepository;
 import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceCreateRequest;
 import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceRequest;
-import com.fesi.mukitlist.api.service.gathering.response.GatheringCreateResponse;
-import com.fesi.mukitlist.api.service.gathering.response.v2.inherit.GatheringCreateResponse2;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringListResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringParticipantsResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringWithParticipantsResponse;
 import com.fesi.mukitlist.api.service.gathering.response.JoinedGatheringsResponse;
+import com.fesi.mukitlist.api.service.gathering.response.v2.composition.GatheringCreateResponse;
 import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.domain.gathering.Gathering;
 import com.fesi.mukitlist.domain.gathering.Keyword;
@@ -87,7 +85,7 @@ public class GatheringService {
 		boolean isFavorite = false;
 
 		Gathering gathering = getGatheringsFrom(id);
-		List<GatheringParticipantsResponse> participants = getGatheringsWithParticpantsFrom(gathering);
+		List<GatheringParticipantsResponse> participants = getGatheringsWithParticipantsFrom(gathering);
 		List<Keyword> keywords = keywordRepository.findAllByGathering(gathering);
 		if (user != null) {
 			isFavorite = checkIsFavoriteGathering(gathering, user);
@@ -164,7 +162,7 @@ public class GatheringService {
 		List<Long> gatheringCandidates = favoriteGatheringRepository.findById_UserId(user.getId())
 			.stream()
 			.map(favoriteGathering -> favoriteGathering.getId().getGatheringId())
-			.collect(Collectors.toList());
+			.toList();
 		List<Gathering> gatherings = gatheringRepository.findAllByIdIn(gatheringCandidates);
 
 		return gatherings.stream()
@@ -189,12 +187,12 @@ public class GatheringService {
 			return favoriteGatheringRepository.existsById(FavoriteGatheringId.of(user.getId(), gathering.getId()));
 	}
 
-	private List<GatheringParticipantsResponse> getGatheringsWithParticpantsFrom(Gathering gathering) {
+	private List<GatheringParticipantsResponse> getGatheringsWithParticipantsFrom(Gathering gathering) {
 		List<UserGathering> userGathering = userGatheringRepository.findByIdGathering(gathering);
 		return userGathering.stream()
 			.map(GatheringParticipantsResponse::of
 			)
-			.collect(Collectors.toList());
+			.toList();
 	}
 
 	private Gathering getGatheringsFrom(Long id) {
