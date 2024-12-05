@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.api.controller.web.request;
+package com.fesi.mukitlist.api.controller.web.kakao.request;
 
 import lombok.Builder;
 
