@@ -60,6 +60,9 @@ public class Gathering {
 	private String description;
 
 	@Column(nullable = false)
+	private int openParticipantCount;
+
+	@Column(nullable = false)
 	private int participantCount = 0;
 
 	@Column(nullable = false)
@@ -85,6 +88,7 @@ public class Gathering {
 		String address1,
 		String address2,
 		String description,
+		int openParticipantCount,
 		int participantCount,
 		int capacity,
 		String image,
@@ -100,6 +104,7 @@ public class Gathering {
 		this.address2 = address2;
 		this.description = description;
 		this.participantCount = participantCount;
+		this.openParticipantCount = openParticipantCount;
 		this.capacity = capacity;
 		this.image = image;
 		this.createdBy = createdBy;
@@ -113,6 +118,7 @@ public class Gathering {
 			.type(request.type())
 			.name(request.name())
 			.dateTime(request.dateTime())
+			.openParticipantCount(request.openParticipantCount())
 			.capacity(request.minimumCapacity())
 			.image(storedName)
 			.registrationEnd(request.registrationEnd())

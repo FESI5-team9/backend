@@ -30,6 +30,7 @@ public record GatheringWithParticipantsResponse(
 	LocalDateTime canceledAt,
 	Boolean host,
 	Boolean favorite,
+	Boolean open,
 	List<GatheringParticipantsResponse> participants
 ) {
 	public static GatheringWithParticipantsResponse of(Gathering gathering, User user, List<Keyword> keywords,
@@ -51,8 +52,9 @@ public record GatheringWithParticipantsResponse(
 			gathering.getUser().getImage(),
 			gathering.getUser().getName(),
 			gathering.getCanceledAt(),
-			gathering.getUser().equals(user),
-			user != null && isFavorite,
+			user != null && gathering.getId().equals(user.getId()),
+			isFavorite,
+			participants.size() >= gathering.getOpenParticipantCount(),
 			participants
 		);
 	}

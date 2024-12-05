@@ -25,7 +25,10 @@ public class CustomAuthenticationPrincipalResolver implements HandlerMethodArgum
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		boolean isAuthenticatedUser = isAuthenticatedUser(authentication);
 
-		if (parameter.getParameterAnnotation(Authorize.class).required() && !isAuthenticatedUser) {
+		Authorize authorize = parameter.getParameterAnnotation(Authorize.class);
+		boolean isRequired = authorize != null && authorize.required();
+
+		if (isRequired && !isAuthenticatedUser) {
 			throw new AppException(LOGIN_REQUIRED);
 		}
 

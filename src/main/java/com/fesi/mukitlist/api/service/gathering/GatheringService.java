@@ -84,11 +84,14 @@ public class GatheringService {
 
 	@Transactional(readOnly = true)
 	public GatheringWithParticipantsResponse getGatheringById(Long id, User user) {
+		boolean isFavorite = false;
 
 		Gathering gathering = getGatheringsFrom(id);
 		List<GatheringParticipantsResponse> participants = getGatheringsWithParticpantsFrom(gathering);
 		List<Keyword> keywords = keywordRepository.findAllByGathering(gathering);
-		boolean isFavorite = checkIsFavoriteGathering(gathering, user);
+		if (user != null) {
+			isFavorite = checkIsFavoriteGathering(gathering, user);
+		}
 
 		return GatheringWithParticipantsResponse.of(gathering, user, keywords, isFavorite,participants);
 	}
@@ -183,7 +186,7 @@ public class GatheringService {
 	}
 
 	private boolean checkIsFavoriteGathering(Gathering gathering, User user) {
-		return favoriteGatheringRepository.existsById(FavoriteGatheringId.of(user.getId(), gathering.getId()));
+			return favoriteGatheringRepository.existsById(FavoriteGatheringId.of(user.getId(), gathering.getId()));
 	}
 
 	private List<GatheringParticipantsResponse> getGatheringsWithParticpantsFrom(Gathering gathering) {
