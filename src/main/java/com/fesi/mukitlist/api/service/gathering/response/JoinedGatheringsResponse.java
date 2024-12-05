@@ -54,6 +54,5 @@ public record JoinedGatheringsResponse(
 			.isCompleted(isCompleted)
 			.isReviewed(isReviewed)
 			.build();
-
 	}
 }
