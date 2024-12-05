@@ -15,12 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fesi.mukitlist.api.exception.AppException;
 import com.fesi.mukitlist.api.repository.FavoriteGatheringRepository;
 import com.fesi.mukitlist.api.repository.KeywordRepository;
-import com.fesi.mukitlist.api.repository.UserRepository;
 import com.fesi.mukitlist.api.repository.gathering.GatheringRepository;
 import com.fesi.mukitlist.api.repository.usergathering.UserGatheringRepository;
 import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceCreateRequest;
 import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceRequest;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringCreateResponse;
+import com.fesi.mukitlist.api.service.gathering.response.v2.inherit.GatheringCreateResponse2;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringListResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringParticipantsResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringResponse;
@@ -77,7 +77,7 @@ public class GatheringService {
 
 		List<Keyword> keywords = request.keyword().stream()
 			.map(k -> Keyword.of(k, savedGathering))
-			.collect(Collectors.toList());
+			.toList();
 		List<Keyword> savedKeywords = keywordRepository.saveAll(keywords);
 		return GatheringCreateResponse.of(savedGathering, savedKeywords);
 	}

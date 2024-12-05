@@ -26,6 +26,7 @@ import com.fesi.mukitlist.api.controller.gathering.request.GatheringRequest;
 import com.fesi.mukitlist.api.exception.response.ValidationErrorResponse;
 import com.fesi.mukitlist.api.service.gathering.GatheringService;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringCreateResponse;
+import com.fesi.mukitlist.api.service.gathering.response.v2.inherit.GatheringCreateResponse2;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringListResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringParticipantsResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringResponse;
@@ -177,7 +178,7 @@ public class GatheringController {
 		responses = {
 			@ApiResponse(responseCode = "201", description = "모임 생성 성공",
 				content = @Content(
-					schema = @Schema(implementation = GatheringResponse.class))),
+					schema = @Schema(implementation = GatheringCreateResponse.class))),
 			@ApiResponse(responseCode = "400", description = "잘못된 요청",
 				content = @Content(mediaType = "application/json", schema = @Schema(implementation = ValidationErrorResponse.class))),
 		}
