@@ -105,7 +105,7 @@ public class GatheringController {
 	@Operation(summary = "모임 상세 조회", description = "모임의 상제 정보를 조회합니다.",
 		responses = {
 			@ApiResponse(responseCode = "200", description = "모임 상세 조회 성공",
-				content = @Content(schema = @Schema(implementation = GatheringResponse.class))),
+				content = @Content(schema = @Schema(implementation = GatheringWithParticipantsResponse.class))),
 			@ApiResponse(
 				responseCode = "400",
 				description = "요청 오류",
