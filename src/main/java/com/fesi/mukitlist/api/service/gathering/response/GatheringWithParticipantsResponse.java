@@ -52,7 +52,7 @@ public record GatheringWithParticipantsResponse(
 			gathering.getUser().getImage(),
 			gathering.getUser().getName(),
 			gathering.getCanceledAt(),
-			user != null && gathering.getId().equals(user.getId()),
+			user != null && gathering.getUser().getId().equals(user.getId()),
 			isFavorite,
 			participants.size() >= gathering.getOpenParticipantCount(),
 			participants
