@@ -14,7 +14,5 @@ public interface TokenRepository extends JpaRepository<Token, Integer> {
       on t.user.id = u.id\s
       where u.id = :id and (t.expired = false)\s
       """)
-    Optional<Token> findByToken(String token);
-
     Token findByUserAndToken(User user, String refreshToken);
 }

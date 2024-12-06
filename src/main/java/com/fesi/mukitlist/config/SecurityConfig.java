@@ -2,8 +2,10 @@ package com.fesi.mukitlist.config;
 
 import java.util.List;
 
+import com.fesi.mukitlist.api.service.auth.JwtService;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;

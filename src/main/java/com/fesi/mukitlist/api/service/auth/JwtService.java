@@ -1,7 +1,6 @@
 package com.fesi.mukitlist.api.service.auth;
 
 import com.fesi.mukitlist.domain.auth.PrincipalDetails;
-import com.fesi.mukitlist.domain.auth.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
