@@ -118,16 +118,6 @@ public class ReviewController {
 				content = @Content(array = @ArraySchema(
 					schema = @Schema(implementation = ReviewScoreResponse.class)
 				))),
-			@ApiResponse(
-				responseCode = "400",
-				description = "요청 오류",
-				content = @Content(
-					mediaType = "application/json",
-					schema = @Schema(
-						example = "{\"code\":\"VALIDATION_ERROR\",\"parameter\":\"gatheringId\",\"message\":\"모임 ID는 숫자의 쉼표로 구분된 목록이어야 합니다\"}"
-					)
-				)
-			),
 		}
 	)
 	@GetMapping("/score")
@@ -143,16 +133,6 @@ public class ReviewController {
 				content = @Content(array = @ArraySchema(
 					schema = @Schema(implementation = ReviewStatisticsScoreResponse.class)
 				))),
-			@ApiResponse(
-				responseCode = "400",
-				description = "요청 오류",
-				content = @Content(
-					mediaType = "application/json",
-					schema = @Schema(
-						example = "{\"code\":\"VALIDATION_ERROR\",\"parameter\":\"gatheringId\",\"message\":\"모임 ID는 숫자의 쉼표로 구분된 목록이어야 합니다\"}"
-					)
-				)
-			),
 		}
 	)
 	@GetMapping("/statistics")
