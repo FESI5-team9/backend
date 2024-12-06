@@ -1,5 +1,7 @@
 package com.fesi.mukitlist.api.service.auth;
 
+import com.fesi.mukitlist.domain.auth.PrincipalDetails;
+import com.fesi.mukitlist.domain.auth.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -35,30 +37,24 @@ public class JwtService {
 		return claimsResolver.apply(claims);
 	}
 
-	public String generateToken(UserDetails userDetails) {
-		return generateToken(new HashMap<>(), userDetails);
+	public String generateToken(PrincipalDetails principalDetails) {
+		return generateToken(new HashMap<>(), principalDetails);
 	}
 
-	public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-		return buildToken(extraClaims, userDetails, accessExpiration);
+	public String generateToken(Map<String, Object> extraClaims, PrincipalDetails principalDetails) {
+		return buildToken(extraClaims, principalDetails, accessExpiration);
 	}
 
-	public String generateRefreshToken(UserDetails userDetails) {
+	public String generateRefreshToken(PrincipalDetails principalDetails) {
 		Map<String, Object> claims = new HashMap<>();
 		claims.put("RefreshToken", true);
-		return Jwts.builder()
-			.setClaims(claims)
-			.setSubject(userDetails.getUsername())
-			.setIssuedAt(new Date(System.currentTimeMillis()))
-			.setExpiration(new Date(System.currentTimeMillis() + refreshExpiration))
-			.signWith(getSignInKey(), SignatureAlgorithm.HS256)
-			.compact();
+		return buildToken(claims, principalDetails, refreshExpiration);
 	}
 
-	private String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long expiration) {
+	private String buildToken(Map<String, Object> extraClaims, PrincipalDetails principalDetails, long expiration) {
 		return Jwts.builder()
 			.setClaims(extraClaims)
-			.setSubject(userDetails.getUsername())
+			.setSubject(principalDetails.getUsername())
 			.setIssuedAt(new Date(System.currentTimeMillis()))
 			.setExpiration(new Date(System.currentTimeMillis() + expiration))
 			.signWith(getSignInKey(), SignatureAlgorithm.HS256)
@@ -76,7 +72,7 @@ public class JwtService {
                 .setSigningKey(getRefreshSignInKey())
                 .build()
                 .parseClaimsJws(token)
-                .getBody();
+					.getBody();
             Boolean isRefresh = claims.get("RefreshToken", Boolean.class);
             return Boolean.TRUE.equals(isRefresh) && !isTokenExpired(token);
         } catch (Exception e) {

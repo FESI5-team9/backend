@@ -5,11 +5,8 @@ import java.util.Optional;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.fesi.mukitlist.api.controller.auth.request.UserUpdateRequest;
-import com.fesi.mukitlist.api.exception.AppException;
-import com.fesi.mukitlist.api.exception.ExceptionCode;
 import com.fesi.mukitlist.api.repository.UserRepository;
 import com.fesi.mukitlist.api.service.auth.request.UserServiceCreateRequest;
 import com.fesi.mukitlist.api.service.auth.response.UserInfoResponse;
