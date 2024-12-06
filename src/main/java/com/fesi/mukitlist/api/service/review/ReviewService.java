@@ -18,6 +18,7 @@ import com.fesi.mukitlist.api.exception.AppException;
 import com.fesi.mukitlist.api.repository.ReviewRepository;
 import com.fesi.mukitlist.api.repository.usergathering.UserGatheringRepository;
 import com.fesi.mukitlist.api.service.PageService;
+import com.fesi.mukitlist.api.service.review.response.ReviewStatisticsScoreResponse;
 import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.domain.gathering.Gathering;
 import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
@@ -154,6 +155,31 @@ public class ReviewService {
 			.toList();
 	}
 
+	public ReviewStatisticsScoreResponse getReviewScoreStatistics(GatheringType type) {
+		List<Review> reviewCandidates = reviewRepository.findAllByGathering_Type(type);
+
+		Map<Integer, Long> reviewScoreCounts = reviewCandidates.stream()
+			.collect(Collectors.groupingBy(
+				Review::getScore,
+				Collectors.counting()
+			));
+
+
+		// 점수별 카운트를 활용해 평균 계산
+		long totalScore = reviewScoreCounts.entrySet().stream()
+			.mapToLong(e -> e.getKey() * e.getValue()) // score * count
+			.sum();
+
+		long totalReviews = reviewScoreCounts.values().stream()
+			.mapToLong(Long::longValue) // 리뷰 개수 합산
+			.sum();
+
+		double averageScore = totalReviews > 0 ? (double) totalScore / totalReviews : 0.0;
+
+		return ReviewStatisticsScoreResponse.of(averageScore, reviewScoreCounts);
+
+	}
+
 	private void checkIsUserParticipant(User user, Gathering gathering) {
 		UserGatheringId userGatheringId = UserGatheringId.of(user, gathering);
 		if (!userGatheringRepository.existsById(userGatheringId)) {
@@ -163,5 +189,16 @@ public class ReviewService {
 
 	private Gathering getGatheringsFrom(Long id) {
 		return gatheringRepository.findById(id).orElseThrow(() -> new AppException(NOT_FOUND));
+	}
+
+	public List<ReviewResponse> getReviewsBy(ReviewServiceRequest request) {
+
+		Pageable pageable = PageService.pageableBy(request.page(), request.size(), request.sort(),
+			request.direction());
+
+		Page<Review> reviewsPage = reviewRepository.findAllByGatheringId(request.gatheringId(), pageable);
+		return reviewsPage.stream()
+			.map(ReviewResponse::of)
+			.toList();
 	}
 }
