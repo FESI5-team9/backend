@@ -12,12 +12,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fesi.mukitlist.api.controller.review.request.ReviewByRequest;
 import com.fesi.mukitlist.api.controller.review.request.ReviewCreateRequest;
 import com.fesi.mukitlist.api.controller.review.request.ReviewRequest;
 import com.fesi.mukitlist.api.exception.response.ValidationErrorResponse;
 import com.fesi.mukitlist.api.service.review.ReviewService;
 import com.fesi.mukitlist.api.service.review.response.ReviewResponse;
 import com.fesi.mukitlist.api.service.review.response.ReviewScoreResponse;
+import com.fesi.mukitlist.api.service.review.response.ReviewStatisticsScoreResponse;
 import com.fesi.mukitlist.api.service.review.response.ReviewWithGatheringAndUserResponse;
 import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
@@ -87,6 +89,29 @@ public class ReviewController {
 		return new ResponseEntity<>(reviewService.getReviews(request.toServiceRequest()), HttpStatus.OK);
 	}
 
+	@Operation(summary = "모임 별 리뷰 목록 조회", description = "모임 별 리뷰 목록을 조회합니다.",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "리뷰 목록 조회 성공",
+				content = @Content(array = @ArraySchema(
+					schema = @Schema(implementation = ReviewResponse.class)
+				))),
+			@ApiResponse(responseCode = "400", description = "잘못된 요청",
+				content = @Content(mediaType = "application/json", schema = @Schema(implementation = ValidationErrorResponse.class))),
+		}
+	)
+	@GetMapping("/gathering")
+	public ResponseEntity<List<ReviewResponse>> getReviewsBy(
+		@RequestParam(required = false) Long gatheringId,
+		@RequestParam(defaultValue = "10") int size,
+		@RequestParam(defaultValue = "0") int page,
+		@RequestParam(defaultValue = "createdAt") String sort,
+		@RequestParam(defaultValue = "desc") String direction
+	) {
+
+		ReviewByRequest request = ReviewByRequest.of(gatheringId, size, page, sort, direction);
+		return new ResponseEntity<>(reviewService.getReviewsBy(request.toServiceRequest()), HttpStatus.OK);
+	}
+
 	@Operation(summary = "리뷰 평점 목록 조회", description = "필터링에 따라 리뷰 평점 목록을 조회합니다",
 		responses = {
 			@ApiResponse(responseCode = "200", description = "리뷰 목록 조회 성공",
@@ -111,4 +136,29 @@ public class ReviewController {
 		@RequestParam(required = false) GatheringType type) {
 		return new ResponseEntity<>(reviewService.getReviewScores(gatheringId, type), HttpStatus.OK);
 	}
+
+	@Operation(summary = "타입별 리뷰 평점 통계 조회", description = "타입별 리뷰 평점 통계를 조회합니다",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "조회 성공",
+				content = @Content(array = @ArraySchema(
+					schema = @Schema(implementation = ReviewStatisticsScoreResponse.class)
+				))),
+			@ApiResponse(
+				responseCode = "400",
+				description = "요청 오류",
+				content = @Content(
+					mediaType = "application/json",
+					schema = @Schema(
+						example = "{\"code\":\"VALIDATION_ERROR\",\"parameter\":\"gatheringId\",\"message\":\"모임 ID는 숫자의 쉼표로 구분된 목록이어야 합니다\"}"
+					)
+				)
+			),
+		}
+	)
+	@GetMapping("/statistics")
+	public ResponseEntity<ReviewStatisticsScoreResponse> getReviewScores(
+		@RequestParam(required = false) GatheringType type) {
+		return new ResponseEntity<>(reviewService.getReviewScoreStatistics(type), HttpStatus.OK);
+	}
+
 }
