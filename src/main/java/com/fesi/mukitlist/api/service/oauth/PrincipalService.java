@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.api.service.auth;
+package com.fesi.mukitlist.api.service.oauth;
 
 import com.fesi.mukitlist.api.exception.AppException;
 import com.fesi.mukitlist.api.repository.UserRepository;

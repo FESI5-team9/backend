@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.api.controller.web.kakao.response;
+package com.fesi.mukitlist.api.controller.oauth.kakao.response;
 
 import lombok.Builder;
 

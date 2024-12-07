@@ -1,7 +1,7 @@
-package com.fesi.mukitlist.api.controller.web.kakao;
+package com.fesi.mukitlist.api.controller.oauth.kakao;
 
-import com.fesi.mukitlist.api.controller.web.kakao.client.KakaoTokenClient;
-import com.fesi.mukitlist.api.controller.web.kakao.response.KakaoTokenResponse;
+import com.fesi.mukitlist.api.controller.oauth.kakao.client.KakaoTokenClient;
+import com.fesi.mukitlist.api.controller.oauth.kakao.response.KakaoTokenResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
