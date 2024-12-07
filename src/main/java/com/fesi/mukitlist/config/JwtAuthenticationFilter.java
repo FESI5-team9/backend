@@ -1,7 +1,5 @@
-
 package com.fesi.mukitlist.config;
 
-import com.fesi.mukitlist.api.repository.TokenRepository;
 import com.fesi.mukitlist.api.service.auth.JwtService;
 import com.fesi.mukitlist.domain.auth.PrincipalDetails;
 import jakarta.servlet.FilterChain;
@@ -10,7 +8,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;

@@ -12,7 +12,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.fesi.mukitlist.api.controller.auth.response.AuthenticationResponse;
@@ -68,9 +67,10 @@ public class AuthenticationService {
                 )
         );
 
-        PrincipalDetails principalDetails = (PrincipalDetails) userRepository.findByEmail(request.email())
-                .map(PrincipalDetails::new)
+        User user = userRepository.findByEmail(request.email())
                 .orElseThrow(() -> new AppException(NOT_FOUND_USER));
+
+        PrincipalDetails principalDetails = new PrincipalDetails(user);
 
         String accessToken = jwtService.generateToken(principalDetails);
         String refreshToken = jwtService.generateRefreshToken(principalDetails);
@@ -92,14 +92,13 @@ public class AuthenticationService {
         final String userEmail = jwtService.extractUsername(refreshToken);
 
         if (userEmail != null) {
-            PrincipalDetails principalDetails = userRepository.findByEmail(userEmail)
-                    .map(PrincipalDetails::new)
+            User findUser = userRepository.findByEmail(userEmail)
                     .orElseThrow(() -> new AppException(NOT_FOUND_USER));
-
             if (!jwtService.isRefreshTokenValid(refreshToken)) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return null;
             }
+            PrincipalDetails principalDetails = new PrincipalDetails(findUser);
             String accessToken = jwtService.generateToken(principalDetails);
             saveUserToken(principalDetails, refreshToken);
             addRefreshTokenToCookie(response, refreshToken);
