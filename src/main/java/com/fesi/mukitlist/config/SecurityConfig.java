@@ -2,11 +2,8 @@ package com.fesi.mukitlist.config;
 
 import java.util.List;
 
-import com.fesi.mukitlist.api.service.auth.JwtService;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -50,6 +47,7 @@ public class SecurityConfig {
 			.authenticationProvider(authenticationProvider)
 			.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 			// TODO http basic 인증 방식 disable
+			// TODO 일반 로그인 OAuth2 로그인 uri 설정
 
 		return http.build();
 	}
