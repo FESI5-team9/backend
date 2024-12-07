@@ -1,12 +1,15 @@
 package com.fesi.mukitlist.api.service.auth;
 
 import com.fesi.mukitlist.domain.auth.PrincipalDetails;
+import com.fesi.mukitlist.domain.auth.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -46,7 +49,7 @@ public class JwtService {
 
 	public String generateRefreshToken(PrincipalDetails principalDetails) {
 		Map<String, Object> claims = new HashMap<>();
-		claims.put("RefreshToken", true);
+		claims.put("refresh-token", true);
 		return buildToken(claims, principalDetails, refreshExpiration);
 	}
 
@@ -60,9 +63,9 @@ public class JwtService {
 			.compact();
 	}
 
-	public boolean isTokenValid(String token, UserDetails userDetails) {
+	public boolean isTokenValid(String token, PrincipalDetails principalDetails) {
 		final String username = extractUsername(token);
-		return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+		return (username.equals(principalDetails.getUsername())) && !isTokenExpired(token);
 	}
 
     public boolean isRefreshTokenValid(String token) {
@@ -72,7 +75,7 @@ public class JwtService {
                 .build()
                 .parseClaimsJws(token)
 					.getBody();
-            Boolean isRefresh = claims.get("RefreshToken", Boolean.class);
+            Boolean isRefresh = claims.get("refresh-token", Boolean.class);
             return Boolean.TRUE.equals(isRefresh) && !isTokenExpired(token);
         } catch (Exception e) {
             return false;

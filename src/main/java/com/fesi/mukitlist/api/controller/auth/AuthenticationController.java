@@ -2,6 +2,7 @@ package com.fesi.mukitlist.api.controller.auth;
 
 import java.io.IOException;
 
+import jakarta.servlet.http.Cookie;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,46 +32,49 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @Operation(summary = "로그인", description = "로그인을 시도합니다.",
-        responses = {
-            @ApiResponse(responseCode = "200", description = "로그인 성공",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = AuthenticationResponse.class))),
-            @ApiResponse(
-                responseCode = "403",
-                description = "권한 오류",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        example = "{\"code\":\"FORBIDDEN\",\"message\":\"권한이 없습니다.\"}"
-                    )
-                )
-            ),
-            @ApiResponse(
-                responseCode = "404",
-                description = "유저 없음",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                        example = "{\"code\":\"NOT_FOUND\",\"message\":\"유저를 찾을 수 없습니다.\"}"
-                    )
-                )
-            ),
-        }
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "로그인 성공",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = AuthenticationResponse.class))),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "권한 오류",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(
+                                            example = "{\"code\":\"FORBIDDEN\",\"message\":\"권한이 없습니다.\"}"
+                                    )
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "유저 없음",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(
+                                            example = "{\"code\":\"NOT_FOUND\",\"message\":\"유저를 찾을 수 없습니다.\"}"
+                                    )
+                            )
+                    ),
+            }
     )
+
     @PostMapping("/signin")
     public ResponseEntity<AuthenticationResponse> authenticate(
-            @RequestBody AuthenticationServiceRequest request) {
-        AuthenticationResponse authenticate = authenticationService.authenticate(request);
-        return new ResponseEntity<>(authenticate, HttpStatus.OK);
+            @RequestBody AuthenticationServiceRequest request, HttpServletResponse response) {
+        AuthenticationResponse authenticate = authenticationService.authenticate(request, response);
+        return new ResponseEntity<>(new AuthenticationResponse(authenticate.accessToken()), HttpStatus.OK);
     }
 
-    @PostMapping("/refresh-token")
-    public void refreshToken(
+    @PostMapping("/refresh-token") // TODO Error Code 변경
+    public ResponseEntity<AuthenticationResponse> refreshToken(
             HttpServletRequest request,
-            HttpServletResponse response
-    ) throws IOException {
-        authenticationService.refreshToken(request, response);
+            HttpServletResponse response) throws IOException {
+        AuthenticationResponse authenticationResponse = authenticationService.refreshToken(request, response);
+        if (authenticationResponse == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(authenticationResponse, HttpStatus.OK);
     }
 }
-

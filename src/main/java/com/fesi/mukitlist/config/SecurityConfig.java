@@ -36,7 +36,6 @@ public class SecurityConfig {
 			.requestMatchers(new AntPathRequestMatcher("/h2-console/**"))
 			.requestMatchers(new AntPathRequestMatcher("api/auth/**"))
 			.requestMatchers(new AntPathRequestMatcher("/swagger-ui/**")));
-
 	}
 
 	@Bean

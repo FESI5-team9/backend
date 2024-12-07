@@ -32,7 +32,7 @@ public class Token {
     public User user;
 
     @Builder
-    public Token(Long id, String token, GrantType grantType,TokenType tokenType, boolean expired, User user) {
+    public Token(Long id, String token, GrantType grantType, TokenType tokenType, boolean expired, User user) {
         this.id = id;
         this.token = token;
         this.grantType = grantType;
