@@ -34,7 +34,6 @@ public class SecurityConfig {
 			.requestMatchers(new AntPathRequestMatcher("/h2-console/**"))
 			.requestMatchers(new AntPathRequestMatcher("api/auth/**"))
 			.requestMatchers(new AntPathRequestMatcher("/swagger-ui/**")));
-
 	}
 
 	@Bean
@@ -48,6 +47,8 @@ public class SecurityConfig {
 			.authenticationProvider(authenticationProvider)
 			.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 			// TODO http basic 인증 방식 disable
+			// TODO 일반 로그인 OAuth2 로그인 uri 설정
+
 		return http.build();
 	}
 

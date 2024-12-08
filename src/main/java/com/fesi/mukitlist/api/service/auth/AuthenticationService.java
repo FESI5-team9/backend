@@ -2,6 +2,11 @@ package com.fesi.mukitlist.api.service.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fesi.mukitlist.api.exception.AppException;
+import com.fesi.mukitlist.domain.auth.PrincipalDetails;
+import com.fesi.mukitlist.domain.auth.User;
+import com.fesi.mukitlist.domain.auth.constant.GrantType;
+import com.fesi.mukitlist.domain.auth.constant.TokenType;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
@@ -14,8 +19,6 @@ import com.fesi.mukitlist.api.repository.TokenRepository;
 import com.fesi.mukitlist.api.repository.UserRepository;
 import com.fesi.mukitlist.api.service.auth.request.AuthenticationServiceRequest;
 import com.fesi.mukitlist.domain.auth.Token;
-import com.fesi.mukitlist.domain.auth.TokenType;
-import com.fesi.mukitlist.domain.auth.User;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,34 +31,35 @@ import static com.fesi.mukitlist.api.exception.ExceptionCode.NOT_FOUND_USER;
 @Service
 @Slf4j
 public class AuthenticationService {
-    private final UserRepository repository;
+    private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    private void saveUserToken(User user, String refreshToken) {
-        Token existingToken = tokenRepository.findByUserAndToken(user, refreshToken);
+    private void saveUserToken(PrincipalDetails principalDetails, String refreshToken) {
+        Token existingToken = tokenRepository.findByUserAndToken(principalDetails.getUser().getId(), refreshToken);
         if (existingToken != null) {
             existingToken = Token.builder()
                     .id(existingToken.getId())
-                    .user(user)
+                    .user(principalDetails.getUser())
                     .token(refreshToken)
-                    .tokenType(TokenType.BEARER)
+                    .grantType(GrantType.BEARER)
+                    .tokenType(TokenType.REFRESH)
                     .expired(false)
                     .build();
             tokenRepository.save(existingToken);
         } else {
             Token token = Token.builder()
-                    .user(user)
+                    .user(principalDetails.getUser())
                     .token(refreshToken)
-                    .tokenType(TokenType.BEARER)
+                    .tokenType(TokenType.REFRESH)
                     .expired(false)
                     .build();
             tokenRepository.save(token);
         }
     }
 
-    public AuthenticationResponse authenticate(AuthenticationServiceRequest request) {
+    public AuthenticationResponse authenticate(AuthenticationServiceRequest request, HttpServletResponse response) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.email(),
@@ -63,47 +67,57 @@ public class AuthenticationService {
                 )
         );
 
-        User user = repository.findByEmail(request.email())
+        User user = userRepository.findByEmail(request.email())
                 .orElseThrow(() -> new AppException(NOT_FOUND_USER));
-        String accessToken = jwtService.generateToken(user);
-        String refreshToken = jwtService.generateRefreshToken(user);
-        saveUserToken(user, refreshToken);
+
+        PrincipalDetails principalDetails = new PrincipalDetails(user);
+
+        String accessToken = jwtService.generateToken(principalDetails);
+        String refreshToken = jwtService.generateRefreshToken(principalDetails);
+        saveUserToken(principalDetails, refreshToken);
+        addRefreshTokenToCookie(response, refreshToken);
         return AuthenticationResponse.builder()
                 .accessToken(accessToken)
-                .refreshToken(refreshToken)
                 .build();
     }
 
-    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public AuthenticationResponse refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return;
+            return null;
         }
 
         final String refreshToken = authHeader.substring(7);
         final String userEmail = jwtService.extractUsername(refreshToken);
 
         if (userEmail != null) {
-            var user = this.repository.findByEmail(userEmail)
+            User findUser = userRepository.findByEmail(userEmail)
                     .orElseThrow(() -> new AppException(NOT_FOUND_USER));
-
-            // Refresh token 만료 여부 체크
-            if (!jwtService.isTokenValid(refreshToken, user)) {
+            if (!jwtService.isRefreshTokenValid(refreshToken)) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                return;
+                return null;
             }
-
-            String accessToken = jwtService.generateToken(user);
-            saveUserToken(user, refreshToken);
+            PrincipalDetails principalDetails = new PrincipalDetails(findUser);
+            String accessToken = jwtService.generateToken(principalDetails);
+            saveUserToken(principalDetails, refreshToken);
+            addRefreshTokenToCookie(response, refreshToken);
             AuthenticationResponse authResponse = AuthenticationResponse.builder()
                     .accessToken(accessToken)
-                    .refreshToken(refreshToken)
                     .build();
-
             new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
         } else {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
+        return null;
+    }
+
+    private void addRefreshTokenToCookie(HttpServletResponse response, String refreshToken) {
+        Cookie cookie = new Cookie("refresh-token", refreshToken);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false);
+        cookie.setPath("/");
+        cookie.setMaxAge(60 * 60 * 24 * 7);
+        response.addCookie(cookie);
     }
 }

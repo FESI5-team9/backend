@@ -13,7 +13,9 @@ public record UserCreateRequest(
 	String email,
 	String password,
 	String nickname,
-	String name
+	String name,
+	String provider,
+	String providerId
 	// String image
 ) {
 
@@ -23,6 +25,8 @@ public record UserCreateRequest(
 			.password(password)
 			.nickname(nickname)
 			.name(name)
+				.provider(provider)
+				.providerId(providerId)
 			.build();
 	}
 }

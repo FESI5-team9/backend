@@ -1,14 +1,13 @@
 package com.fesi.mukitlist.config;
 
-import com.fesi.mukitlist.api.repository.TokenRepository;
 import com.fesi.mukitlist.api.service.auth.JwtService;
+import com.fesi.mukitlist.domain.auth.PrincipalDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
@@ -26,7 +25,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
-    private final TokenRepository tokenRepository;
 
     @Override
     protected void doFilterInternal(
@@ -34,41 +32,36 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         @NonNull HttpServletResponse response,
         @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
+        if (request.getServletPath().contains("/auth")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         final String authHeader = request.getHeader("Authorization");
-        final String accessToken;
+        final String jwt;
         final String userEmail;
-
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
-
-        accessToken = authHeader.substring(7);
-        try {
-            userEmail = jwtService.extractUsername(accessToken);
-        } catch (Exception e) {
-            logger.error("Invalid token", e);
-            filterChain.doFilter(request, response);
-            return;
-        }
-
+        jwt = authHeader.substring(7);
+        userEmail = jwtService.extractUsername(jwt);
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-
-            if (jwtService.isTokenValid(accessToken, userDetails)) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                    userDetails,
-                    null,
-                    userDetails.getAuthorities()
-                );
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
+            if (userDetails instanceof PrincipalDetails) {
+                PrincipalDetails principalDetails = (PrincipalDetails) userDetails;
+                if (jwtService.isTokenValid(jwt, principalDetails)) {
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            principalDetails,
+                            null,
+                            principalDetails.getAuthorities()
+                    );
+                    authToken.setDetails(
+                            new WebAuthenticationDetailsSource().buildDetails(request)
+                    );
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
             }
+            filterChain.doFilter(request, response);
         }
-
-        filterChain.doFilter(request, response);
     }
-
 }
-
-

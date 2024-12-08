@@ -42,7 +42,7 @@ public class AuthenticationController {
                 content = @Content(
                     mediaType = "application/json",
                     schema = @Schema(
-                        example = "{\"code\":\"FORBIDDEN\",\"message\":\"권한이 없습니다.\"}"
+                            example = "{\"code\":\"FORBIDDEN\",\"message\":\"권한이 없습니다.\"}"
                     )
                 )
             ),
@@ -52,25 +52,28 @@ public class AuthenticationController {
                 content = @Content(
                     mediaType = "application/json",
                     schema = @Schema(
-                        example = "{\"code\":\"NOT_FOUND\",\"message\":\"유저를 찾을 수 없습니다.\"}"
+                            example = "{\"code\":\"NOT_FOUND\",\"message\":\"유저를 찾을 수 없습니다.\"}"
                     )
                 )
             ),
         }
     )
+
     @PostMapping("/signin")
     public ResponseEntity<AuthenticationResponse> authenticate(
-            @RequestBody AuthenticationServiceRequest request) {
-        AuthenticationResponse authenticate = authenticationService.authenticate(request);
-        return new ResponseEntity<>(authenticate, HttpStatus.OK);
+            @RequestBody AuthenticationServiceRequest request, HttpServletResponse response) {
+        AuthenticationResponse authenticate = authenticationService.authenticate(request, response);
+        return new ResponseEntity<>(new AuthenticationResponse(authenticate.accessToken()), HttpStatus.OK);
     }
 
-    @PostMapping("/refresh-token")
-    public void refreshToken(
+    @PostMapping("/refresh-token") // TODO Error Code 변경
+    public ResponseEntity<AuthenticationResponse> refreshToken(
             HttpServletRequest request,
-            HttpServletResponse response
-    ) throws IOException {
-        authenticationService.refreshToken(request, response);
+            HttpServletResponse response) throws IOException {
+        AuthenticationResponse authenticationResponse = authenticationService.refreshToken(request, response);
+        if (authenticationResponse == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(authenticationResponse, HttpStatus.OK);
     }
 }
-

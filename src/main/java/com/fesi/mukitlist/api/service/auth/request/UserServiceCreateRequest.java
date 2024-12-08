@@ -7,7 +7,9 @@ public record UserServiceCreateRequest(
         String email,
         String password,
         String nickname,
-        String name
+        String name,
+        String provider,
+        String providerId
         // String image
 ) {
 }

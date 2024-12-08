@@ -21,6 +21,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        default_batch_fetch_size: 500
 
     defer-datasource-initialization: true # (2.5~) Hibernate 초기화 이후 data.sql 실행
 
@@ -30,8 +31,14 @@ spring:
 logging:
   level:
     org.hibernate.SQL: debug
-
     org.hibernate.type.descriptor.sql: trace
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
 
 springdoc:
   api-docs:
@@ -48,8 +55,6 @@ security:
     expiration: 1800000 # 30 minutes
     refresh-token:
       expiration: 604800000 # 7 days
-
-
 
 ---
 spring:
@@ -68,4 +73,10 @@ spring:
   sql:
     init:
       mode: never
+
+---
+
+spring:
+  config:
+    import: classpath:/application-social-login.yml
 

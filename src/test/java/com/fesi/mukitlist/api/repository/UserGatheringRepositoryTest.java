@@ -1,11 +1,13 @@
 package com.fesi.mukitlist.api.repository;
 
+import static com.fesi.mukitlist.api.exception.ExceptionCode.NOT_FOUND;
 import static com.fesi.mukitlist.domain.gathering.constant.GatheringType.*;
 import static com.fesi.mukitlist.domain.gathering.constant.LocationType.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
 
+import com.fesi.mukitlist.api.exception.AppException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
