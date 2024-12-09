@@ -31,6 +31,8 @@ import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.domain.gathering.Gathering;
 import com.fesi.mukitlist.domain.gathering.Keyword;
 import com.fesi.mukitlist.domain.gathering.constant.GatheringStatus;
+import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
+import com.fesi.mukitlist.domain.gathering.constant.LocationType;
 import com.fesi.mukitlist.domain.gathering.favorite.FavoriteGathering;
 import com.fesi.mukitlist.domain.gathering.favorite.FavoriteGatheringId;
 import com.fesi.mukitlist.domain.usergathering.UserGathering;
@@ -60,8 +62,9 @@ public class GatheringService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<GatheringListResponse> searchGathering(List<String> search, Pageable pageable) {
-		Page<Gathering> gatheringPage = gatheringRepository.searchByTerms(search, pageable);
+	public List<GatheringListResponse> searchGathering(List<String> search, LocationType location, GatheringType type,
+		Pageable pageable) {
+		Page<Gathering> gatheringPage = gatheringRepository.searchByTerms(search, location, type, pageable);
 
 		return gatheringPage.stream()
 			.map(GatheringListResponse::of)
@@ -135,7 +138,7 @@ public class GatheringService {
 			List<Keyword> keywords = request.keyword().stream()
 				.map(k -> Keyword.of(k, savedGathering))
 				.collect(Collectors.toList());
-			 savedKeywords = keywordRepository.saveAll(keywords);
+			savedKeywords = keywordRepository.saveAll(keywords);
 		}
 
 		return GatheringCreateResponse.of(savedGathering, savedKeywords);
@@ -152,7 +155,7 @@ public class GatheringService {
 			isFavorite = checkIsFavoriteGathering(gathering, user);
 		}
 
-		return GatheringWithParticipantsResponse.of(gathering, user, keywords, isFavorite,participants);
+		return GatheringWithParticipantsResponse.of(gathering, user, keywords, isFavorite, participants);
 	}
 
 	public GatheringResponse cancelGathering(Long id, User user) {
@@ -245,7 +248,7 @@ public class GatheringService {
 	}
 
 	private boolean checkIsFavoriteGathering(Gathering gathering, User user) {
-			return favoriteGatheringRepository.existsById(FavoriteGatheringId.of(user.getId(), gathering.getId()));
+		return favoriteGatheringRepository.existsById(FavoriteGatheringId.of(user.getId(), gathering.getId()));
 	}
 
 	private List<GatheringParticipantsResponse> getGatheringsWithParticpantsFrom(Gathering gathering) {
@@ -293,6 +296,5 @@ public class GatheringService {
 		}
 		return Map.of("모임 상태 변경", status.getDescription());
 	}
-
 
 }

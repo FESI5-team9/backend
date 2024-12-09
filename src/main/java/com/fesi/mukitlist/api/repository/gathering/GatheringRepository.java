@@ -10,6 +10,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceRequest;
 import com.fesi.mukitlist.domain.gathering.Gathering;
+import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
+import com.fesi.mukitlist.domain.gathering.constant.LocationType;
 
 public interface GatheringRepository extends JpaRepository<Gathering, Long>, JpaSpecificationExecutor<Gathering> {
 	default Page<Gathering> findWithFilters(GatheringServiceRequest request, Pageable pageable) {
@@ -18,8 +20,10 @@ public interface GatheringRepository extends JpaRepository<Gathering, Long>, Jpa
 		return this.findAll(specification, pageable);
 	}
 
-	default Page<Gathering> searchByTerms(List<String> searchTerms, Pageable pageable) {
-		Specification<Gathering> specification = Specification.where(GatheringSpecifications.bySearchTerms(searchTerms));
+	default Page<Gathering> searchByTerms(List<String> searchTerms, LocationType locationType,
+		GatheringType gatheringType, Pageable pageable) {
+		Specification<Gathering> specification = Specification.where(
+			GatheringSpecifications.bySearchTerms(searchTerms, locationType, gatheringType));
 		return this.findAll(specification, pageable);
 	}
 
