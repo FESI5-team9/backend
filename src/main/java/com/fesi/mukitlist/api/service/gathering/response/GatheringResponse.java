@@ -46,7 +46,7 @@ public record GatheringResponse(
 			gathering.getParticipantCount(),
 			gathering.getCapacity(),
 			gathering.getUser().getImage(),
-			gathering.getUser().getName(),
+			gathering.getUser().getNickname(),
 			gathering.getCanceledAt(),
 			gathering.isHostUser(user));
 	}

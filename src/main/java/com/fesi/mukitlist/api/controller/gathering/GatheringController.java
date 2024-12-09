@@ -31,6 +31,7 @@ import com.fesi.mukitlist.api.service.gathering.response.GatheringParticipantsRe
 import com.fesi.mukitlist.api.service.gathering.response.GatheringResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringWithParticipantsResponse;
 import com.fesi.mukitlist.api.service.gathering.response.JoinedGatheringsResponse;
+import com.fesi.mukitlist.domain.auth.PrincipalDetails;
 import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.global.annotation.Authorize;
 
@@ -185,9 +186,9 @@ public class GatheringController {
 	@PostMapping(consumes = "multipart/form-data")
 	public ResponseEntity<GatheringCreateResponse> createGathering(
 		@ModelAttribute @Valid GatheringCreateRequest request,
-		@Parameter(hidden = true) @Authorize User user) throws IOException {
+		@Parameter(hidden = true) @Authorize PrincipalDetails user) throws IOException {
 		return new ResponseEntity<>(gatheringService.createGathering(request.toServiceRequest(),
-			user), HttpStatus.CREATED);
+			user.getUser()), HttpStatus.CREATED);
 	}
 
 	@Operation(summary = "로그인된 사용자가 참석한 모임 목록 조회", description = "로그인된 사용자가 참석한 모임의 목록을 조회합니다.",

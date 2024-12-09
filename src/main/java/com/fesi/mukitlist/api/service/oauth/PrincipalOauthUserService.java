@@ -52,7 +52,6 @@ public class PrincipalOauthUserService extends DefaultOAuth2UserService {
                     UserCreateRequest userCreateRequest = UserCreateRequest.builder()
                             .email(email)
                             .password(password)
-                            .name(username)
                             .nickname(nickname)
                             .provider(provider)
                             .providerId(providerId)

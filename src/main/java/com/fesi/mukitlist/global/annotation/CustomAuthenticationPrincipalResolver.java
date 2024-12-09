@@ -11,6 +11,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 import com.fesi.mukitlist.api.exception.AppException;
+import com.fesi.mukitlist.domain.auth.PrincipalDetails;
 import com.fesi.mukitlist.domain.auth.User;
 
 public class CustomAuthenticationPrincipalResolver implements HandlerMethodArgumentResolver {
@@ -32,12 +33,12 @@ public class CustomAuthenticationPrincipalResolver implements HandlerMethodArgum
 			throw new AppException(LOGIN_REQUIRED);
 		}
 
-		return isAuthenticatedUser ? ((User) authentication.getPrincipal()) : null;
+		return isAuthenticatedUser ? ((PrincipalDetails) authentication.getPrincipal()) : null;
 	}
 
 	private boolean isAuthenticatedUser(Authentication authentication) {
 		return authentication != null
 			&& authentication.isAuthenticated()
-			&& authentication.getPrincipal() instanceof User;
+			&& authentication.getPrincipal() instanceof PrincipalDetails;
 	}
 }

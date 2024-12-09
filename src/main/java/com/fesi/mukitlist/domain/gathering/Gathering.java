@@ -125,7 +125,7 @@ public class Gathering {
 			.address1(request.address1())
 			.address2(request.address2())
 			.description(request.description())
-			.createdBy(user.getName())
+			.createdBy(user.getNickname())
 			.user(user)
 			.build();
 	}

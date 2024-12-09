@@ -33,9 +33,6 @@ public class User {
 	private String password;
 
 	@Column(nullable = false)
-	private String name;
-
-	@Column(nullable = false)
 	private String nickname;
 
 	private String image;
@@ -55,11 +52,10 @@ public class User {
 	private LocalDateTime deletedAt;
 
 	@Builder
-	private User(String email, String password, String name, String nickname, String image, String provider, String providerId, LocalDateTime createdAt,
+	private User(String email, String password, String nickname, String image, String provider, String providerId, LocalDateTime createdAt,
 				 LocalDateTime updatedAt, LocalDateTime deletedAt) {
 		this.email = email;
 		this.password = password;
-		this.name = name;
 		this.nickname = nickname;
 		this.image = image;
 		this.provider = provider;
@@ -74,7 +70,6 @@ public class User {
 				.email(request.email())
 				.password(password)
 				.nickname(request.nickname())
-				.name(request.name())
 				.build();
 	}
 
