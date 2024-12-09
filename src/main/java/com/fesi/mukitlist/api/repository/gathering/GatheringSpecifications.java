@@ -38,9 +38,9 @@ public class GatheringSpecifications {
 				predicates.add(criteriaBuilder.equal(root.get("location"), request.location()));
 			}
 
-			if (request.dateTime() != null) {
-				predicates.add(criteriaBuilder.between(root.get("dateTime"), request.dateTime()
-					.atStartOfDay(), request.dateTime().plusDays(1).atStartOfDay()));
+			if (request.startDate() != null && request.endDate() != null) {
+				predicates.add(criteriaBuilder.between(root.get("dateTime"), request.startDate()
+					.atStartOfDay(), request.endDate().atStartOfDay()));
 			}
 
 			if (request.createdBy() != null) {

@@ -70,7 +70,8 @@ public class GatheringController {
 		@ParameterObject @ModelAttribute GatheringRequest request,
 		@RequestParam(defaultValue = "10") int size,
 		@RequestParam(defaultValue = "0") int page,
-		@Schema(description = "정렬 기준", example = "dateTime(모임일), registrationEnd(모집 마감일), participantCount(참여 인원)", minimum = "5") @RequestParam(defaultValue = "dateTime") String sort,
+		@Schema(description = "정렬 기준", example = "dateTime(모임일), registrationEnd(모집 마감일), participantCount(참여 인원)", minimum = "5")
+		@RequestParam(defaultValue = "dateTime") String sort,
 		@RequestParam(defaultValue = "desc") String direction
 	) {
 		Sort sortOrder = Sort.by(Sort.Order.by(sort).with(Sort.Direction.fromString(direction)));
