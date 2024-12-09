@@ -1,8 +1,10 @@
 package com.fesi.mukitlist.domain.gathering;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceCreateRequest;
@@ -73,6 +75,9 @@ public class Gathering {
 	@CreatedBy
 	private String createdBy;
 
+	@CreatedDate
+	private LocalDateTime createdAt;
+
 	@ManyToOne
 	private User user;
 
@@ -93,6 +98,7 @@ public class Gathering {
 		int capacity,
 		String image,
 		String createdBy,
+		LocalDateTime createdAt,
 		User user,
 		LocalDateTime canceledAt) {
 		this.location = location;
@@ -108,6 +114,7 @@ public class Gathering {
 		this.capacity = capacity;
 		this.image = image;
 		this.createdBy = createdBy;
+		this.createdAt = createdAt;
 		this.user = user;
 		this.canceledAt = canceledAt;
 	}
@@ -125,7 +132,6 @@ public class Gathering {
 			.address1(request.address1())
 			.address2(request.address2())
 			.description(request.description())
-			.createdBy(user.getNickname())
 			.user(user)
 			.build();
 	}

@@ -17,7 +17,7 @@ public record GatheringListResponse(
 	int participantCount,
 	int capacity,
 	String image,
-	String createdBy,
+	LocalDateTime createdAt,
 	LocalDateTime canceledAt
 ) {
 	public static GatheringListResponse of(Gathering gathering) {
@@ -32,7 +32,7 @@ public record GatheringListResponse(
 			gathering.getParticipantCount(),
 			gathering.getCapacity(),
 			gathering.getImage(),
-			gathering.getCreatedBy(),
+			gathering.getCreatedAt(),
 			gathering.getCanceledAt()
 		);
 	}

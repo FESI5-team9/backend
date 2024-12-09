@@ -26,7 +26,7 @@ public record GatheringResponse(
 	int participantCount,
 	int capacity,
 	String image,
-	String createdBy,
+	LocalDateTime createdAt,
 	LocalDateTime canceledAt,
 	Boolean host
 ) {
@@ -46,7 +46,7 @@ public record GatheringResponse(
 			gathering.getParticipantCount(),
 			gathering.getCapacity(),
 			gathering.getUser().getImage(),
-			gathering.getUser().getNickname(),
+			gathering.getCreatedAt(),
 			gathering.getCanceledAt(),
 			gathering.isHostUser(user));
 	}

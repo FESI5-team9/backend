@@ -27,7 +27,7 @@ public record JoinedGatheringsResponse(
 	int participantCount,
 	int capacity,
 	String image,
-	String createdBy,
+	LocalDateTime createdAt,
 	LocalDateTime canceledAt,
 	LocalDateTime joinedAt,
 	Boolean isCompleted,
@@ -48,7 +48,7 @@ public record JoinedGatheringsResponse(
 			.participantCount(userGathering.getId().getGathering().getParticipantCount())
 			.capacity(userGathering.getId().getGathering().getCapacity())
 			.image(userGathering.getId().getGathering().getImage())
-			.createdBy(userGathering.getId().getGathering().getCreatedBy())
+			.createdAt(userGathering.getId().getGathering().getCreatedAt())
 			.canceledAt(userGathering.getId().getGathering().getCanceledAt())
 			.joinedAt(userGathering.getJoinedAt())
 			.isCompleted(isCompleted)

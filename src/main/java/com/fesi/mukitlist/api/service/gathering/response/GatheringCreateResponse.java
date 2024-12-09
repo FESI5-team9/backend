@@ -21,7 +21,7 @@ public record GatheringCreateResponse(
 	int participantCount,
 	int capacity,
 	String image,
-	String createdBy
+	LocalDateTime createdAt
 ) {
 	public static GatheringCreateResponse of(Gathering gathering, List<Keyword> keywords) {
 		return new GatheringCreateResponse(
@@ -37,7 +37,7 @@ public record GatheringCreateResponse(
 			gathering.getParticipantCount(),
 			gathering.getCapacity(),
 			gathering.getImage(),
-			gathering.getCreatedBy()
+			gathering.getCreatedAt()
 		);
 	}
 }
