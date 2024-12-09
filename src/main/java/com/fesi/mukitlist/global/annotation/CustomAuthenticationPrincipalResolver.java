@@ -33,8 +33,16 @@ public class CustomAuthenticationPrincipalResolver implements HandlerMethodArgum
 			throw new AppException(LOGIN_REQUIRED);
 		}
 
-		return isAuthenticatedUser ? ((PrincipalDetails) authentication.getPrincipal()) : null;
+		if (isAuthenticatedUser) {
+			PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+			// User가 null인지 체크하고 null일 경우 null 반환
+			User user = principalDetails.getUser();
+			return user != null ? principalDetails : null;
+		}
+
+		return null;
 	}
+
 
 	private boolean isAuthenticatedUser(Authentication authentication) {
 		return authentication != null
