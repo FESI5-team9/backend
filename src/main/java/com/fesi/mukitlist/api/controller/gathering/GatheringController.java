@@ -268,7 +268,7 @@ public class GatheringController {
 	)
 	@GetMapping("/joined")
 	public ResponseEntity<List<JoinedGatheringsResponse>> getGatheringsBySignInUser(
-		@Parameter(hidden = true) @Authorize User user,
+		@Parameter(hidden = true) @Authorize PrincipalDetails user,
 		@RequestParam(required = false) Boolean completed,
 		@RequestParam(required = false) Boolean reviewed,
 		@RequestParam(defaultValue = "10") int size,
@@ -279,7 +279,7 @@ public class GatheringController {
 		Sort sortOrder = Sort.by(Sort.Order.by(sort).with(Sort.Direction.fromString(direction)));
 		Pageable pageable = PageRequest.of(page, size, sortOrder);
 
-		return new ResponseEntity<>(gatheringService.getJoinedGatherings(user, completed,
+		return new ResponseEntity<>(gatheringService.getJoinedGatherings(user.getUser(), completed,
 			reviewed, pageable), HttpStatus.OK);
 	}
 
@@ -352,8 +352,8 @@ public class GatheringController {
 	)
 	@PostMapping("/{id}/join")
 	public ResponseEntity<Map<String, String>> joinGathering(@PathVariable("id") Long id,
-		@Parameter(hidden = true) @Authorize User user) {
-		gatheringService.joinGathering(id, user);
+		@Parameter(hidden = true) @Authorize PrincipalDetails user) {
+		gatheringService.joinGathering(id, user.getUser());
 		return new ResponseEntity<>(Map.of("message", "모임에 참여했습니다."), HttpStatus.OK);
 	}
 
@@ -391,9 +391,9 @@ public class GatheringController {
 	)
 	@DeleteMapping("/{id}/leave")
 	public ResponseEntity<Map<String, String>> leaveGathering(@PathVariable("id") Long id,
-		@Parameter(hidden = true) @Authorize User user) {
+		@Parameter(hidden = true) @Authorize PrincipalDetails user) {
 		LocalDateTime leaveTime = LocalDateTime.now();
-		gatheringService.leaveGathering(id, user, leaveTime);
+		gatheringService.leaveGathering(id, user.getUser(), leaveTime);
 		return new ResponseEntity<>(Map.of("message", "모임 참여 취소를 성공했습니다."), HttpStatus.OK);
 	}
 

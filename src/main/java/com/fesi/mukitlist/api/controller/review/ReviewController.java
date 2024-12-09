@@ -21,6 +21,7 @@ import com.fesi.mukitlist.api.service.review.response.ReviewResponse;
 import com.fesi.mukitlist.api.service.review.response.ReviewScoreResponse;
 import com.fesi.mukitlist.api.service.review.response.ReviewStatisticsScoreResponse;
 import com.fesi.mukitlist.api.service.review.response.ReviewWithGatheringAndUserResponse;
+import com.fesi.mukitlist.domain.auth.PrincipalDetails;
 import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
 import com.fesi.mukitlist.domain.gathering.constant.LocationType;
@@ -55,8 +56,8 @@ public class ReviewController {
 	)
 	@PostMapping
 	public ResponseEntity<ReviewResponse> createReview(@RequestBody ReviewCreateRequest request,
-		@Parameter(hidden = true) @Authorize User user) {
-		return new ResponseEntity<>(reviewService.createReview(request.toServiceRequest(), user),
+		@Parameter(hidden = true) @Authorize PrincipalDetails user) {
+		return new ResponseEntity<>(reviewService.createReview(request.toServiceRequest(), user.getUser()),
 			HttpStatus.OK);
 	}
 
