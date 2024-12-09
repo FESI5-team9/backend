@@ -4,6 +4,7 @@ import static com.fesi.mukitlist.api.exception.ExceptionCode.*;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -80,6 +81,63 @@ public class GatheringService {
 			.map(k -> Keyword.of(k, savedGathering))
 			.collect(Collectors.toList());
 		List<Keyword> savedKeywords = keywordRepository.saveAll(keywords);
+		return GatheringCreateResponse.of(savedGathering, savedKeywords);
+	}
+
+	public GatheringCreateResponse updateGathering(Long id, GatheringServiceCreateRequest request, User user) throws
+		IOException {
+		String storedName = "";
+		if (request.image() != null) {
+			storedName = s3Service.upload(request.image(), request.image().getOriginalFilename());
+		}
+
+		Gathering gathering = getGatheringsFrom(id);
+
+		if (!gathering.getUser().getId().equals(user.getId())) {
+			throw new AppException(FORBIDDEN);
+		}
+
+		// Gathering 정보 업데이트 (null 체크 후 업데이트)
+		if (request.location() != null) {
+			gathering.setLocation(request.location());
+		}
+		if (request.type() != null) {
+			gathering.setType(request.type());
+		}
+		if (request.name() != null) {
+			gathering.setName(request.name());
+		}
+		if (request.dateTime() != null) {
+			gathering.setDateTime(request.dateTime());
+		}
+		if (request.openParticipantCount() > 0) { // 0 이상 값만 업데이트
+			gathering.setOpenParticipantCount(request.openParticipantCount());
+		}
+		if (request.capacity() > 0) { // 0 이상 값만 업데이트
+			gathering.setCapacity(request.minimumCapacity());
+		}
+		if (storedName != null) {
+			gathering.setImage(storedName);
+		}
+		if (request.address1() != null) {
+			gathering.setAddress1(request.address1());
+		}
+		if (request.address2() != null) {
+			gathering.setAddress2(request.address2());
+		}
+		if (request.description() != null) {
+			gathering.setDescription(request.description());
+		}
+		Gathering savedGathering = gatheringRepository.save(gathering);
+
+		List<Keyword> savedKeywords = new ArrayList<>();
+		if (request.keyword() != null) {
+			List<Keyword> keywords = request.keyword().stream()
+				.map(k -> Keyword.of(k, savedGathering))
+				.collect(Collectors.toList());
+			 savedKeywords = keywordRepository.saveAll(keywords);
+		}
+
 		return GatheringCreateResponse.of(savedGathering, savedKeywords);
 	}
 
@@ -235,4 +293,6 @@ public class GatheringService {
 		}
 		return Map.of("모임 상태 변경", status.getDescription());
 	}
+
+
 }
