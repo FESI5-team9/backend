@@ -22,7 +22,6 @@ public record GatheringServiceCreateRequest(
 	int openParticipantCount,
 	int capacity,
 	MultipartFile image,
-	LocalDateTime registrationEnd,
 	String address1,
 	String address2,
 	String description,

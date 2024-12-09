@@ -37,10 +37,6 @@ public record GatheringCreateRequest(
 	@Schema(description = "모임 이미지", type = "string", format = "binary")
 	MultipartFile image,
 
-	@Schema(description = "모임 등록 마감일", example = "2024-12-16T23:59:59", format = "date-time")
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-	LocalDateTime registrationEnd,
-
 	String address1,
 	String address2,
 	String description,
@@ -56,7 +52,6 @@ public record GatheringCreateRequest(
 			.openParticipantCount(openParticipantCount)
 			.capacity(capacity)
 			.image(image)
-			.registrationEnd(registrationEnd)
 			.address1(address1)
 			.address2(address2)
 			.description(description)

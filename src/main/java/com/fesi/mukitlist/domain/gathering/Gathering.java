@@ -121,7 +121,7 @@ public class Gathering {
 			.openParticipantCount(request.openParticipantCount())
 			.capacity(request.minimumCapacity())
 			.image(storedName)
-			.registrationEnd(request.registrationEnd())
+			.registrationEnd(request.dateTime().minusHours(6))
 			.address1(request.address1())
 			.address2(request.address2())
 			.description(request.description())
