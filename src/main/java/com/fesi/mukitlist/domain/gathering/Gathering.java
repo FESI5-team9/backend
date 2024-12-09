@@ -1,6 +1,7 @@
 package com.fesi.mukitlist.domain.gathering;
 
-import java.time.LocalDate;
+import static com.fesi.mukitlist.domain.gathering.constant.GatheringStatus.*;
+
 import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.CreatedBy;
@@ -9,6 +10,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceCreateRequest;
 import com.fesi.mukitlist.domain.auth.User;
+import com.fesi.mukitlist.domain.gathering.constant.GatheringStatus;
 import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
 import com.fesi.mukitlist.domain.gathering.constant.LocationType;
 
@@ -78,10 +80,13 @@ public class Gathering {
 	@CreatedDate
 	private LocalDateTime createdAt;
 
+	private LocalDateTime canceledAt;
+	@Enumerated(EnumType.STRING)
+	private GatheringStatus status;
+
 	@ManyToOne
 	private User user;
 
-	private LocalDateTime canceledAt;
 
 	@Builder
 	private Gathering(
@@ -100,7 +105,8 @@ public class Gathering {
 		String createdBy,
 		LocalDateTime createdAt,
 		User user,
-		LocalDateTime canceledAt) {
+		LocalDateTime canceledAt,
+		GatheringStatus status) {
 		this.location = location;
 		this.type = type;
 		this.name = name;
@@ -117,6 +123,7 @@ public class Gathering {
 		this.createdAt = createdAt;
 		this.user = user;
 		this.canceledAt = canceledAt;
+		this.status = status;
 	}
 
 	public static Gathering create(GatheringServiceCreateRequest request, String storedName, User user) {
@@ -133,6 +140,7 @@ public class Gathering {
 			.address2(request.address2())
 			.description(request.description())
 			.user(user)
+			.status(RECRUITING)
 			.build();
 	}
 
@@ -162,6 +170,10 @@ public class Gathering {
 
 	public void leaveParticipant() {
 		this.participantCount--;
+	}
+
+	public void changeStatus(GatheringStatus status) {
+		this.status = status;
 	}
 	// User
 	// participants
