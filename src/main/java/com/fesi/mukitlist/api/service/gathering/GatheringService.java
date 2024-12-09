@@ -5,6 +5,7 @@ import static com.fesi.mukitlist.api.exception.ExceptionCode.*;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -15,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fesi.mukitlist.api.exception.AppException;
 import com.fesi.mukitlist.api.repository.FavoriteGatheringRepository;
 import com.fesi.mukitlist.api.repository.KeywordRepository;
-import com.fesi.mukitlist.api.repository.UserRepository;
 import com.fesi.mukitlist.api.repository.gathering.GatheringRepository;
 import com.fesi.mukitlist.api.repository.usergathering.UserGatheringRepository;
 import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceCreateRequest;
@@ -29,6 +29,7 @@ import com.fesi.mukitlist.api.service.gathering.response.JoinedGatheringsRespons
 import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.domain.gathering.Gathering;
 import com.fesi.mukitlist.domain.gathering.Keyword;
+import com.fesi.mukitlist.domain.gathering.constant.GatheringStatus;
 import com.fesi.mukitlist.domain.gathering.favorite.FavoriteGathering;
 import com.fesi.mukitlist.domain.gathering.favorite.FavoriteGatheringId;
 import com.fesi.mukitlist.domain.usergathering.UserGathering;
@@ -223,5 +224,15 @@ public class GatheringService {
 		if (!gathering.isCancelAuthorization(user)) {
 			throw new AppException(FORBIDDEN);
 		}
+	}
+
+	public Map<String, String> changeGatheringStatus(Long id, GatheringStatus status, User user) {
+		Gathering gathering = getGatheringsFrom(id);
+		if (gathering.getUser().getId().equals(user.getId())) {
+			gathering.changeStatus(status);
+		} else {
+			throw new AppException(FORBIDDEN);
+		}
+		return Map.of("모임 상태 변경", status.getDescription());
 	}
 }
