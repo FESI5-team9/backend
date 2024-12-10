@@ -22,7 +22,7 @@ public class GatheringBaseResponse {
 	private int participantCount;
 	private int capacity;
 	private String image;
-	private String createdBy;
+	private LocalDateTime createdAt;
 
 	@Builder
 	protected GatheringBaseResponse(
@@ -37,7 +37,7 @@ public class GatheringBaseResponse {
 		int participantCount,
 		int capacity,
 		String image,
-		String createdBy
+		LocalDateTime createdAt
 	) {
 		this.id = id;
 		this.type = type;
@@ -50,7 +50,7 @@ public class GatheringBaseResponse {
 		this.participantCount = participantCount;
 		this.capacity = capacity;
 		this.image = image;
-		this.createdBy = createdBy;
+		this.createdAt = createdAt;
 	}
 
 	public static GatheringBaseResponse of(Gathering gathering) {
@@ -66,6 +66,6 @@ public class GatheringBaseResponse {
 			gathering.getParticipantCount(),
 			gathering.getCapacity(),
 			gathering.getUser().getImage(),
-			gathering.getUser().getName());
+			gathering.getUser().getCreatedAt());
 	}
 }

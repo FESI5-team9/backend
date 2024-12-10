@@ -25,7 +25,7 @@ public class GatheringCreateResponse2 extends GatheringBaseResponse {
 			gathering.getParticipantCount(),
 			gathering.getCapacity(),
 			gathering.getImage(),
-			gathering.getCreatedBy()
+			gathering.getCreatedAt()
 			);
 		this.keywords = keywords;
 	}

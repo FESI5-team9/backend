@@ -20,7 +20,7 @@ public record GatheringBaseResponse(
 	int participantCount,
 	int capacity,
 	String image,
-	String createdBy
+	LocalDateTime createdAt
 ) {
 	public static GatheringBaseResponse of(Gathering gathering) {
 		return new GatheringBaseResponse(
@@ -36,6 +36,6 @@ public record GatheringBaseResponse(
 			gathering.getParticipantCount(),
 			gathering.getCapacity(),
 			gathering.getUser().getImage(),
-			gathering.getUser().getName());
+			gathering.getUser().getCreatedAt());
 	}
 }

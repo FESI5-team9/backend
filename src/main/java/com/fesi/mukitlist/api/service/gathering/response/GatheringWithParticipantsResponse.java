@@ -30,6 +30,7 @@ public record GatheringWithParticipantsResponse(
 	LocalDateTime canceledAt,
 	Boolean host,
 	Boolean favorite,
+	Boolean open,
 	List<GatheringParticipantsResponse> participants
 ) {
 	public static GatheringWithParticipantsResponse of(Gathering gathering, User user, List<Keyword> keywords,

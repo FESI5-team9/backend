@@ -25,6 +25,8 @@ import com.fesi.mukitlist.api.service.gathering.response.v2.composition.Gatherin
 import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.domain.gathering.Gathering;
 import com.fesi.mukitlist.domain.gathering.Keyword;
+import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
+import com.fesi.mukitlist.domain.gathering.constant.LocationType;
 import com.fesi.mukitlist.domain.usergathering.UserGathering;
 import com.fesi.mukitlist.global.aws.S3Service;
 
@@ -48,8 +50,9 @@ public class GatheringService2 {
 	}
 
 	@Transactional(readOnly = true)
-	public List<GatheringListResponse> searchGathering(List<String> keywords, Pageable pageable) {
-		Page<Gathering> gatherings = gatheringRepository.searchByTerms(keywords, pageable);
+	public List<GatheringListResponse> searchGathering(List<String> keywords, LocationType location, GatheringType type,
+		Pageable pageable) {
+		Page<Gathering> gatherings = gatheringRepository.searchByTerms(keywords, location, type, pageable);
 		return response(gatherings, GatheringListResponse::of);
 	}
 
@@ -91,7 +94,6 @@ public class GatheringService2 {
 			user,
 			getKeywordListBy(gathering));
 	}
-
 
 	public void joinGathering(Long gatheringId, User user) {
 		Gathering gathering = findGatheringById(gatheringId);
