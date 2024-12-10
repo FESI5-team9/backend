@@ -35,7 +35,6 @@ public class CustomAuthenticationPrincipalResolver implements HandlerMethodArgum
 
 		if (isAuthenticatedUser) {
 			PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
-			// User가 null인지 체크하고 null일 경우 null 반환
 			User user = principalDetails.getUser();
 			return user != null ? principalDetails : null;
 		}

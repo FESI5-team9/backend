@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import com.fesi.mukitlist.api.service.review.request.ReviewServiceRequest;
 import com.fesi.mukitlist.domain.Review;
+import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
 
 public interface ReviewRepository extends JpaRepository<Review, Long>, JpaSpecificationExecutor<Review> {
@@ -27,4 +28,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long>, JpaSpecif
 	List<Review> findAllByGathering_Type(GatheringType gatheringType);
 
 	Page<Review> findAllByGatheringId(Long gatheringId, Pageable pageable);
+
+	List<Review> findAllByUser(User user);
 }

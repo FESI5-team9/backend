@@ -7,6 +7,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.fesi.mukitlist.api.controller.auth.request.UserUpdateRequest;
+import com.fesi.mukitlist.api.exception.AppException;
+import com.fesi.mukitlist.api.exception.ExceptionCode;
 import com.fesi.mukitlist.api.repository.UserRepository;
 import com.fesi.mukitlist.api.service.auth.request.UserServiceCreateRequest;
 import com.fesi.mukitlist.api.service.auth.response.UserInfoResponse;
@@ -32,7 +34,8 @@ public class UserService {
 	}
 
 	public UserInfoResponse getUserInfo(User user) {
-		return UserInfoResponse.of(user);
+		return UserInfoResponse.of(userRepository.findById(user.getId()).orElseThrow(() -> new AppException(
+			ExceptionCode.NOT_FOUND_USER)));
 	}
 
 	public UserInfoResponse updateUser(User user, UserUpdateRequest request) throws IOException {

@@ -1,6 +1,7 @@
 package com.fesi.mukitlist.api.controller.auth;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,9 +10,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fesi.mukitlist.api.controller.auth.request.UserCreateRequest;
 import com.fesi.mukitlist.api.controller.auth.response.AuthenticationResponse;
 import com.fesi.mukitlist.api.service.auth.AuthenticationService;
+import com.fesi.mukitlist.api.service.auth.UserService;
 import com.fesi.mukitlist.api.service.auth.request.AuthenticationServiceRequest;
+import com.fesi.mukitlist.api.service.auth.response.UserInfoResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -29,6 +33,33 @@ import lombok.RequiredArgsConstructor;
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
+    private final UserService userService;
+
+    @Operation(summary = "회원가입", description = "회원 가입을 진행합니다.",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "회원 가입 성공",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = UserInfoResponse.class))),
+            @ApiResponse(
+                responseCode = "400",
+                description = "타입 오류",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                        example = "{\"code\":\"VALIDATION_ERROR\", \"parameter\":\"email\", \"message\":\"이메일 양식을 지켜주세요.\"}"
+                    )
+                )
+            ),
+        }
+    )
+    @PostMapping("/signup")
+    public ResponseEntity<Map<String, String>> signup(
+        @RequestBody UserCreateRequest userCreateRequest) {
+        userService.createUser(userCreateRequest.toServiceRequest());
+        return new ResponseEntity<>(Map.of("message", "사용자 생성 성공"), HttpStatus.CREATED);
+    }
+
 
     @Operation(summary = "로그인", description = "로그인을 시도합니다.",
         responses = {
