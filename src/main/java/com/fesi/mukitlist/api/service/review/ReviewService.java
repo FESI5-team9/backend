@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fesi.mukitlist.api.exception.AppException;
-import com.fesi.mukitlist.api.repository.ReviewRepository;
+import com.fesi.mukitlist.api.repository.review.ReviewRepository;
 import com.fesi.mukitlist.api.repository.usergathering.UserGatheringRepository;
 import com.fesi.mukitlist.api.service.PageService;
 import com.fesi.mukitlist.api.service.review.response.ReviewStatisticsScoreResponse;
@@ -44,7 +44,6 @@ public class ReviewService {
 
 	private final ReviewRepository reviewRepository;
 	private final GatheringRepository gatheringRepository;
-	private final UserRepository userRepository;
 	private final UserGatheringRepository userGatheringRepository;
 
 	@Transactional(readOnly = true)
@@ -52,78 +51,39 @@ public class ReviewService {
 
 		Pageable pageable = PageService.pageableBy(request.page(), request.size(), request.sort(),
 			request.direction());
-		Specification<Review> specification = (root, query, criteriaBuilder) -> {
-			List<Predicate> predicates = new ArrayList<>();
+		Page<Review> reviewsPage = reviewRepository.findWithFilters(request, pageable);
 
-			// Gathering 조인
-			Join<Review, Gathering> gatheringJoin = root.join("gathering", JoinType.INNER);
-
-			// User 조인
-			Join<Review, User> userJoin = root.join("user", JoinType.INNER);
-
-			// 필터 조건 추가
-			if (request.gatheringId() != null) {
-				predicates.add(criteriaBuilder.equal(gatheringJoin.get("id"), request.gatheringId()));
-			}
-			if (request.userId() != null) {
-				predicates.add(criteriaBuilder.equal(userJoin.get("id"), request.userId()));
-			}
-			if (request.type() != null) {
-				predicates.add(criteriaBuilder.equal(gatheringJoin.get("type"), request.type()));
-			}
-			if (request.location() != null) {
-				predicates.add(criteriaBuilder.equal(gatheringJoin.get("location"), request.location()));
-			}
-			if (request.date() != null) {
-				predicates.add(criteriaBuilder.greaterThanOrEqualTo(gatheringJoin.get("dateTime"), request.date()));
-			}
-			if (request.registrationEnd() != null) {
-				predicates.add(criteriaBuilder.greaterThanOrEqualTo(gatheringJoin.get("registrationEnd"), request.registrationEnd()));
-			}
-
-			return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-		};
-
-		// 데이터 조회
-		Page<Review> reviewsPage = reviewRepository.findAll(specification, pageable);
-
-		// ReviewResponse로 변환
 		return reviewsPage.stream()
 			.map(ReviewWithGatheringAndUserResponse::of)
 			.toList();
 	}
 
+	@Transactional(readOnly = true)
+	public List<ReviewResponse> getReviewsBy(ReviewServiceRequest request) {
 
+		Pageable pageable = PageService.pageableBy(request.page(), request.size(), request.sort(),
+			request.direction());
+		Page<Review> reviewsPage = reviewRepository.findAllByGatheringId(request.gatheringId(), pageable);
+
+		return reviewsPage.stream()
+			.map(ReviewResponse::of)
+			.toList();
+	}
 
 	public ReviewResponse createReview(ReviewServiceCreateRequest request, User user) {
-		Gathering gathering = getGatheringsFrom(request.gatheringId());
 
+		Gathering gathering = getGatheringsFrom(request.gatheringId());
 		checkIsUserParticipant(user, gathering);
 
 		Review savedReview = reviewRepository.save(request.toEntity(gathering, user));
+
 		return ReviewResponse.of(savedReview);
 	}
 
+	@Transactional(readOnly = true)
 	public List<ReviewScoreResponse> getReviewScores(List<Long> id, GatheringType type) {
-		Specification<Review> specification = ((root, query, criteriaBuilder) -> {
-			List<Predicate> predicates = new ArrayList<>();
 
-			// Gathering 조인
-			Join<Review, Gathering> gatheringJoin = root.join("gathering", JoinType.INNER);
-
-			if (id != null && !id.isEmpty()) {
-				predicates.add(root.get("gathering").get("id").in(id));
-			}
-
-			if (type != null) {
-				predicates.add(criteriaBuilder.equal(gatheringJoin.get("type"), type));
-			}
-			return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-		});
-
-		// 데이터 조회
-		List<Review> reviewsPage = reviewRepository.findAll(specification);
-
+		List<Review> reviewsPage = reviewRepository.findWithFilters(id, type);
 		Map<Gathering, Map<Integer, Long>> scoreCountsByGatheringId = reviewsPage.stream()
 			.collect(Collectors.groupingBy(
 				Review::getGathering,
@@ -133,28 +93,21 @@ public class ReviewService {
 				)
 			));
 
-		// ReviewResponse로 변환
 		return scoreCountsByGatheringId.entrySet().stream()
 			.map(entry -> {
 				Gathering gathering = entry.getKey();
 
 				Map<Integer, Long> scoreCounts = entry.getValue();
-				// 점수별 카운트를 활용해 평균 계산
-				long totalScore = scoreCounts.entrySet().stream()
-					.mapToLong(e -> e.getKey() * e.getValue()) // score * count
-					.sum();
-
-				long totalReviews = scoreCounts.values().stream()
-					.mapToLong(Long::longValue) // 리뷰 개수 합산
-					.sum();
-
-				double averageScore = totalReviews > 0 ? (double) totalScore / totalReviews : 0.0;
+				long totalScore = getTotalScore(scoreCounts);
+				long totalReviews = getTotalReviewSum(scoreCounts);
+				double averageScore = getAverageScore(totalReviews, (double)totalScore);
 
 				return ReviewScoreResponse.of(gathering, averageScore, scoreCounts);
 			})
 			.toList();
 	}
 
+	@Transactional(readOnly = true)
 	public ReviewStatisticsScoreResponse getReviewScoreStatistics(GatheringType type) {
 		List<Review> reviewCandidates = reviewRepository.findAllByGathering_Type(type);
 
@@ -164,20 +117,28 @@ public class ReviewService {
 				Collectors.counting()
 			));
 
-
-		// 점수별 카운트를 활용해 평균 계산
-		long totalScore = reviewScoreCounts.entrySet().stream()
-			.mapToLong(e -> e.getKey() * e.getValue()) // score * count
-			.sum();
-
-		long totalReviews = reviewScoreCounts.values().stream()
-			.mapToLong(Long::longValue) // 리뷰 개수 합산
-			.sum();
-
-		double averageScore = totalReviews > 0 ? (double) totalScore / totalReviews : 0.0;
+		long totalScore = getTotalScore(reviewScoreCounts);
+		long totalReviews = getTotalReviewSum(reviewScoreCounts);
+		double averageScore = getAverageScore(totalReviews, (double)totalScore);
 
 		return ReviewStatisticsScoreResponse.of(averageScore, reviewScoreCounts);
 
+	}
+
+	private long getTotalReviewSum(Map<Integer, Long> reviewScoreCounts) {
+		return reviewScoreCounts.values().stream()
+			.mapToLong(Long::longValue)
+			.sum();
+	}
+
+	private long getTotalScore(Map<Integer, Long> reviewScoreCounts) {
+		return reviewScoreCounts.entrySet().stream()
+			.mapToLong(e -> e.getKey() * e.getValue())
+			.sum();
+	}
+
+	private double getAverageScore(long totalReviews, double totalScore) {
+		return totalReviews > 0 ? totalScore / totalReviews : 0.0;
 	}
 
 	private void checkIsUserParticipant(User user, Gathering gathering) {
@@ -191,14 +152,4 @@ public class ReviewService {
 		return gatheringRepository.findById(id).orElseThrow(() -> new AppException(NOT_FOUND));
 	}
 
-	public List<ReviewResponse> getReviewsBy(ReviewServiceRequest request) {
-
-		Pageable pageable = PageService.pageableBy(request.page(), request.size(), request.sort(),
-			request.direction());
-
-		Page<Review> reviewsPage = reviewRepository.findAllByGatheringId(request.gatheringId(), pageable);
-		return reviewsPage.stream()
-			.map(ReviewResponse::of)
-			.toList();
-	}
 }

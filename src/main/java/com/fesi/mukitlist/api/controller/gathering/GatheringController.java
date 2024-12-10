@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,8 +36,6 @@ import com.fesi.mukitlist.api.service.gathering.response.JoinedGatheringsRespons
 import com.fesi.mukitlist.domain.auth.PrincipalDetails;
 import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.domain.gathering.constant.GatheringStatus;
-import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
-import com.fesi.mukitlist.domain.gathering.constant.LocationType;
 import com.fesi.mukitlist.global.annotation.Authorize;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -76,8 +73,7 @@ public class GatheringController {
 		@ParameterObject @ModelAttribute GatheringRequest request,
 		@RequestParam(defaultValue = "10") int size,
 		@RequestParam(defaultValue = "0") int page,
-		@Schema(description = "정렬 기준", example = "dateTime(모임일), registrationEnd(모집 마감일), participantCount(참여 인원)", minimum = "5")
-		@RequestParam(defaultValue = "dateTime") String sort,
+		@Schema(description = "정렬 기준", example = "dateTime(모임일), registrationEnd(모집 마감일), participantCount(참여 인원)", minimum = "5") @RequestParam(defaultValue = "dateTime") String sort,
 		@RequestParam(defaultValue = "desc") String direction
 	) {
 		Sort sortOrder = Sort.by(Sort.Order.by(sort).with(Sort.Direction.fromString(direction)));
@@ -99,8 +95,6 @@ public class GatheringController {
 	@GetMapping("/search")
 	ResponseEntity<List<GatheringListResponse>> searchGatherings(
 		@RequestParam List<String> search,
-		@RequestParam(required = false) LocationType location,
-		@RequestParam(required = false) GatheringType type,
 		@RequestParam(defaultValue = "10") int size,
 		@RequestParam(defaultValue = "0") int page,
 		@RequestParam(defaultValue = "dateTime") String sort,
@@ -109,7 +103,7 @@ public class GatheringController {
 
 		Sort sortOrder = Sort.by(Sort.Order.by(sort).with(Sort.Direction.fromString(direction)));
 		Pageable pageable = PageRequest.of(page, size, sortOrder);
-		return new ResponseEntity<>(gatheringService.searchGathering(search, location, type, pageable), HttpStatus.OK);
+		return new ResponseEntity<>(gatheringService.searchGathering(search, pageable), HttpStatus.OK);
 	}
 
 	@Operation(summary = "모임 상세 조회", description = "모임의 상제 정보를 조회합니다.",

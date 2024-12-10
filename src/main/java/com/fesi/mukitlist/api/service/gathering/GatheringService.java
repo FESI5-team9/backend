@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fesi.mukitlist.api.exception.AppException;
 import com.fesi.mukitlist.api.repository.FavoriteGatheringRepository;
 import com.fesi.mukitlist.api.repository.KeywordRepository;
+import com.fesi.mukitlist.api.repository.UserRepository;
 import com.fesi.mukitlist.api.repository.gathering.GatheringRepository;
 import com.fesi.mukitlist.api.repository.usergathering.UserGatheringRepository;
 import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceCreateRequest;
@@ -112,7 +113,7 @@ public class GatheringService {
 		boolean isFavorite = false;
 
 		Gathering gathering = getGatheringsFrom(id);
-		List<GatheringParticipantsResponse> participants = getGatheringsWithParticpantsFrom(gathering);
+		List<GatheringParticipantsResponse> participants = getGatheringsWithParticipantsFrom(gathering);
 		List<Keyword> keywords = keywordRepository.findAllByGathering(gathering);
 		if (user != null) {
 			isFavorite = checkIsFavoriteGathering(gathering, user);
@@ -224,7 +225,7 @@ public class GatheringService {
 		return favoriteGatheringRepository.existsById(FavoriteGatheringId.of(user.getId(), gathering.getId()));
 	}
 
-	private List<GatheringParticipantsResponse> getGatheringsWithParticpantsFrom(Gathering gathering) {
+	private List<GatheringParticipantsResponse> getGatheringsWithParticipantsFrom(Gathering gathering) {
 		List<UserGathering> userGathering = userGatheringRepository.findByIdGathering(gathering);
 		return userGathering.stream()
 			.map(GatheringParticipantsResponse::of
@@ -260,33 +261,18 @@ public class GatheringService {
 		}
 	}
 
-	private <T> void updateIfNotNull(Consumer<T> setter, T value) {
-		if (value != null) {
-			setter.accept(value);
-		}
-	}
-
-	private void updateIfPositive(Consumer<Integer> setter, int value) {
-		if (value > 0) {
-			setter.accept(value);
-		}
-	}
-
 	private void updateKeywords(List<String> newKeywordValues, Gathering gathering) {
 		if (newKeywordValues == null) {
 			return;
 		}
 
-		// 기존 Keywords 가져오기
 		List<Keyword> existingKeywords = keywordRepository.findAllByGathering(gathering);
 
-		// 삭제할 키워드
 		List<Keyword> keywordsToDelete = existingKeywords.stream()
 			.filter(existing -> !newKeywordValues.contains(existing.getKeyword()))
 			.collect(Collectors.toList());
 		keywordRepository.deleteAll(keywordsToDelete);
 
-		// 추가할 키워드
 		List<Keyword> keywordsToAdd = newKeywordValues.stream()
 			.filter(newValue -> existingKeywords.stream()
 				.noneMatch(existing -> existing.getKeyword().equals(newValue)))

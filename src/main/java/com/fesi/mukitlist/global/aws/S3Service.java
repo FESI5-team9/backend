@@ -88,4 +88,12 @@ public class S3Service {
 		DeleteObjectRequest request = new DeleteObjectRequest(bucketName, originalFilename);
 		s3Client.deleteObject(request);
 	}
+
+	public String uploadIfPresent(MultipartFile image) throws IOException {
+		if (image == null || image.isEmpty()) {
+			return ""; // Return an empty string if no image is provided
+		}
+
+		return upload(image, image.getOriginalFilename());
+	}
 }
