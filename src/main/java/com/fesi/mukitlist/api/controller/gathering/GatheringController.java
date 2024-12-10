@@ -24,12 +24,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fesi.mukitlist.api.controller.gathering.request.GatheringCreateRequest;
 import com.fesi.mukitlist.api.controller.gathering.request.GatheringRequest;
+import com.fesi.mukitlist.api.controller.gathering.request.GatheringUpdateRequest;
 import com.fesi.mukitlist.api.exception.response.ValidationErrorResponse;
 import com.fesi.mukitlist.api.service.gathering.GatheringService;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringCreateResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringListResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringParticipantsResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringResponse;
+import com.fesi.mukitlist.api.service.gathering.response.GatheringUpdateResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringWithParticipantsResponse;
 import com.fesi.mukitlist.api.service.gathering.response.JoinedGatheringsResponse;
 import com.fesi.mukitlist.domain.auth.PrincipalDetails;
@@ -230,15 +232,15 @@ public class GatheringController {
 		responses = {
 			@ApiResponse(responseCode = "200", description = "모임 수정 성공",
 				content = @Content(
-					schema = @Schema(implementation = GatheringCreateResponse.class))),
+					schema = @Schema(implementation = GatheringUpdateResponse.class))),
 			@ApiResponse(responseCode = "400", description = "잘못된 요청",
 				content = @Content(mediaType = "application/json", schema = @Schema(implementation = ValidationErrorResponse.class))),
 		}
 	)
 	@PutMapping(value = "/{id}", consumes = "multipart/form-data")
-	public ResponseEntity<GatheringCreateResponse> updateGathering(
+	public ResponseEntity<GatheringUpdateResponse> updateGathering(
 		@PathVariable("id") Long id,
-		@ModelAttribute @Valid GatheringCreateRequest request,
+		@ModelAttribute @Valid GatheringUpdateRequest request,
 		@Parameter(hidden = true) @Authorize PrincipalDetails user) throws IOException {
 		return new ResponseEntity<>(gatheringService.updateGathering(id,request.toServiceRequest(),
 			user.getUser()), HttpStatus.OK);

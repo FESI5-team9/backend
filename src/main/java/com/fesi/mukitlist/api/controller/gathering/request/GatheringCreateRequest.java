@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceCreateRequest;
+import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceRequest;
 import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
 import com.fesi.mukitlist.domain.gathering.constant.LocationType;
 
@@ -44,18 +45,18 @@ public record GatheringCreateRequest(
 ) {
 
 	public GatheringServiceCreateRequest toServiceRequest() {
-		return GatheringServiceCreateRequest.builder()
-			.location(location)
-			.type(type)
-			.name(name)
-			.dateTime(dateTime)
-			.openParticipantCount(openParticipantCount)
-			.capacity(capacity)
-			.image(image)
-			.address1(address1)
-			.address2(address2)
-			.description(description)
-			.keyword(keyword)
-			.build();
+		return new GatheringServiceCreateRequest(
+			location,
+			type,
+			name,
+			dateTime,
+			openParticipantCount,
+			capacity,
+			image,
+			address1,
+			address2,
+			description,
+			keyword
+		);
 	}
 }

@@ -13,7 +13,6 @@ import com.fesi.mukitlist.domain.gathering.constant.LocationType;
 
 import lombok.Builder;
 
-@Builder
 public record GatheringServiceCreateRequest(
 	LocationType location,
 	GatheringType type,
