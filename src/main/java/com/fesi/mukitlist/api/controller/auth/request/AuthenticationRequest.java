@@ -10,7 +10,6 @@ public record AuthenticationRequest(
         String password
 ) implements Serializable {
 
-
     public AuthenticationRequest toServiceRequest() {
         return AuthenticationRequest.builder()
                 .email(email)

@@ -314,8 +314,8 @@ public class GatheringController {
 	)
 	@PutMapping("/{id}/cancel")
 	public ResponseEntity<GatheringResponse> cancelGathering(@PathVariable("id") Long id,
-		@Parameter(hidden = true) @Authorize User user) {
-		return new ResponseEntity<>(gatheringService.cancelGathering(id, user), HttpStatus.OK);
+		@Parameter(hidden = true) @Authorize PrincipalDetails user) {
+		return new ResponseEntity<>(gatheringService.cancelGathering(id, user.getUser()), HttpStatus.OK);
 	}
 
 	@Operation(summary = "모임 참여", description = "로그인한 사용자가 모임에 참여합니다",
@@ -409,9 +409,9 @@ public class GatheringController {
 	)
 	@GetMapping("/favorite")
 	public ResponseEntity<List<GatheringListResponse>> getFavoriteGatherings(
-		@Parameter(hidden = true) @Authorize User user) {
+		@Parameter(hidden = true) @Authorize PrincipalDetails user) {
 
-		List<GatheringListResponse> response = gatheringService.findFavoriteGatheringsBy(user);
+		List<GatheringListResponse> response = gatheringService.findFavoriteGatheringsBy(user.getUser());
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
@@ -449,9 +449,9 @@ public class GatheringController {
 	)
 	@PostMapping("/{id}/favorite")
 	public ResponseEntity<Map<String, String>> choiceFavoriteGathering(@PathVariable("id") Long id,
-		@Parameter(hidden = true) @Authorize User user) {
+		@Parameter(hidden = true) @Authorize PrincipalDetails user) {
 
-		gatheringService.choiceFavorite(id, user);
+		gatheringService.choiceFavorite(id, user.getUser());
 		return new ResponseEntity<>(Map.of("message", "모임 찜하기를 성공했습니다."), HttpStatus.OK);
 	}
 
