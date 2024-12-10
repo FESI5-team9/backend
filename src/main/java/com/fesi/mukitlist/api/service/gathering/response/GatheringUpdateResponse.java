@@ -1,12 +1,14 @@
 package com.fesi.mukitlist.api.service.gathering.response;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.fesi.mukitlist.domain.gathering.Gathering;
+import com.fesi.mukitlist.domain.gathering.Keyword;
 import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
 import com.fesi.mukitlist.domain.gathering.constant.LocationType;
 
-public record GatheringListResponse(
+public record GatheringUpdateResponse(
 	Long id,
 	GatheringType type,
 	String name,
@@ -15,14 +17,14 @@ public record GatheringListResponse(
 	LocationType location,
 	String address1,
 	String address2,
-	int participantCount,
-	int capacity,
+	List<String> keywords,
+	Integer participantCount,
+	Integer capacity,
 	String image,
-	LocalDateTime createdAt,
-	LocalDateTime canceledAt
+	LocalDateTime createdAt
 ) {
-	public static GatheringListResponse of(Gathering gathering) {
-		return new GatheringListResponse(
+	public static GatheringUpdateResponse of(Gathering gathering, List<Keyword> keywords) {
+		return new GatheringUpdateResponse(
 			gathering.getId(),
 			gathering.getType(),
 			gathering.getName(),
@@ -31,11 +33,11 @@ public record GatheringListResponse(
 			gathering.getLocation(),
 			gathering.getAddress1(),
 			gathering.getAddress2(),
+			keywords.stream().map(Keyword::toString).toList(),
 			gathering.getParticipantCount(),
 			gathering.getCapacity(),
 			gathering.getImage(),
-			gathering.getCreatedAt(),
-			gathering.getCanceledAt()
+			gathering.getCreatedAt()
 		);
 	}
 }

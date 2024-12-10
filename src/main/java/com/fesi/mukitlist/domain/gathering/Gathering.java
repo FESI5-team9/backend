@@ -1,5 +1,6 @@
 package com.fesi.mukitlist.domain.gathering;
 
+import static com.fesi.mukitlist.api.exception.ExceptionCode.*;
 import static com.fesi.mukitlist.domain.gathering.constant.GatheringStatus.*;
 
 import java.time.LocalDateTime;
@@ -8,7 +9,10 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.fesi.mukitlist.api.controller.gathering.request.GatheringUpdateRequest;
+import com.fesi.mukitlist.api.exception.AppException;
 import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceCreateRequest;
+import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceUpdateRequest;
 import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.domain.gathering.constant.GatheringStatus;
 import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
@@ -30,7 +34,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @EntityListeners(AuditingEntityListener.class)
@@ -89,7 +92,6 @@ public class Gathering {
 	@ManyToOne
 	private User user;
 
-
 	@Builder
 	private Gathering(
 		LocationType location,
@@ -109,6 +111,9 @@ public class Gathering {
 		User user,
 		LocalDateTime canceledAt,
 		GatheringStatus status) {
+		if (location == null || type == null || name == null || dateTime == null || address1 == null || address2 == null) {
+			throw new AppException(REQUIRED_PROPERTIES);
+		}
 		this.location = location;
 		this.type = type;
 		this.name = name;
@@ -146,6 +151,26 @@ public class Gathering {
 			.build();
 	}
 
+	public Gathering update(GatheringServiceUpdateRequest request, String storedName) {
+		this.location = request.location() != null ? request.location() : this.location;
+		this.type = request.type() != null ? request.type() : this.type;
+		this.name = request.name() != null ? request.name() : this.name;
+		this.dateTime = request.dateTime() != null ? request.dateTime() : this.dateTime;
+
+		if (request.openParticipantCount() != null && request.openParticipantCount() > 0) {
+			this.openParticipantCount = request.openParticipantCount();
+		}
+		if (request.capacity() != null && request.capacity() > 0) {
+			this.capacity = request.minimumCapacity();
+		}
+		this.image = storedName != null ? storedName : this.image;
+		this.address1 = request.address1() != null ? request.address1() : this.address1;
+		this.address2 = request.address2() != null ? request.address2() : this.address2;
+		this.description = request.description() != null ? request.description() : this.description;
+
+		return this;
+	}
+
 	public boolean isCancelAuthorization(User user) {
 		return this.user.equals(user);
 	}
@@ -162,16 +187,16 @@ public class Gathering {
 		return this.participantCount <= this.capacity;
 	}
 
-	public void updateCanceledAt(LocalDateTime canceledTime) {
-		this.canceledAt = canceledTime;
-	}
-
 	public void joinParticipant() {
 		this.participantCount++;
 	}
 
 	public void leaveParticipant() {
 		this.participantCount--;
+	}
+
+	public void updateCanceledAt(LocalDateTime canceledTime) {
+		this.canceledAt = canceledTime;
 	}
 
 	public void changeStatus(GatheringStatus status) {

@@ -6,6 +6,8 @@ import lombok.Getter;
 
 @Getter
 public enum ExceptionCode {
+	//생성
+	REQUIRED_PROPERTIES(HttpStatus.BAD_REQUEST, "REQUIRED_PROPERTIES", "필수 값이 입력되지 않았습니다"),
 	//유저
 	EMAIL_EXIST(HttpStatus.BAD_REQUEST, "EMAIL_EXIST", "중복된 이메일입니다"),
 	NOT_FOUND_USER(HttpStatus.NOT_FOUND, "NOT_FOUND", "사용자를 찾을 수 없습니다."),

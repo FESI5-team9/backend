@@ -4,9 +4,9 @@ import static com.fesi.mukitlist.api.exception.ExceptionCode.*;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -17,14 +17,17 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fesi.mukitlist.api.exception.AppException;
 import com.fesi.mukitlist.api.repository.FavoriteGatheringRepository;
 import com.fesi.mukitlist.api.repository.KeywordRepository;
+import com.fesi.mukitlist.api.repository.UserRepository;
 import com.fesi.mukitlist.api.repository.gathering.GatheringRepository;
 import com.fesi.mukitlist.api.repository.usergathering.UserGatheringRepository;
 import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceCreateRequest;
 import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceRequest;
+import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceUpdateRequest;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringCreateResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringListResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringParticipantsResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringResponse;
+import com.fesi.mukitlist.api.service.gathering.response.GatheringUpdateResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringWithParticipantsResponse;
 import com.fesi.mukitlist.api.service.gathering.response.JoinedGatheringsResponse;
 import com.fesi.mukitlist.domain.auth.User;
@@ -87,7 +90,7 @@ public class GatheringService {
 		return GatheringCreateResponse.of(savedGathering, savedKeywords);
 	}
 
-	public GatheringCreateResponse updateGathering(Long id, GatheringServiceCreateRequest request, User user) throws
+	public GatheringUpdateResponse updateGathering(Long id, GatheringServiceUpdateRequest request, User user) throws
 		IOException {
 		String storedName = "";
 		if (request.image() != null) {
@@ -95,53 +98,14 @@ public class GatheringService {
 		}
 
 		Gathering gathering = getGatheringsFrom(id);
-
 		if (!gathering.getUser().getId().equals(user.getId())) {
 			throw new AppException(FORBIDDEN);
 		}
+		Gathering savedGathering = gatheringRepository.save(gathering.update(request, storedName));
 
-		// Gathering 정보 업데이트 (null 체크 후 업데이트)
-		if (request.location() != null) {
-			gathering.setLocation(request.location());
-		}
-		if (request.type() != null) {
-			gathering.setType(request.type());
-		}
-		if (request.name() != null) {
-			gathering.setName(request.name());
-		}
-		if (request.dateTime() != null) {
-			gathering.setDateTime(request.dateTime());
-		}
-		if (request.openParticipantCount() > 0) { // 0 이상 값만 업데이트
-			gathering.setOpenParticipantCount(request.openParticipantCount());
-		}
-		if (request.capacity() > 0) { // 0 이상 값만 업데이트
-			gathering.setCapacity(request.minimumCapacity());
-		}
-		if (storedName != null) {
-			gathering.setImage(storedName);
-		}
-		if (request.address1() != null) {
-			gathering.setAddress1(request.address1());
-		}
-		if (request.address2() != null) {
-			gathering.setAddress2(request.address2());
-		}
-		if (request.description() != null) {
-			gathering.setDescription(request.description());
-		}
-		Gathering savedGathering = gatheringRepository.save(gathering);
-
-		List<Keyword> savedKeywords = new ArrayList<>();
-		if (request.keyword() != null) {
-			List<Keyword> keywords = request.keyword().stream()
-				.map(k -> Keyword.of(k, savedGathering))
-				.collect(Collectors.toList());
-			savedKeywords = keywordRepository.saveAll(keywords);
-		}
-
-		return GatheringCreateResponse.of(savedGathering, savedKeywords);
+		updateKeywords(request.keyword(), savedGathering);
+		List<Keyword> savedKeywords = keywordRepository.findAllByGathering(savedGathering);
+		return GatheringUpdateResponse.of(savedGathering, savedKeywords);
 	}
 
 	@Transactional(readOnly = true)
@@ -149,7 +113,7 @@ public class GatheringService {
 		boolean isFavorite = false;
 
 		Gathering gathering = getGatheringsFrom(id);
-		List<GatheringParticipantsResponse> participants = getGatheringsWithParticpantsFrom(gathering);
+		List<GatheringParticipantsResponse> participants = getGatheringsWithParticipantsFrom(gathering);
 		List<Keyword> keywords = keywordRepository.findAllByGathering(gathering);
 		if (user != null) {
 			isFavorite = checkIsFavoriteGathering(gathering, user);
@@ -247,11 +211,21 @@ public class GatheringService {
 			FavoriteGathering.of(FavoriteGatheringId.of(user.getId(), gathering.getId())));
 	}
 
+	public Map<String, String> changeGatheringStatus(Long id, GatheringStatus status, User user) {
+		Gathering gathering = getGatheringsFrom(id);
+		if (gathering.getUser().getId().equals(user.getId())) {
+			gathering.changeStatus(status);
+		} else {
+			throw new AppException(FORBIDDEN);
+		}
+		return Map.of("모임 상태 변경", status.getDescription());
+	}
+
 	private boolean checkIsFavoriteGathering(Gathering gathering, User user) {
 		return favoriteGatheringRepository.existsById(FavoriteGatheringId.of(user.getId(), gathering.getId()));
 	}
 
-	private List<GatheringParticipantsResponse> getGatheringsWithParticpantsFrom(Gathering gathering) {
+	private List<GatheringParticipantsResponse> getGatheringsWithParticipantsFrom(Gathering gathering) {
 		List<UserGathering> userGathering = userGatheringRepository.findByIdGathering(gathering);
 		return userGathering.stream()
 			.map(GatheringParticipantsResponse::of
@@ -287,14 +261,24 @@ public class GatheringService {
 		}
 	}
 
-	public Map<String, String> changeGatheringStatus(Long id, GatheringStatus status, User user) {
-		Gathering gathering = getGatheringsFrom(id);
-		if (gathering.getUser().getId().equals(user.getId())) {
-			gathering.changeStatus(status);
-		} else {
-			throw new AppException(FORBIDDEN);
+	private void updateKeywords(List<String> newKeywordValues, Gathering gathering) {
+		if (newKeywordValues == null) {
+			return;
 		}
-		return Map.of("모임 상태 변경", status.getDescription());
+
+		List<Keyword> existingKeywords = keywordRepository.findAllByGathering(gathering);
+
+		List<Keyword> keywordsToDelete = existingKeywords.stream()
+			.filter(existing -> !newKeywordValues.contains(existing.getKeyword()))
+			.collect(Collectors.toList());
+		keywordRepository.deleteAll(keywordsToDelete);
+
+		List<Keyword> keywordsToAdd = newKeywordValues.stream()
+			.filter(newValue -> existingKeywords.stream()
+				.noneMatch(existing -> existing.getKeyword().equals(newValue)))
+			.map(newValue -> Keyword.of(newValue, gathering))
+			.collect(Collectors.toList());
+		keywordRepository.saveAll(keywordsToAdd);
 	}
 
 }

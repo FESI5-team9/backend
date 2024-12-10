@@ -17,19 +17,20 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fesi.mukitlist.api.controller.gathering.request.GatheringCreateRequest;
 import com.fesi.mukitlist.api.controller.gathering.request.GatheringRequest;
+import com.fesi.mukitlist.api.controller.gathering.request.GatheringUpdateRequest;
 import com.fesi.mukitlist.api.exception.response.ValidationErrorResponse;
 import com.fesi.mukitlist.api.service.gathering.GatheringService;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringCreateResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringListResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringParticipantsResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringResponse;
+import com.fesi.mukitlist.api.service.gathering.response.GatheringUpdateResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringWithParticipantsResponse;
 import com.fesi.mukitlist.api.service.gathering.response.JoinedGatheringsResponse;
 import com.fesi.mukitlist.domain.auth.PrincipalDetails;
@@ -74,8 +75,7 @@ public class GatheringController {
 		@ParameterObject @ModelAttribute GatheringRequest request,
 		@RequestParam(defaultValue = "10") int size,
 		@RequestParam(defaultValue = "0") int page,
-		@Schema(description = "정렬 기준", example = "dateTime(모임일), registrationEnd(모집 마감일), participantCount(참여 인원)", minimum = "5")
-		@RequestParam(defaultValue = "dateTime") String sort,
+		@Schema(description = "정렬 기준", example = "dateTime(모임일), registrationEnd(모집 마감일), participantCount(참여 인원)", minimum = "5") @RequestParam(defaultValue = "dateTime") String sort,
 		@RequestParam(defaultValue = "desc") String direction
 	) {
 		Sort sortOrder = Sort.by(Sort.Order.by(sort).with(Sort.Direction.fromString(direction)));
@@ -133,7 +133,8 @@ public class GatheringController {
 	@GetMapping("/{id}")
 	ResponseEntity<GatheringWithParticipantsResponse> getGatheringById(@PathVariable("id") Long id,
 		@Parameter(hidden = true) @Authorize(required = false) PrincipalDetails user) {
-		return new ResponseEntity<>(gatheringService.getGatheringById(id, user != null ? user.getUser() : null), HttpStatus.OK);
+		return new ResponseEntity<>(gatheringService.getGatheringById(id, user != null ? user.getUser() : null),
+			HttpStatus.OK);
 	}
 
 	@Operation(summary = "모임 상태 변경", description = "모임의 상태를 변경합니다.",
@@ -159,7 +160,7 @@ public class GatheringController {
 	ResponseEntity<Map<String, String>> getGatheringRecruit(@PathVariable("id") Long id,
 		@RequestParam GatheringStatus status,
 		@Parameter(hidden = true) @Authorize PrincipalDetails user) {
-		return new ResponseEntity<>(gatheringService.changeGatheringStatus(id,status,user.getUser()), HttpStatus.OK);
+		return new ResponseEntity<>(gatheringService.changeGatheringStatus(id, status, user.getUser()), HttpStatus.OK);
 
 	}
 
@@ -230,17 +231,17 @@ public class GatheringController {
 		responses = {
 			@ApiResponse(responseCode = "200", description = "모임 수정 성공",
 				content = @Content(
-					schema = @Schema(implementation = GatheringCreateResponse.class))),
+					schema = @Schema(implementation = GatheringUpdateResponse.class))),
 			@ApiResponse(responseCode = "400", description = "잘못된 요청",
 				content = @Content(mediaType = "application/json", schema = @Schema(implementation = ValidationErrorResponse.class))),
 		}
 	)
 	@PutMapping(value = "/{id}", consumes = "multipart/form-data")
-	public ResponseEntity<GatheringCreateResponse> updateGathering(
+	public ResponseEntity<GatheringUpdateResponse> updateGathering(
 		@PathVariable("id") Long id,
-		@ModelAttribute @Valid GatheringCreateRequest request,
+		@ModelAttribute @Valid GatheringUpdateRequest request,
 		@Parameter(hidden = true) @Authorize PrincipalDetails user) throws IOException {
-		return new ResponseEntity<>(gatheringService.updateGathering(id,request.toServiceRequest(),
+		return new ResponseEntity<>(gatheringService.updateGathering(id, request.toServiceRequest(),
 			user.getUser()), HttpStatus.OK);
 	}
 
