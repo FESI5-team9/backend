@@ -3,6 +3,7 @@ package com.fesi.mukitlist.api.service.auth;
 import java.io.IOException;
 import java.util.Optional;
 
+import org.springframework.http.HttpStatusCode;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -47,5 +48,13 @@ public class UserService {
 		}
 
 		return UserInfoResponse.of(user);
+	}
+
+	public boolean checkEmail(String email) {
+		return userRepository.existsUserByEmail(email);
+	}
+
+	public boolean checkNickname(String nickname) {
+		return userRepository.existsUserByNickname(nickname);
 	}
 }

@@ -5,9 +5,11 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fesi.mukitlist.api.controller.auth.request.UserCreateRequest;
@@ -89,12 +91,21 @@ public class AuthenticationController {
             ),
         }
     )
-
     @PostMapping("/signin")
     public ResponseEntity<AuthenticationResponse> authenticate(
             @RequestBody AuthenticationServiceRequest request, HttpServletResponse response) {
         AuthenticationResponse authenticate = authenticationService.authenticate(request, response);
         return new ResponseEntity<>(new AuthenticationResponse(authenticate.accessToken()), HttpStatus.OK);
+    }
+
+    @GetMapping("/check-email")
+    public ResponseEntity<Map<String,Boolean>> checkEmailDuplicated(@RequestParam String email){
+        return new ResponseEntity(Map.of("중복여부", userService.checkEmail(email)),HttpStatus.OK);
+    }
+
+    @GetMapping("/check-nickname")
+    public ResponseEntity<Map<String,Boolean>> checkNicknameDuplicated(@RequestParam String nickname){
+        return new ResponseEntity(Map.of("중복여부", userService.checkNickname(nickname)),HttpStatus.OK);
     }
 
     @PostMapping("/refresh-token") // TODO Error Code 변경
