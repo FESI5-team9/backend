@@ -53,8 +53,6 @@ public class PrincipalOauthUserService extends DefaultOAuth2UserService {
                             .email(email)
                             .password(password)
                             .nickname(nickname)
-                            .provider(provider)
-                            .providerId(providerId)
                             .build();
 
                     return userService.createUser(userCreateRequest.toServiceRequest());

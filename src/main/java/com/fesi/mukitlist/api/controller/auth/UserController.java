@@ -8,13 +8,11 @@ import com.fesi.mukitlist.api.service.auth.UserService;
 import com.fesi.mukitlist.api.controller.auth.request.UserCreateRequest;
 import com.fesi.mukitlist.api.service.auth.response.UserInfoResponse;
 import com.fesi.mukitlist.domain.auth.PrincipalDetails;
-import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.global.annotation.Authorize;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

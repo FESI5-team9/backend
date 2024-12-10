@@ -31,7 +31,6 @@ class MukitlistApplicationTests {
 				.email("test@test.com")
 				.password("password123")
 				.nickname("테스트")
-				.name("김테스트")
 				.build();
 
 		// when
