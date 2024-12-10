@@ -1,17 +1,13 @@
-package com.fesi.mukitlist.api.service.gathering.response;
+package com.fesi.mukitlist.api.service.gathering.response.v2.composition;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import com.fesi.mukitlist.api.service.auth.response.UserResponse;
-import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.domain.gathering.Gathering;
 import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
-import com.fesi.mukitlist.domain.gathering.Keyword;
 import com.fesi.mukitlist.domain.gathering.constant.LocationType;
 
-public record GatheringResponse(
+public record GatheringBaseResponse(
 	Long id,
 	UserResponse user,
 	GatheringType type,
@@ -21,17 +17,13 @@ public record GatheringResponse(
 	LocationType location,
 	String address1,
 	String address2,
-	String description,
-	List<String> keyword,
 	int participantCount,
 	int capacity,
 	String image,
-	LocalDateTime createdAt,
-	LocalDateTime canceledAt,
-	Boolean host
+	LocalDateTime createdAt
 ) {
-	public static GatheringResponse of(Gathering gathering, User user, List<Keyword> keywords) {
-		return new GatheringResponse(
+	public static GatheringBaseResponse of(Gathering gathering) {
+		return new GatheringBaseResponse(
 			gathering.getId(),
 			UserResponse.of(gathering.getUser()),
 			gathering.getType(),
@@ -41,13 +33,9 @@ public record GatheringResponse(
 			gathering.getLocation(),
 			gathering.getAddress1(),
 			gathering.getAddress2(),
-			gathering.getDescription(),
-			keywords.stream().map(Keyword::toString).collect(Collectors.toList()),
 			gathering.getParticipantCount(),
 			gathering.getCapacity(),
 			gathering.getUser().getImage(),
-			gathering.getCreatedAt(),
-			gathering.getCanceledAt(),
-			gathering.isHostUser(user));
+			gathering.getUser().getCreatedAt());
 	}
 }

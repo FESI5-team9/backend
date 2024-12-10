@@ -5,6 +5,8 @@ import static com.fesi.mukitlist.api.exception.ExceptionCode.*;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -20,15 +22,20 @@ import com.fesi.mukitlist.api.repository.gathering.GatheringRepository;
 import com.fesi.mukitlist.api.repository.usergathering.UserGatheringRepository;
 import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceCreateRequest;
 import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceRequest;
+import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceUpdateRequest;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringCreateResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringListResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringParticipantsResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringResponse;
+import com.fesi.mukitlist.api.service.gathering.response.GatheringUpdateResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringWithParticipantsResponse;
 import com.fesi.mukitlist.api.service.gathering.response.JoinedGatheringsResponse;
 import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.domain.gathering.Gathering;
 import com.fesi.mukitlist.domain.gathering.Keyword;
+import com.fesi.mukitlist.domain.gathering.constant.GatheringStatus;
+import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
+import com.fesi.mukitlist.domain.gathering.constant.LocationType;
 import com.fesi.mukitlist.domain.gathering.favorite.FavoriteGathering;
 import com.fesi.mukitlist.domain.gathering.favorite.FavoriteGatheringId;
 import com.fesi.mukitlist.domain.usergathering.UserGathering;
@@ -58,8 +65,9 @@ public class GatheringService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<GatheringListResponse> searchGathering(List<String> search, Pageable pageable) {
-		Page<Gathering> gatheringPage = gatheringRepository.searchByTerms(search, pageable);
+	public List<GatheringListResponse> searchGathering(List<String> search, LocationType location, GatheringType type,
+		Pageable pageable) {
+		Page<Gathering> gatheringPage = gatheringRepository.searchByTerms(search, location, type, pageable);
 
 		return gatheringPage.stream()
 			.map(GatheringListResponse::of)
@@ -82,18 +90,36 @@ public class GatheringService {
 		return GatheringCreateResponse.of(savedGathering, savedKeywords);
 	}
 
+	public GatheringUpdateResponse updateGathering(Long id, GatheringServiceUpdateRequest request, User user) throws
+		IOException {
+		String storedName = "";
+		if (request.image() != null) {
+			storedName = s3Service.upload(request.image(), request.image().getOriginalFilename());
+		}
+
+		Gathering gathering = getGatheringsFrom(id);
+		if (!gathering.getUser().getId().equals(user.getId())) {
+			throw new AppException(FORBIDDEN);
+		}
+		Gathering savedGathering = gatheringRepository.save(gathering.update(request, storedName));
+
+		updateKeywords(request.keyword(), savedGathering);
+		List<Keyword> savedKeywords = keywordRepository.findAllByGathering(savedGathering);
+		return GatheringUpdateResponse.of(savedGathering, savedKeywords);
+	}
+
 	@Transactional(readOnly = true)
 	public GatheringWithParticipantsResponse getGatheringById(Long id, User user) {
 		boolean isFavorite = false;
 
 		Gathering gathering = getGatheringsFrom(id);
-		List<GatheringParticipantsResponse> participants = getGatheringsWithParticpantsFrom(gathering);
+		List<GatheringParticipantsResponse> participants = getGatheringsWithParticipantsFrom(gathering);
 		List<Keyword> keywords = keywordRepository.findAllByGathering(gathering);
 		if (user != null) {
 			isFavorite = checkIsFavoriteGathering(gathering, user);
 		}
 
-		return GatheringWithParticipantsResponse.of(gathering, user, keywords, isFavorite,participants);
+		return GatheringWithParticipantsResponse.of(gathering, user, keywords, isFavorite, participants);
 	}
 
 	public GatheringResponse cancelGathering(Long id, User user) {
@@ -185,11 +211,21 @@ public class GatheringService {
 			FavoriteGathering.of(FavoriteGatheringId.of(user.getId(), gathering.getId())));
 	}
 
-	private boolean checkIsFavoriteGathering(Gathering gathering, User user) {
-			return favoriteGatheringRepository.existsById(FavoriteGatheringId.of(user.getId(), gathering.getId()));
+	public Map<String, String> changeGatheringStatus(Long id, GatheringStatus status, User user) {
+		Gathering gathering = getGatheringsFrom(id);
+		if (gathering.getUser().getId().equals(user.getId())) {
+			gathering.changeStatus(status);
+		} else {
+			throw new AppException(FORBIDDEN);
+		}
+		return Map.of("모임 상태 변경", status.getDescription());
 	}
 
-	private List<GatheringParticipantsResponse> getGatheringsWithParticpantsFrom(Gathering gathering) {
+	private boolean checkIsFavoriteGathering(Gathering gathering, User user) {
+		return favoriteGatheringRepository.existsById(FavoriteGatheringId.of(user.getId(), gathering.getId()));
+	}
+
+	private List<GatheringParticipantsResponse> getGatheringsWithParticipantsFrom(Gathering gathering) {
 		List<UserGathering> userGathering = userGatheringRepository.findByIdGathering(gathering);
 		return userGathering.stream()
 			.map(GatheringParticipantsResponse::of
@@ -224,4 +260,25 @@ public class GatheringService {
 			throw new AppException(FORBIDDEN);
 		}
 	}
+
+	private void updateKeywords(List<String> newKeywordValues, Gathering gathering) {
+		if (newKeywordValues == null) {
+			return;
+		}
+
+		List<Keyword> existingKeywords = keywordRepository.findAllByGathering(gathering);
+
+		List<Keyword> keywordsToDelete = existingKeywords.stream()
+			.filter(existing -> !newKeywordValues.contains(existing.getKeyword()))
+			.collect(Collectors.toList());
+		keywordRepository.deleteAll(keywordsToDelete);
+
+		List<Keyword> keywordsToAdd = newKeywordValues.stream()
+			.filter(newValue -> existingKeywords.stream()
+				.noneMatch(existing -> existing.getKeyword().equals(newValue)))
+			.map(newValue -> Keyword.of(newValue, gathering))
+			.collect(Collectors.toList());
+		keywordRepository.saveAll(keywordsToAdd);
+	}
+
 }

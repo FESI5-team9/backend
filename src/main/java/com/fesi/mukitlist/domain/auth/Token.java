@@ -14,22 +14,22 @@ import lombok.NoArgsConstructor;
 public class Token {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    public Long id;
 
     @Column(unique = true)
-    private String token;
+    public String token;
 
     @Enumerated(EnumType.STRING)
-    private GrantType grantType;
+    public GrantType grantType;
 
     @Enumerated(EnumType.STRING)
-    private TokenType tokenType;
+    public TokenType tokenType;
 
-    private boolean expired;
+    public boolean expired;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    public User user;
 
     @Builder
     public Token(Long id, String token, GrantType grantType, TokenType tokenType, boolean expired, User user) {

@@ -27,4 +27,6 @@ public interface UserGatheringRepository
 
 	List<UserGathering> findByIdGathering(Gathering gathering);
 
+	List<UserGathering> findByIdUser(User user);
+
 }

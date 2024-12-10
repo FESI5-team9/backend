@@ -14,10 +14,11 @@ public record GatheringListResponse(
 	LocalDateTime registrationEnd,
 	LocationType location,
 	String address1,
+	String address2,
 	int participantCount,
 	int capacity,
 	String image,
-	String createdBy,
+	LocalDateTime createdAt,
 	LocalDateTime canceledAt
 ) {
 	public static GatheringListResponse of(Gathering gathering) {
@@ -29,10 +30,11 @@ public record GatheringListResponse(
 			gathering.getRegistrationEnd(),
 			gathering.getLocation(),
 			gathering.getAddress1(),
+			gathering.getAddress2(),
 			gathering.getParticipantCount(),
 			gathering.getCapacity(),
 			gathering.getImage(),
-			gathering.getCreatedBy(),
+			gathering.getCreatedAt(),
 			gathering.getCanceledAt()
 		);
 	}

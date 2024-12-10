@@ -4,11 +4,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fesi.mukitlist.domain.gathering.Gathering;
-import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
 import com.fesi.mukitlist.domain.gathering.Keyword;
+import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
 import com.fesi.mukitlist.domain.gathering.constant.LocationType;
 
-public record GatheringCreateResponse(
+public record GatheringUpdateResponse(
 	Long id,
 	GatheringType type,
 	String name,
@@ -18,13 +18,13 @@ public record GatheringCreateResponse(
 	String address1,
 	String address2,
 	List<String> keywords,
-	int participantCount,
-	int capacity,
+	Integer participantCount,
+	Integer capacity,
 	String image,
 	LocalDateTime createdAt
 ) {
-	public static GatheringCreateResponse of(Gathering gathering, List<Keyword> keywords) {
-		return new GatheringCreateResponse(
+	public static GatheringUpdateResponse of(Gathering gathering, List<Keyword> keywords) {
+		return new GatheringUpdateResponse(
 			gathering.getId(),
 			gathering.getType(),
 			gathering.getName(),

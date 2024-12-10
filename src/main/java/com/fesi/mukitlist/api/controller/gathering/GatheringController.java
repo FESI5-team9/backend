@@ -23,15 +23,21 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fesi.mukitlist.api.controller.gathering.request.GatheringCreateRequest;
 import com.fesi.mukitlist.api.controller.gathering.request.GatheringRequest;
+import com.fesi.mukitlist.api.controller.gathering.request.GatheringUpdateRequest;
 import com.fesi.mukitlist.api.exception.response.ValidationErrorResponse;
 import com.fesi.mukitlist.api.service.gathering.GatheringService;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringCreateResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringListResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringParticipantsResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringResponse;
+import com.fesi.mukitlist.api.service.gathering.response.GatheringUpdateResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringWithParticipantsResponse;
 import com.fesi.mukitlist.api.service.gathering.response.JoinedGatheringsResponse;
+import com.fesi.mukitlist.domain.auth.PrincipalDetails;
 import com.fesi.mukitlist.domain.auth.User;
+import com.fesi.mukitlist.domain.gathering.constant.GatheringStatus;
+import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
+import com.fesi.mukitlist.domain.gathering.constant.LocationType;
 import com.fesi.mukitlist.global.annotation.Authorize;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -91,6 +97,8 @@ public class GatheringController {
 	@GetMapping("/search")
 	ResponseEntity<List<GatheringListResponse>> searchGatherings(
 		@RequestParam List<String> search,
+		@RequestParam(required = false) LocationType location,
+		@RequestParam(required = false) GatheringType type,
 		@RequestParam(defaultValue = "10") int size,
 		@RequestParam(defaultValue = "0") int page,
 		@RequestParam(defaultValue = "dateTime") String sort,
@@ -99,7 +107,7 @@ public class GatheringController {
 
 		Sort sortOrder = Sort.by(Sort.Order.by(sort).with(Sort.Direction.fromString(direction)));
 		Pageable pageable = PageRequest.of(page, size, sortOrder);
-		return new ResponseEntity<>(gatheringService.searchGathering(search, pageable), HttpStatus.OK);
+		return new ResponseEntity<>(gatheringService.searchGathering(search, location, type, pageable), HttpStatus.OK);
 	}
 
 	@Operation(summary = "모임 상세 조회", description = "모임의 상제 정보를 조회합니다.",
@@ -124,8 +132,36 @@ public class GatheringController {
 	)
 	@GetMapping("/{id}")
 	ResponseEntity<GatheringWithParticipantsResponse> getGatheringById(@PathVariable("id") Long id,
-		@Parameter(hidden = true) @Authorize(required = false) User user) {
-		return new ResponseEntity<>(gatheringService.getGatheringById(id, user), HttpStatus.OK);
+		@Parameter(hidden = true) @Authorize(required = false) PrincipalDetails user) {
+		return new ResponseEntity<>(gatheringService.getGatheringById(id, user != null ? user.getUser() : null),
+			HttpStatus.OK);
+	}
+
+	@Operation(summary = "모임 상태 변경", description = "모임의 상태를 변경합니다.",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "모임 상태 변경 성공"),
+			@ApiResponse(
+				responseCode = "400",
+				description = "요청 오류",
+				content = @Content(
+					mediaType = "application/json",
+					schema = @Schema(
+						example = "{\"code\":\"VALIDATION_ERROR\",\"parameter\":\"id\",\"message\":\"유효한 모임 ID를 입력하세요\"}"
+					)
+				)
+			),
+			@ApiResponse(responseCode = "404", description = "모임을 찾을 수 없음",
+				content = @Content(schema = @Schema(
+					example = "{\"code\":\"NOT_FOUND\",\"message\":\"모임을 찾을 수 없습니다\"}"
+				))),
+		}
+	)
+	@GetMapping("/{id}/recruit")
+	ResponseEntity<Map<String, String>> getGatheringRecruit(@PathVariable("id") Long id,
+		@RequestParam GatheringStatus status,
+		@Parameter(hidden = true) @Authorize PrincipalDetails user) {
+		return new ResponseEntity<>(gatheringService.changeGatheringStatus(id, status, user.getUser()), HttpStatus.OK);
+
 	}
 
 	@Operation(summary = "특정 모임의 참가자 목록 조회", description = "특정 모임의 참가자 목록을 페이지네이션 하여 조회합니다.",
@@ -177,7 +213,7 @@ public class GatheringController {
 		responses = {
 			@ApiResponse(responseCode = "201", description = "모임 생성 성공",
 				content = @Content(
-					schema = @Schema(implementation = GatheringResponse.class))),
+					schema = @Schema(implementation = GatheringCreateResponse.class))),
 			@ApiResponse(responseCode = "400", description = "잘못된 요청",
 				content = @Content(mediaType = "application/json", schema = @Schema(implementation = ValidationErrorResponse.class))),
 		}
@@ -185,9 +221,28 @@ public class GatheringController {
 	@PostMapping(consumes = "multipart/form-data")
 	public ResponseEntity<GatheringCreateResponse> createGathering(
 		@ModelAttribute @Valid GatheringCreateRequest request,
-		@Parameter(hidden = true) @Authorize User user) throws IOException {
+		@Parameter(hidden = true) @Authorize PrincipalDetails user) throws IOException {
 		return new ResponseEntity<>(gatheringService.createGathering(request.toServiceRequest(),
-			user), HttpStatus.CREATED);
+			user.getUser()), HttpStatus.CREATED);
+	}
+
+	@Operation(summary = "모임 수정", description = "모임 수정",
+		security = @SecurityRequirement(name = "bearerAuth"),
+		responses = {
+			@ApiResponse(responseCode = "200", description = "모임 수정 성공",
+				content = @Content(
+					schema = @Schema(implementation = GatheringUpdateResponse.class))),
+			@ApiResponse(responseCode = "400", description = "잘못된 요청",
+				content = @Content(mediaType = "application/json", schema = @Schema(implementation = ValidationErrorResponse.class))),
+		}
+	)
+	@PutMapping(value = "/{id}", consumes = "multipart/form-data")
+	public ResponseEntity<GatheringUpdateResponse> updateGathering(
+		@PathVariable("id") Long id,
+		@ModelAttribute @Valid GatheringUpdateRequest request,
+		@Parameter(hidden = true) @Authorize PrincipalDetails user) throws IOException {
+		return new ResponseEntity<>(gatheringService.updateGathering(id, request.toServiceRequest(),
+			user.getUser()), HttpStatus.OK);
 	}
 
 	@Operation(summary = "로그인된 사용자가 참석한 모임 목록 조회", description = "로그인된 사용자가 참석한 모임의 목록을 조회합니다.",
@@ -214,7 +269,7 @@ public class GatheringController {
 	)
 	@GetMapping("/joined")
 	public ResponseEntity<List<JoinedGatheringsResponse>> getGatheringsBySignInUser(
-		@Parameter(hidden = true) @Authorize User user,
+		@Parameter(hidden = true) @Authorize PrincipalDetails user,
 		@RequestParam(required = false) Boolean completed,
 		@RequestParam(required = false) Boolean reviewed,
 		@RequestParam(defaultValue = "10") int size,
@@ -225,7 +280,7 @@ public class GatheringController {
 		Sort sortOrder = Sort.by(Sort.Order.by(sort).with(Sort.Direction.fromString(direction)));
 		Pageable pageable = PageRequest.of(page, size, sortOrder);
 
-		return new ResponseEntity<>(gatheringService.getJoinedGatherings(user, completed,
+		return new ResponseEntity<>(gatheringService.getJoinedGatherings(user.getUser(), completed,
 			reviewed, pageable), HttpStatus.OK);
 	}
 
@@ -260,8 +315,8 @@ public class GatheringController {
 	)
 	@PutMapping("/{id}/cancel")
 	public ResponseEntity<GatheringResponse> cancelGathering(@PathVariable("id") Long id,
-		@Parameter(hidden = true) @Authorize User user) {
-		return new ResponseEntity<>(gatheringService.cancelGathering(id, user), HttpStatus.OK);
+		@Parameter(hidden = true) @Authorize PrincipalDetails user) {
+		return new ResponseEntity<>(gatheringService.cancelGathering(id, user.getUser()), HttpStatus.OK);
 	}
 
 	@Operation(summary = "모임 참여", description = "로그인한 사용자가 모임에 참여합니다",
@@ -298,8 +353,8 @@ public class GatheringController {
 	)
 	@PostMapping("/{id}/join")
 	public ResponseEntity<Map<String, String>> joinGathering(@PathVariable("id") Long id,
-		@Parameter(hidden = true) @Authorize User user) {
-		gatheringService.joinGathering(id, user);
+		@Parameter(hidden = true) @Authorize PrincipalDetails user) {
+		gatheringService.joinGathering(id, user.getUser());
 		return new ResponseEntity<>(Map.of("message", "모임에 참여했습니다."), HttpStatus.OK);
 	}
 
@@ -337,9 +392,9 @@ public class GatheringController {
 	)
 	@DeleteMapping("/{id}/leave")
 	public ResponseEntity<Map<String, String>> leaveGathering(@PathVariable("id") Long id,
-		@Parameter(hidden = true) @Authorize User user) {
+		@Parameter(hidden = true) @Authorize PrincipalDetails user) {
 		LocalDateTime leaveTime = LocalDateTime.now();
-		gatheringService.leaveGathering(id, user, leaveTime);
+		gatheringService.leaveGathering(id, user.getUser(), leaveTime);
 		return new ResponseEntity<>(Map.of("message", "모임 참여 취소를 성공했습니다."), HttpStatus.OK);
 	}
 
@@ -355,9 +410,9 @@ public class GatheringController {
 	)
 	@GetMapping("/favorite")
 	public ResponseEntity<List<GatheringListResponse>> getFavoriteGatherings(
-		@Parameter(hidden = true) @Authorize User user) {
+		@Parameter(hidden = true) @Authorize PrincipalDetails user) {
 
-		List<GatheringListResponse> response = gatheringService.findFavoriteGatheringsBy(user);
+		List<GatheringListResponse> response = gatheringService.findFavoriteGatheringsBy(user.getUser());
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
@@ -395,9 +450,9 @@ public class GatheringController {
 	)
 	@PostMapping("/{id}/favorite")
 	public ResponseEntity<Map<String, String>> choiceFavoriteGathering(@PathVariable("id") Long id,
-		@Parameter(hidden = true) @Authorize User user) {
+		@Parameter(hidden = true) @Authorize PrincipalDetails user) {
 
-		gatheringService.choiceFavorite(id, user);
+		gatheringService.choiceFavorite(id, user.getUser());
 		return new ResponseEntity<>(Map.of("message", "모임 찜하기를 성공했습니다."), HttpStatus.OK);
 	}
 

@@ -7,6 +7,7 @@ import com.fesi.mukitlist.api.controller.auth.request.UserUpdateRequest;
 import com.fesi.mukitlist.api.service.auth.UserService;
 import com.fesi.mukitlist.api.controller.auth.request.UserCreateRequest;
 import com.fesi.mukitlist.api.service.auth.response.UserInfoResponse;
+import com.fesi.mukitlist.domain.auth.PrincipalDetails;
 import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.global.annotation.Authorize;
 
@@ -97,8 +98,8 @@ public class UserController {
 		}
 	)
 	@GetMapping("user")
-	public ResponseEntity<UserInfoResponse> getUser(@Parameter(hidden = true) @Authorize User user) {
-		return new ResponseEntity<>(userService.getUserInfo(user), HttpStatus.OK);
+	public ResponseEntity<UserInfoResponse> getUser(@Parameter(hidden = true) @Authorize PrincipalDetails user) {
+		return new ResponseEntity<>(userService.getUserInfo(user.getUser()), HttpStatus.OK);
 	}
 
 	@Operation(summary = "유저 정보 수정", description = "유저 정보를 수정 합니다.",
@@ -142,9 +143,9 @@ public class UserController {
 	)
 	@PutMapping(value = "user", consumes = "multipart/form-data")
 	public ResponseEntity<UserInfoResponse> updateUser(
-		@Parameter(hidden = true) @Authorize User user,
+		@Parameter(hidden = true) @Authorize PrincipalDetails user,
 		@ModelAttribute UserUpdateRequest request) throws IOException {
-		UserInfoResponse response = userService.updateUser(user, request);
+		UserInfoResponse response = userService.updateUser(user.getUser(), request);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 }
