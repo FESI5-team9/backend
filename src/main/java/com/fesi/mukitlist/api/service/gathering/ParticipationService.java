@@ -1,10 +1,12 @@
-package com.fesi.mukitlist.api.service.gathering.v2;
+package com.fesi.mukitlist.api.service.gathering;
 
 import static com.fesi.mukitlist.api.exception.ExceptionCode.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,17 +26,13 @@ import lombok.RequiredArgsConstructor;
 public class ParticipationService {
 	private final UserGatheringRepository userGatheringRepository;
 
-
-
-	public Gathering joinGathering(Gathering gathering, User user) {
+	public Gathering joinGathering(Gathering gathering, User user, LocalDateTime joinedTime) {
 		checkIsCanceledGathering(gathering);
 		checkIsJoinedGathering(gathering);
 
 		UserGatheringId userGatheringId = UserGatheringId.of(user, gathering);
-		LocalDateTime joinedTime = LocalDateTime.now();
 		UserGathering userGathering = UserGathering.of(userGatheringId, joinedTime);
 		userGatheringRepository.save(userGathering);
-
 		gathering.joinParticipant();
 		return gathering;
 	}
@@ -49,6 +47,23 @@ public class ParticipationService {
 		gathering.leaveParticipant();
 
 		return gathering;
+	}
+
+	public List<UserGathering> getParticipantsBy(Gathering gathering) {
+		return userGatheringRepository.findByIdGathering(gathering);
+	}
+
+	public List<UserGathering> getParticipantsBy(Gathering gathering, Pageable pageable) {
+		return userGatheringRepository.findByIdGathering(gathering, pageable).getContent();
+	}
+
+	public List<UserGathering> getParticipantsBy(User user) {
+		return userGatheringRepository.findByIdUser(user);
+	}
+
+	public Page<UserGathering> getParticipantsWithFilters(User user, Boolean completed, Boolean reviewed,
+		Pageable pageable) {
+		return userGatheringRepository.findWithFilters(user, completed, reviewed, pageable);
 	}
 
 	private void checkIsNotPastGathering(Gathering gathering, LocalDateTime leaveTime) {
@@ -67,13 +82,7 @@ public class ParticipationService {
 		if (!gathering.isJoinableGathering()) {
 			throw new AppException(MAXIMUM_PARTICIPANTS);
 		}
-	}
-
-	public List<GatheringParticipantsResponse> getParticipants(Gathering gathering) {
-		return userGatheringRepository.findByIdGathering(gathering).stream()
-			.map(GatheringParticipantsResponse::of
-			)
-			.toList();
 
 	}
+
 }

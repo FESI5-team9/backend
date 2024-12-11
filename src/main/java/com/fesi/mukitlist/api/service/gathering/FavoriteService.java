@@ -1,4 +1,7 @@
-package com.fesi.mukitlist.api.service.gathering.v2;
+package com.fesi.mukitlist.api.service.gathering;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,12 +34,19 @@ public class FavoriteService {
 	}
 
 	public void markAsFavorite(Gathering gathering, User user) {
-		favoriteGatheringRepository.save(
+		 favoriteGatheringRepository.save(
 			FavoriteGathering.of(FavoriteGatheringId.of(user.getId(), gathering.getId())));
 	}
 
 	public void unmarkAsFavorite(Gathering gathering, User user) {
 		favoriteGatheringRepository.delete(
 			FavoriteGathering.of(FavoriteGatheringId.of(user.getId(), gathering.getId())));
+	}
+
+	public List<Long> findFavoriteGatheringIdBy(Long userId) {
+		return favoriteGatheringRepository.findById_UserId(userId)
+			.stream()
+			.map(favoriteGathering -> favoriteGathering.getId().getGatheringId())
+			.collect(Collectors.toList());
 	}
 }
