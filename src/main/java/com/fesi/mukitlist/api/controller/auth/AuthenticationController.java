@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fesi.mukitlist.api.controller.auth.request.UserCreateRequest;
 import com.fesi.mukitlist.api.controller.auth.response.AuthenticationResponse;
+import com.fesi.mukitlist.api.response.SimpleApiResponse;
 import com.fesi.mukitlist.api.service.auth.AuthenticationService;
 import com.fesi.mukitlist.api.service.auth.UserService;
 import com.fesi.mukitlist.api.service.auth.request.AuthenticationServiceRequest;
@@ -56,10 +57,10 @@ public class AuthenticationController {
         }
     )
     @PostMapping("/signup")
-    public ResponseEntity<Map<String, String>> signup(
+    public ResponseEntity<SimpleApiResponse> signup(
         @RequestBody UserCreateRequest userCreateRequest) {
         userService.createUser(userCreateRequest.toServiceRequest());
-        return new ResponseEntity<>(Map.of("message", "사용자 생성 성공"), HttpStatus.CREATED);
+        return new ResponseEntity<>(SimpleApiResponse.of("사용자 생성 성공"), HttpStatus.CREATED);
     }
 
 
@@ -95,17 +96,44 @@ public class AuthenticationController {
     public ResponseEntity<AuthenticationResponse> authenticate(
             @RequestBody AuthenticationServiceRequest request, HttpServletResponse response) {
         AuthenticationResponse authenticate = authenticationService.authenticate(request, response);
-        return new ResponseEntity<>(new AuthenticationResponse(authenticate.accessToken()), HttpStatus.OK);
+        return new ResponseEntity<>(AuthenticationResponse.of(authenticate.accessToken()), HttpStatus.OK);
     }
 
+    @Operation(summary = "이메일 중복확인", description = "이메일 중복 확인을 진행합니다.",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "중복 확인 성공",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = SimpleApiResponse.class))),
+            @ApiResponse(
+                responseCode = "400",
+                description = "타입 오류",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(
+                        example = "{\"code\":\"VALIDATION_ERROR\", \"parameter\":\"email\", \"message\":\"이메일 양식을 지켜주세요.\"}"
+                    )
+                )
+            ),
+        }
+    )
     @GetMapping("/check-email")
     public ResponseEntity<Map<String,Boolean>> checkEmailDuplicated(@RequestParam String email){
-        return new ResponseEntity(Map.of("중복여부", userService.checkEmail(email)),HttpStatus.OK);
+
+        return new ResponseEntity(SimpleApiResponse.of(String.valueOf(userService.checkEmail(email))),HttpStatus.OK);
     }
 
+    @Operation(summary = "닉네임 중복확인", description = "닉네임 중복 확인을 진행합니다.",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "중복 확인 성공",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = SimpleApiResponse.class))),
+        }
+    )
     @GetMapping("/check-nickname")
     public ResponseEntity<Map<String,Boolean>> checkNicknameDuplicated(@RequestParam String nickname){
-        return new ResponseEntity(Map.of("중복여부", userService.checkNickname(nickname)),HttpStatus.OK);
+        return new ResponseEntity(SimpleApiResponse.of(String.valueOf(userService.checkEmail(nickname))),HttpStatus.OK);
     }
 
     @PostMapping("/refresh-token") // TODO Error Code 변경
