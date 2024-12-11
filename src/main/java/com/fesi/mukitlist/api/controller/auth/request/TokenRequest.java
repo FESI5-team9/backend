@@ -1,9 +1,9 @@
 package com.fesi.mukitlist.api.controller.auth.request;
 
-import com.fesi.mukitlist.api.service.auth.request.TokenServiceRequest;
-import com.fesi.mukitlist.domain.auth.constant.GrantType;
-import com.fesi.mukitlist.domain.auth.constant.TokenType;
-import com.fesi.mukitlist.domain.auth.User;
+import com.fesi.mukitlist.domain.service.auth.request.TokenServiceRequest;
+import com.fesi.mukitlist.core.auth.constant.GrantType;
+import com.fesi.mukitlist.core.auth.constant.TokenType;
+import com.fesi.mukitlist.core.auth.User;
 import lombok.Builder;
 
 import java.io.Serializable;

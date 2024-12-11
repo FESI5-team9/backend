@@ -5,11 +5,11 @@ import java.util.List;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import com.fesi.mukitlist.api.service.review.request.ReviewServiceRequest;
-import com.fesi.mukitlist.domain.Review;
-import com.fesi.mukitlist.domain.auth.User;
-import com.fesi.mukitlist.domain.gathering.Gathering;
-import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
+import com.fesi.mukitlist.domain.service.review.request.ReviewServiceRequest;
+import com.fesi.mukitlist.core.Review;
+import com.fesi.mukitlist.core.auth.User;
+import com.fesi.mukitlist.core.gathering.Gathering;
+import com.fesi.mukitlist.core.gathering.constant.GatheringType;
 
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
@@ -36,14 +36,10 @@ public class ReviewSpecifications {
 			if (request.location() != null) {
 				predicates.add(criteriaBuilder.equal(gatheringJoin.get("location"), request.location()));
 			}
-			if (request.date() != null) {
-				predicates.add(criteriaBuilder.greaterThanOrEqualTo(gatheringJoin.get("dateTime"), request.date()));
-			}
 			if (request.registrationEnd() != null) {
 				predicates.add(criteriaBuilder.greaterThanOrEqualTo(gatheringJoin.get("registrationEnd"),
 					request.registrationEnd()));
 			}
-
 			return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
 		});
 	}

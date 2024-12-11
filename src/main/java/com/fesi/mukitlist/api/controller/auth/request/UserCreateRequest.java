@@ -1,7 +1,7 @@
 package com.fesi.mukitlist.api.controller.auth.request;
 
-import com.fesi.mukitlist.api.service.auth.request.UserServiceCreateRequest;
-import com.fesi.mukitlist.domain.auth.User;
+import com.fesi.mukitlist.domain.service.auth.request.UserServiceCreateRequest;
+import com.fesi.mukitlist.core.auth.User;
 
 import lombok.Builder;
 

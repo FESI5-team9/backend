@@ -2,13 +2,12 @@ package com.fesi.mukitlist.api.controller.gathering.request;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
-import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceRequest;
-import com.fesi.mukitlist.domain.gathering.Gathering;
-import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
-import com.fesi.mukitlist.domain.gathering.constant.LocationType;
+import com.fesi.mukitlist.domain.service.gathering.request.GatheringServiceRequest;
+import com.fesi.mukitlist.core.gathering.Gathering;
+import com.fesi.mukitlist.core.gathering.constant.GatheringType;
+import com.fesi.mukitlist.core.gathering.constant.LocationType;
 
 import lombok.Builder;
 

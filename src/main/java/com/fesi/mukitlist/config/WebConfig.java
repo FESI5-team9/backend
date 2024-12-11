@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.fesi.mukitlist.global.annotation.CustomAuthenticationPrincipalResolver;
+import com.fesi.mukitlist.api.controller.annotation.CustomAuthenticationPrincipalResolver;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {

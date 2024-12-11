@@ -4,11 +4,11 @@ import java.time.LocalDateTime;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import com.fesi.mukitlist.domain.Review;
-import com.fesi.mukitlist.domain.auth.User;
-import com.fesi.mukitlist.domain.gathering.Gathering;
-import com.fesi.mukitlist.domain.usergathering.UserGathering;
-import com.fesi.mukitlist.domain.usergathering.UserGatheringId;
+import com.fesi.mukitlist.core.Review;
+import com.fesi.mukitlist.core.auth.User;
+import com.fesi.mukitlist.core.gathering.Gathering;
+import com.fesi.mukitlist.core.usergathering.UserGathering;
+import com.fesi.mukitlist.core.usergathering.UserGatheringId;
 
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
