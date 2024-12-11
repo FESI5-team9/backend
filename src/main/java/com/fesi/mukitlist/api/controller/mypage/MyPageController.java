@@ -15,16 +15,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fesi.mukitlist.api.controller.mypage.response.MyPageReviewResponse;
 import com.fesi.mukitlist.api.service.gathering.response.GatheringListResponse;
 import com.fesi.mukitlist.api.service.mypage.MyPageService;
-import com.fesi.mukitlist.api.service.gathering.response.GatheringResponse;
-import com.fesi.mukitlist.api.service.review.response.ReviewResponse;
 import com.fesi.mukitlist.domain.auth.PrincipalDetails;
-import com.fesi.mukitlist.global.annotation.Authorize;
+import com.fesi.mukitlist.api.controller.annotation.Authorize;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
+@Deprecated
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/my")
