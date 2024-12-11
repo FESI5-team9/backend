@@ -7,14 +7,12 @@ import java.util.stream.Collectors;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceRequest;
-import com.fesi.mukitlist.domain.gathering.Gathering;
-import com.fesi.mukitlist.domain.gathering.Keyword;
-import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
-import com.fesi.mukitlist.domain.gathering.constant.LocationType;
+import com.fesi.mukitlist.domain.service.gathering.request.GatheringServiceRequest;
+import com.fesi.mukitlist.core.gathering.Gathering;
+import com.fesi.mukitlist.core.gathering.Keyword;
+import com.fesi.mukitlist.core.gathering.constant.GatheringType;
+import com.fesi.mukitlist.core.gathering.constant.LocationType;
 
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;

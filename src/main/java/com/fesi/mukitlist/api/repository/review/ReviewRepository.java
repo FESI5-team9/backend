@@ -8,10 +8,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-import com.fesi.mukitlist.api.service.review.request.ReviewServiceRequest;
-import com.fesi.mukitlist.domain.Review;
-import com.fesi.mukitlist.domain.auth.User;
-import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
+import com.fesi.mukitlist.domain.service.review.request.ReviewServiceRequest;
+import com.fesi.mukitlist.core.Review;
+import com.fesi.mukitlist.core.auth.User;
+import com.fesi.mukitlist.core.gathering.constant.GatheringType;
 
 public interface ReviewRepository extends JpaRepository<Review, Long>, JpaSpecificationExecutor<Review> {
 	default Page<Review> findWithFilters(ReviewServiceRequest request, Pageable pageable) {

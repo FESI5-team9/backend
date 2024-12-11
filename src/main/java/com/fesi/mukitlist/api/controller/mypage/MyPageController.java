@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fesi.mukitlist.api.controller.mypage.response.MyPageReviewResponse;
-import com.fesi.mukitlist.api.service.gathering.response.GatheringListResponse;
-import com.fesi.mukitlist.api.service.mypage.MyPageService;
-import com.fesi.mukitlist.domain.auth.PrincipalDetails;
+import com.fesi.mukitlist.domain.service.gathering.response.GatheringListResponse;
+import com.fesi.mukitlist.domain.service.mypage.MyPageService;
+import com.fesi.mukitlist.core.auth.PrincipalDetails;
 import com.fesi.mukitlist.api.controller.annotation.Authorize;
 
 import io.swagger.v3.oas.annotations.Parameter;

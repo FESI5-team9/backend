@@ -12,18 +12,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fesi.mukitlist.api.controller.review.request.ReviewByRequest;
 import com.fesi.mukitlist.api.controller.review.request.ReviewCreateRequest;
 import com.fesi.mukitlist.api.controller.review.request.ReviewRequest;
 import com.fesi.mukitlist.api.exception.response.ValidationErrorResponse;
-import com.fesi.mukitlist.api.service.review.ReviewService;
-import com.fesi.mukitlist.api.service.review.response.ReviewResponse;
-import com.fesi.mukitlist.api.service.review.response.ReviewScoreResponse;
-import com.fesi.mukitlist.api.service.review.response.ReviewStatisticsScoreResponse;
-import com.fesi.mukitlist.api.service.review.response.ReviewWithGatheringAndUserResponse;
-import com.fesi.mukitlist.domain.auth.PrincipalDetails;
-import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
-import com.fesi.mukitlist.domain.gathering.constant.LocationType;
+import com.fesi.mukitlist.domain.service.review.ReviewService;
+import com.fesi.mukitlist.domain.service.review.response.ReviewResponse;
+import com.fesi.mukitlist.domain.service.review.response.ReviewScoreResponse;
+import com.fesi.mukitlist.domain.service.review.response.ReviewStatisticsScoreResponse;
+import com.fesi.mukitlist.domain.service.review.response.ReviewWithGatheringAndUserResponse;
+import com.fesi.mukitlist.core.auth.PrincipalDetails;
+import com.fesi.mukitlist.core.gathering.constant.GatheringType;
+import com.fesi.mukitlist.core.gathering.constant.LocationType;
 import com.fesi.mukitlist.api.controller.annotation.Authorize;
 
 import io.swagger.v3.oas.annotations.Operation;

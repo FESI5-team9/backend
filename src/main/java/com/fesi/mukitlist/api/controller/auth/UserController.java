@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fesi.mukitlist.api.controller.auth.request.UserUpdateRequest;
-import com.fesi.mukitlist.api.service.auth.UserService;
-import com.fesi.mukitlist.api.service.auth.response.UserInfoResponse;
-import com.fesi.mukitlist.domain.auth.PrincipalDetails;
+import com.fesi.mukitlist.domain.service.auth.UserService;
+import com.fesi.mukitlist.domain.service.auth.response.UserInfoResponse;
+import com.fesi.mukitlist.core.auth.PrincipalDetails;
 import com.fesi.mukitlist.api.controller.annotation.Authorize;
 
 import io.swagger.v3.oas.annotations.Operation;

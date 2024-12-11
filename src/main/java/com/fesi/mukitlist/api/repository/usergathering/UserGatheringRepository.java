@@ -8,10 +8,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-import com.fesi.mukitlist.domain.auth.User;
-import com.fesi.mukitlist.domain.gathering.Gathering;
-import com.fesi.mukitlist.domain.usergathering.UserGathering;
-import com.fesi.mukitlist.domain.usergathering.UserGatheringId;
+import com.fesi.mukitlist.core.auth.User;
+import com.fesi.mukitlist.core.gathering.Gathering;
+import com.fesi.mukitlist.core.usergathering.UserGathering;
+import com.fesi.mukitlist.core.usergathering.UserGatheringId;
 
 public interface UserGatheringRepository
 	extends JpaRepository<UserGathering, UserGatheringId>, JpaSpecificationExecutor<UserGathering> {

@@ -1,7 +1,7 @@
 package com.fesi.mukitlist.api.controller.mypage.response;
 
-import com.fesi.mukitlist.api.service.gathering.response.GatheringListResponse;
-import com.fesi.mukitlist.api.service.review.response.ReviewResponse;
+import com.fesi.mukitlist.domain.service.gathering.response.GatheringListResponse;
+import com.fesi.mukitlist.domain.service.review.response.ReviewResponse;
 
 public record ReviewCompletedList(
 	GatheringListResponse gathering,

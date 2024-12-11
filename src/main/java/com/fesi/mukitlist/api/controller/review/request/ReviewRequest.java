@@ -2,9 +2,9 @@ package com.fesi.mukitlist.api.controller.review.request;
 
 import java.time.LocalDateTime;
 
-import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
-import com.fesi.mukitlist.api.service.review.request.ReviewServiceRequest;
-import com.fesi.mukitlist.domain.gathering.constant.LocationType;
+import com.fesi.mukitlist.core.gathering.constant.GatheringType;
+import com.fesi.mukitlist.domain.service.review.request.ReviewServiceRequest;
+import com.fesi.mukitlist.core.gathering.constant.LocationType;
 
 import lombok.Builder;
 

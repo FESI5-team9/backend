@@ -10,11 +10,11 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceRequest;
-import com.fesi.mukitlist.domain.auth.User;
-import com.fesi.mukitlist.domain.gathering.Gathering;
-import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
-import com.fesi.mukitlist.domain.gathering.constant.LocationType;
+import com.fesi.mukitlist.domain.service.gathering.request.GatheringServiceRequest;
+import com.fesi.mukitlist.core.auth.User;
+import com.fesi.mukitlist.core.gathering.Gathering;
+import com.fesi.mukitlist.core.gathering.constant.GatheringType;
+import com.fesi.mukitlist.core.gathering.constant.LocationType;
 
 public interface GatheringRepository extends JpaRepository<Gathering, Long>, JpaSpecificationExecutor<Gathering> {
 	default Page<Gathering> findWithFilters(GatheringServiceRequest request, Pageable pageable) {

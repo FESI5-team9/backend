@@ -1,9 +1,7 @@
 package com.fesi.mukitlist.api.repository;
 
-import java.util.Optional;
+import com.fesi.mukitlist.core.auth.Token;
 
-import com.fesi.mukitlist.domain.auth.Token;
-import com.fesi.mukitlist.domain.auth.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

@@ -5,11 +5,11 @@ import java.util.List;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import com.fesi.mukitlist.api.service.review.request.ReviewServiceRequest;
-import com.fesi.mukitlist.domain.Review;
-import com.fesi.mukitlist.domain.auth.User;
-import com.fesi.mukitlist.domain.gathering.Gathering;
-import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
+import com.fesi.mukitlist.domain.service.review.request.ReviewServiceRequest;
+import com.fesi.mukitlist.core.Review;
+import com.fesi.mukitlist.core.auth.User;
+import com.fesi.mukitlist.core.gathering.Gathering;
+import com.fesi.mukitlist.core.gathering.constant.GatheringType;
 
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;

@@ -11,8 +11,8 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 import com.fesi.mukitlist.api.exception.AppException;
-import com.fesi.mukitlist.domain.auth.PrincipalDetails;
-import com.fesi.mukitlist.domain.auth.User;
+import com.fesi.mukitlist.core.auth.PrincipalDetails;
+import com.fesi.mukitlist.core.auth.User;
 
 public class CustomAuthenticationPrincipalResolver implements HandlerMethodArgumentResolver {
 

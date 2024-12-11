@@ -6,10 +6,9 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceCreateRequest;
-import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceRequest;
-import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
-import com.fesi.mukitlist.domain.gathering.constant.LocationType;
+import com.fesi.mukitlist.domain.service.gathering.request.GatheringServiceCreateRequest;
+import com.fesi.mukitlist.core.gathering.constant.GatheringType;
+import com.fesi.mukitlist.core.gathering.constant.LocationType;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;

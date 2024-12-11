@@ -2,7 +2,7 @@ package com.fesi.mukitlist.api.controller.auth.request;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fesi.mukitlist.api.service.auth.request.UserUpdateServiceRequest;
+import com.fesi.mukitlist.domain.service.auth.request.UserUpdateServiceRequest;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
