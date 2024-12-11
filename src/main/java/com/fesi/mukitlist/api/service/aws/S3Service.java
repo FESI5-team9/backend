@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.global.aws;
+package com.fesi.mukitlist.api.service.aws;
 
 import static com.fesi.mukitlist.api.exception.ExceptionCode.*;
 

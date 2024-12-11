@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.global.annotation;
+package com.fesi.mukitlist.api.controller.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
