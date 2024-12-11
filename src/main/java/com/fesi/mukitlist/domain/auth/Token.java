@@ -32,12 +32,22 @@ public class Token {
     public User user;
 
     @Builder
-    public Token(Long id, String token, GrantType grantType, TokenType tokenType, boolean expired, User user) {
-        this.id = id;
+    private Token(String token, GrantType grantType, TokenType tokenType, boolean expired, User user) {
         this.token = token;
         this.grantType = grantType;
         this.tokenType = tokenType;
         this.expired = expired;
         this.user = user;
     }
+
+    public static Token of(String token, GrantType grantType, TokenType tokenType, boolean expired, User user) {
+        return Token.builder()
+            .token(token)
+            .grantType(grantType)
+            .tokenType(tokenType)
+            .expired(expired)
+            .user(user)
+            .build();
+    }
+
 }

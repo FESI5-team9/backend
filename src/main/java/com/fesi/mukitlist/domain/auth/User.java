@@ -2,22 +2,27 @@ package com.fesi.mukitlist.domain.auth;
 
 import java.time.LocalDateTime;
 
-import com.fesi.mukitlist.api.service.auth.request.UserServiceCreateRequest;
-
-import com.fesi.mukitlist.api.service.oauth.request.KakaoUserCreateRequest;
-import com.fesi.mukitlist.api.service.oauth.response.SocialUserResponse;
-import com.fesi.mukitlist.domain.auth.constant.UserType;
-import jakarta.persistence.*;
-import lombok.Builder;
-
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.fesi.mukitlist.api.controller.auth.oauth.kakao.request.KakaoServiceCreateRequest;
+import com.fesi.mukitlist.api.service.auth.request.UserServiceCreateRequest;
+import com.fesi.mukitlist.domain.auth.constant.UserType;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -32,13 +37,17 @@ public class User {
 	@Column(nullable = false, unique = true)
 	private String email;
 
-	@Column(nullable = false)
+	@Column
 	private String password;
 
 	@Column(nullable = false)
 	private String nickname;
 
 	private String image;
+
+	private String provider;
+
+	private String providerId;
 
 	@Column(columnDefinition = "ENUM('KAKAO', 'GOOGLE', 'NORMAL') DEFAULT 'NORMAL'")
 	@Enumerated(EnumType.STRING)
@@ -55,33 +64,36 @@ public class User {
 	private LocalDateTime deletedAt;
 
 	@Builder
-	private User(String email, String password, String nickname, String image, UserType userType, LocalDateTime createdAt,
-				 LocalDateTime updatedAt, LocalDateTime deletedAt) {
+	private User(String email, String password, String nickname, String image, String provider, String providerId,
+		UserType userType, LocalDateTime createdAt,
+		LocalDateTime updatedAt, LocalDateTime deletedAt) {
 		this.email = email;
 		this.password = password;
 		this.nickname = nickname;
 		this.image = image;
+		this.provider = provider;
+		this.providerId = providerId;
 		this.userType = userType;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 		this.deletedAt = deletedAt;
 	}
 
-	public static User of(UserServiceCreateRequest request, String password) {
+	public static User create(UserServiceCreateRequest request, String password) {
 		return User.builder()
-				.email(request.email())
-				.password(password)
-				.nickname(request.nickname())
-				.build();
+			.email(request.email())
+			.password(password)
+			.nickname(request.nickname())
+			.build();
 	}
 
-	public static User of(KakaoUserCreateRequest request) {
+	public static User createOAuth2User(KakaoServiceCreateRequest request) {
 		return User.builder()
-				.email(request.email())
-				.password(request.password())
-				.nickname(request.nickname())
-				.userType(request.userType())
-				.build();
+			.email(request.email())
+			.nickname(request.nickname())
+			.userType(request.userType())
+			.provider(request.userType().getProviderName())
+			.build();
 	}
 
 	public void updateNickname(String nickname) {

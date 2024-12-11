@@ -1,17 +1,23 @@
 package com.fesi.mukitlist.api.controller.auth;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fesi.mukitlist.api.controller.auth.request.UserCreateRequest;
 import com.fesi.mukitlist.api.controller.auth.response.AuthenticationResponse;
 import com.fesi.mukitlist.api.service.auth.AuthenticationService;
+import com.fesi.mukitlist.api.service.auth.UserService;
 import com.fesi.mukitlist.api.service.auth.request.AuthenticationServiceRequest;
+import com.fesi.mukitlist.api.service.auth.response.UserInfoResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -87,7 +93,7 @@ public class AuthenticationController {
     )
 
     @PostMapping("/signin")
-    public ResponseEntity<AuthenticationResponse> authenticate(
+    public ResponseEntity<AuthenticationResponse> signIn(
             @RequestBody AuthenticationServiceRequest request, HttpServletResponse response) {
         AuthenticationResponse authenticate = authenticationService.authenticate(request, response);
         return new ResponseEntity<>(new AuthenticationResponse(authenticate.accessToken()), HttpStatus.OK);
@@ -103,11 +109,17 @@ public class AuthenticationController {
         return new ResponseEntity(Map.of("중복여부", userService.checkNickname(nickname)),HttpStatus.OK);
     }
 
-    @PostMapping("/refresh-token") // TODO Error Code 변경
+
+    @PostMapping("/refresh-token") // TODO 더 좋게 받을 방법 있을까 고민
     public ResponseEntity<AuthenticationResponse> refreshToken(
-            HttpServletRequest request,
-            HttpServletResponse response) throws IOException {
-        AuthenticationResponse authenticationResponse = authenticationService.refreshToken(request, response);
+        HttpServletRequest request,
+        String refreshToken
+    ) throws IOException {
+        String cookie = request.getHeader("Cookie");
+        String token = cookie.substring(14);
+        AuthenticationResponse authenticationResponse = authenticationService.refreshToken(token);
+        // 내가 생각나는거
+
         if (authenticationResponse == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

@@ -1,15 +1,15 @@
 package com.fesi.mukitlist.api.service.oauth;
 
-import com.fesi.mukitlist.api.controller.oauth.KakaoAuthApi;
-import com.fesi.mukitlist.api.controller.oauth.KakaoUserApi;
-import com.fesi.mukitlist.api.controller.oauth.util.GsonLocalDateTimeAdapter;
+import com.fesi.mukitlist.api.controller.auth.oauth.KakaoAuthApi;
+import com.fesi.mukitlist.api.controller.auth.oauth.KakaoUserApi;
+import com.fesi.mukitlist.api.controller.auth.oauth.util.GsonLocalDateTimeAdapter;
 import com.fesi.mukitlist.api.exception.AppException;
 import com.fesi.mukitlist.api.exception.ExceptionCode;
 import com.fesi.mukitlist.api.service.oauth.response.KaKaoLoginResponse;
 import com.fesi.mukitlist.api.service.oauth.response.SocialAuthResponse;
 
 import com.fesi.mukitlist.api.service.oauth.response.SocialUserResponse;
-import com.fesi.mukitlist.domain.auth.constant.GrantType;
+import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.domain.auth.constant.UserType;
 import com.nimbusds.jose.shaded.gson.Gson;
 
@@ -29,7 +29,7 @@ import java.util.Optional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class KakaoLoginService implements SocialLoginService {
+public class KakaoLoginService  {
 
     private final KakaoAuthApi kakaoAuthApi;
     private final KakaoUserApi kakaoUserApi;
@@ -43,12 +43,7 @@ public class KakaoLoginService implements SocialLoginService {
     @Value("${kakao.client.redirect_url}")
     private String redirectUrl;
 
-    @Override
-    public UserType getServiceName() {
-        return UserType.KAKAO;
-    }
 
-    @Override
     public String getAccessToken(String authorizationCode) {
         ResponseEntity<?> response = kakaoAuthApi.getAccessToken(
                 clientId,
@@ -76,7 +71,6 @@ public class KakaoLoginService implements SocialLoginService {
         }
     }
 
-    @Override
     public SocialUserResponse getUserInfo(String accessToken) {
         Map<String, String> headerMap = new HashMap<>();
         headerMap.put("Authorization", "Bearer " + accessToken);

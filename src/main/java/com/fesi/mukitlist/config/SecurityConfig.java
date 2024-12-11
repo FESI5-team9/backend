@@ -2,8 +2,6 @@ package com.fesi.mukitlist.config;
 
 import java.util.List;
 
-import lombok.RequiredArgsConstructor;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -19,6 +17,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
@@ -55,7 +55,8 @@ public class SecurityConfig {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(List.of("http://localhost:3000","https://scintillating-caramel-7883ef.netlify.app/")); // 모든 Origin 허용
+		configuration.setAllowedOrigins(
+			List.of("http://localhost:3000", "https://scintillating-caramel-7883ef.netlify.app/")); // 모든 Origin 허용
 		configuration.addAllowedMethod("*"); // 모든 HTTP Method 허용
 		configuration.addAllowedHeader("*"); // 모든 Header 허용
 		configuration.setAllowCredentials(true); // 인증 정보 허용
