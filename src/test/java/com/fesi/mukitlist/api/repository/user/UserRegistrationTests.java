@@ -38,7 +38,6 @@ class UserRegistrationTests {
                 .email(email)
                 .password(password)
                 .nickname(nickname)
-                .name(name)
                 .build();
 
         // when

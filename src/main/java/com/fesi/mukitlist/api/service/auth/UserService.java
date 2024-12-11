@@ -3,13 +3,10 @@ package com.fesi.mukitlist.api.service.auth;
 import java.io.IOException;
 import java.util.Optional;
 
-import org.springframework.http.HttpStatusCode;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.fesi.mukitlist.api.controller.auth.request.UserUpdateRequest;
-import com.fesi.mukitlist.api.exception.AppException;
-import com.fesi.mukitlist.api.exception.ExceptionCode;
 import com.fesi.mukitlist.api.repository.UserRepository;
 import com.fesi.mukitlist.api.service.auth.request.UserServiceCreateRequest;
 import com.fesi.mukitlist.api.service.auth.response.UserInfoResponse;
@@ -26,6 +23,9 @@ public class UserService {
 
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
+	private final KakaoLoginService kakaoLoginService;
+	private final JwtService jwtService;
+	private final AuthenticationService authenticationService;
 	private final S3Service s3Service;
 
 	public User createUser(UserServiceCreateRequest request) {
@@ -56,5 +56,61 @@ public class UserService {
 
 	public boolean checkNickname(String nickname) {
 		return userRepository.existsUserByNickname(nickname);
+	}
+
+	public LoginResponse doSocialLogin(String authorizationCode) throws IOException {
+
+		String accessToken = kakaoLoginService.getAccessToken(authorizationCode);
+
+		SocialUserResponse kakaoUserResponse = kakaoLoginService.getUserInfo(accessToken);
+		validateSocialUserResponse(kakaoUserResponse);
+
+		Optional<User> existingUser = userRepository.findByEmail(kakaoUserResponse.email());
+		User user;
+		if (existingUser.isPresent()) {
+			user = existingUser.get();
+		} else {
+			KakaoUserCreateRequest userCreateRequest = new KakaoUserCreateRequest(
+					kakaoUserResponse.email(),
+					kakaoUserResponse.nickname(),
+					"default_password", // Temporary password
+					kakaoLoginService.getServiceName()
+			);
+			user = User.of(userCreateRequest);
+			user = userRepository.save(user);
+		}
+
+		String jwtAccessToken = generateJwtToken(user);
+		String jwtRefreshToken = generateJwtRefreshToken(user);
+
+		authenticationService.saveUserToken(new PrincipalDetails(user), jwtRefreshToken);
+
+		return new LoginResponse(ExceptionCode.FORBIDDEN.getCode(), jwtAccessToken);
+	}
+
+
+
+	private String generateJwtToken(User user) {
+		PrincipalDetails principalDetails = new PrincipalDetails(user);
+		return jwtService.generateToken(principalDetails);
+	}
+
+	private String generateJwtRefreshToken(User user) {
+		PrincipalDetails principalDetails = new PrincipalDetails(user);
+		return jwtService.generateRefreshToken(principalDetails);
+	}
+
+	private void validateSocialUserResponse(SocialUserResponse socialUserResponse) {
+		if (socialUserResponse == null) {
+			throw new AppException(ExceptionCode.NOT_FOUND_USER);
+		}
+
+		if (socialUserResponse.email() == null || socialUserResponse.email().isEmpty()) {
+			throw new AppException(ExceptionCode.NOT_FOUND_USER);
+		}
+
+		if (socialUserResponse.nickname() == null || socialUserResponse.nickname().isEmpty()) {
+			throw new AppException(ExceptionCode.NOT_FOUND_USER);
+		}
 	}
 }

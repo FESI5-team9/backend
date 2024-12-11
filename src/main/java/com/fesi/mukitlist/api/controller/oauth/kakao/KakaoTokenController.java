@@ -81,8 +81,6 @@ public class KakaoTokenController {
                     .email(email)
                     .password(password)
                     .nickname(nickname)
-                    .provider(provider)
-                    .providerId(providerId)
                     .build();
 
             return userService.createUser(userCreateRequest.toServiceRequest());

@@ -12,10 +12,7 @@ import lombok.Builder;
 public record UserCreateRequest(
 	String email,
 	String password,
-	String nickname,
-
-	String provider,
-	String providerId
+	String nickname
 	// String image
 ) {
 
@@ -24,8 +21,6 @@ public record UserCreateRequest(
 			.email(email)
 			.password(password)
 			.nickname(nickname)
-			.provider(provider)
-			.providerId(providerId)
 			.build();
 	}
 }

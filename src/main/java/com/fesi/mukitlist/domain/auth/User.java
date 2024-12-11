@@ -4,6 +4,9 @@ import java.time.LocalDateTime;
 
 import com.fesi.mukitlist.api.service.auth.request.UserServiceCreateRequest;
 
+import com.fesi.mukitlist.api.service.oauth.request.KakaoUserCreateRequest;
+import com.fesi.mukitlist.api.service.oauth.response.SocialUserResponse;
+import com.fesi.mukitlist.domain.auth.constant.UserType;
 import jakarta.persistence.*;
 import lombok.Builder;
 
@@ -37,9 +40,9 @@ public class User {
 
 	private String image;
 
-	private String provider;
-
-	private String providerId;
+	@Column(columnDefinition = "ENUM('KAKAO', 'GOOGLE', 'NORMAL') DEFAULT 'NORMAL'")
+	@Enumerated(EnumType.STRING)
+	private UserType userType;
 
 	@CreatedDate
 	@Column(updatable = false, nullable = false)
@@ -52,14 +55,13 @@ public class User {
 	private LocalDateTime deletedAt;
 
 	@Builder
-	private User(String email, String password, String nickname, String image, String provider, String providerId, LocalDateTime createdAt,
+	private User(String email, String password, String nickname, String image, UserType userType, LocalDateTime createdAt,
 				 LocalDateTime updatedAt, LocalDateTime deletedAt) {
 		this.email = email;
 		this.password = password;
 		this.nickname = nickname;
 		this.image = image;
-		this.provider = provider;
-		this.providerId = providerId;
+		this.userType = userType;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 		this.deletedAt = deletedAt;
@@ -70,6 +72,15 @@ public class User {
 				.email(request.email())
 				.password(password)
 				.nickname(request.nickname())
+				.build();
+	}
+
+	public static User of(KakaoUserCreateRequest request) {
+		return User.builder()
+				.email(request.email())
+				.password(request.password())
+				.nickname(request.nickname())
+				.userType(request.userType())
 				.build();
 	}
 

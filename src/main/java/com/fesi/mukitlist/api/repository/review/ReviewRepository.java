@@ -12,7 +12,9 @@ import com.fesi.mukitlist.api.service.review.request.ReviewServiceRequest;
 import com.fesi.mukitlist.domain.Review;
 import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
+import org.springframework.stereotype.Repository;
 
+@Repository("reviewRepository1")
 public interface ReviewRepository extends JpaRepository<Review, Long>, JpaSpecificationExecutor<Review> {
 	default Page<Review> findWithFilters(ReviewServiceRequest request, Pageable pageable) {
 		Specification<Review> specification = Specification.where(ReviewSpecifications.byFilter(request));

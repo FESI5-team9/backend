@@ -2,7 +2,8 @@ package com.fesi.mukitlist.domain.auth.constant;
 
 public enum GrantType {
 
-    BEARER("Bearer");
+    BEARER("Bearer"),
+    AUTHORIZATION("authorization_code");
 
     GrantType(final String type) {
         this.type = type;
