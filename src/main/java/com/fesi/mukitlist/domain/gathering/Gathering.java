@@ -172,10 +172,6 @@ public class Gathering {
 		return this;
 	}
 
-	public boolean isCancelAuthorization(User user) {
-		return this.user.getId().equals(user.getId());
-	}
-
 	public boolean isHostUser(User user) {
 		return this.user.getId().equals(user.getId());
 	}
@@ -207,7 +203,5 @@ public class Gathering {
 	public void changeStatus(GatheringStatus status) {
 		this.status = status;
 	}
-	// User
-	// participants
-	// Review
+
 }

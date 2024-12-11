@@ -448,7 +448,6 @@ public class GatheringController {
 	@PostMapping("/{id}/favorite")
 	public ResponseEntity<SimpleApiResponse> choiceFavoriteGathering(@PathVariable("id") Long id,
 		@Parameter(hidden = true) @Authorize PrincipalDetails user) {
-
 		gatheringService.choiceFavorite(id, user.getUser());
 		return new ResponseEntity<>(SimpleApiResponse.of("모임 찜하기를 성공했습니다."), HttpStatus.OK);
 	}

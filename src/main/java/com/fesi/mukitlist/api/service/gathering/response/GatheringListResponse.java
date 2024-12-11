@@ -19,6 +19,7 @@ public record GatheringListResponse(
 	String address1,
 	String address2,
 	Boolean open,
+	Boolean favorite,
 	Boolean participation,
 	int participantCount,
 	int capacity,
@@ -26,7 +27,7 @@ public record GatheringListResponse(
 	LocalDateTime createdAt,
 	LocalDateTime canceledAt
 ) {
-	public static GatheringListResponse of(Gathering gathering, Boolean participation) {
+	public static GatheringListResponse of(Gathering gathering, Boolean participation, Boolean isFavorite) {
 		return new GatheringListResponse(
 			gathering.getId(),
 			gathering.getStatus(),
@@ -38,6 +39,7 @@ public record GatheringListResponse(
 			gathering.getAddress1(),
 			gathering.getAddress2(),
 			gathering.isOpenedGathering(),
+			isFavorite,
 			participation,
 			gathering.getOpenParticipantCount(),
 			gathering.getCapacity(),
@@ -59,6 +61,7 @@ public record GatheringListResponse(
 			gathering.getAddress1(),
 			gathering.getAddress2(),
 			gathering.isOpenedGathering(),
+			null,
 			null,
 			gathering.getOpenParticipantCount(),
 			gathering.getCapacity(),
