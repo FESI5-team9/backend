@@ -8,12 +8,14 @@ import com.fesi.mukitlist.api.service.auth.response.UserResponse;
 import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.domain.gathering.Gathering;
 import com.fesi.mukitlist.domain.gathering.Keyword;
+import com.fesi.mukitlist.domain.gathering.constant.GatheringStatus;
 import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
 import com.fesi.mukitlist.domain.gathering.constant.LocationType;
 
 public record GatheringWithParticipantsResponse(
 	Long id,
 	UserResponse user,
+	GatheringStatus status,
 	GatheringType type,
 	String name,
 	LocalDateTime dateTime,
@@ -39,6 +41,7 @@ public record GatheringWithParticipantsResponse(
 		return new GatheringWithParticipantsResponse(
 			gathering.getId(),
 			UserResponse.of(gathering.getUser()),
+			gathering.getStatus(),
 			gathering.getType(),
 			gathering.getName(),
 			gathering.getDateTime(),

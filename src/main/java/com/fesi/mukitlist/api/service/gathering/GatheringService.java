@@ -58,14 +58,11 @@ public class GatheringService {
 
 		Page<Gathering> gatheringPage = gatheringRepository.findWithFilters(request, pageable);
 		List<Long> gatheringCandidates;
-		if (user != null) {
+
 			List<UserGathering> userGatheringIds = userGatheringRepository.findByIdUser(user);
 			gatheringCandidates = userGatheringIds.stream()
 				.map(ug -> ug.getId().getGathering().getId())
 				.toList();
-		} else {
-			gatheringCandidates = new ArrayList<>();
-		}
 
 		return gatheringPage.stream()
 			.map(g -> GatheringListResponse.of(g, gatheringCandidates.contains(g.getId())))
@@ -95,7 +92,12 @@ public class GatheringService {
 			storedName = s3Service.upload(request.image(), request.image().getOriginalFilename());
 		}
 		Gathering gathering = Gathering.create(request, storedName, user);
+		gathering.joinParticipant();
 		Gathering savedGathering = gatheringRepository.save(gathering);
+
+		UserGatheringId userGatheringId = UserGatheringId.of(user, gathering);
+		UserGathering userGathering = UserGathering.of(userGatheringId, gathering.getCreatedAt());
+		userGatheringRepository.save(userGathering);
 
 		List<Keyword> keywords = request.keyword().stream()
 			.map(k -> Keyword.of(k, savedGathering))
