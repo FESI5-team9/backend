@@ -1,6 +1,6 @@
-package com.fesi.mukitlist.api.controller.oauth.kakao.client;
+package com.fesi.mukitlist.api.controller.auth.oauth.kakao.client;
 
-import com.fesi.mukitlist.api.controller.oauth.kakao.response.KakaoTokenResponse;
+import com.fesi.mukitlist.api.controller.auth.oauth.kakao.response.KakaoTokenResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;

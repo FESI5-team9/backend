@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.api.controller.oauth;
+package com.fesi.mukitlist.api.controller.auth.oauth;
 
 import com.fesi.mukitlist.config.FeignConfig;
 import org.springframework.cloud.openfeign.FeignClient;

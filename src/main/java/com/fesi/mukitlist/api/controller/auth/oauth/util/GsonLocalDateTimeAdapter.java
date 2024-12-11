@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.api.controller.oauth.util;
+package com.fesi.mukitlist.api.controller.auth.oauth.util;
 
 import com.nimbusds.jose.shaded.gson.*;
 
