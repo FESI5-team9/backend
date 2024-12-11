@@ -28,7 +28,7 @@ import com.fesi.mukitlist.domain.gathering.Keyword;
 import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
 import com.fesi.mukitlist.domain.gathering.constant.LocationType;
 import com.fesi.mukitlist.domain.usergathering.UserGathering;
-import com.fesi.mukitlist.global.aws.S3Service;
+import com.fesi.mukitlist.api.service.aws.S3Service;
 
 import lombok.RequiredArgsConstructor;
 

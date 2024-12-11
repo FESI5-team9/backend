@@ -3,7 +3,6 @@ package com.fesi.mukitlist.api.service.auth;
 import java.io.IOException;
 import java.util.Optional;
 
-import org.springframework.http.HttpStatusCode;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +13,7 @@ import com.fesi.mukitlist.api.repository.UserRepository;
 import com.fesi.mukitlist.api.service.auth.request.UserServiceCreateRequest;
 import com.fesi.mukitlist.api.service.auth.response.UserInfoResponse;
 import com.fesi.mukitlist.domain.auth.User;
-import com.fesi.mukitlist.global.aws.S3Service;
+import com.fesi.mukitlist.api.service.aws.S3Service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

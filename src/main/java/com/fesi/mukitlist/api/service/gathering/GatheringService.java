@@ -4,9 +4,9 @@ import static com.fesi.mukitlist.api.exception.ExceptionCode.*;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fesi.mukitlist.api.exception.AppException;
 import com.fesi.mukitlist.api.repository.FavoriteGatheringRepository;
 import com.fesi.mukitlist.api.repository.KeywordRepository;
-import com.fesi.mukitlist.api.repository.UserRepository;
 import com.fesi.mukitlist.api.repository.gathering.GatheringRepository;
 import com.fesi.mukitlist.api.repository.usergathering.UserGatheringRepository;
 import com.fesi.mukitlist.api.service.gathering.request.GatheringServiceCreateRequest;
@@ -40,7 +39,7 @@ import com.fesi.mukitlist.domain.gathering.favorite.FavoriteGathering;
 import com.fesi.mukitlist.domain.gathering.favorite.FavoriteGatheringId;
 import com.fesi.mukitlist.domain.usergathering.UserGathering;
 import com.fesi.mukitlist.domain.usergathering.UserGatheringId;
-import com.fesi.mukitlist.global.aws.S3Service;
+import com.fesi.mukitlist.api.service.aws.S3Service;
 
 import lombok.RequiredArgsConstructor;
 
@@ -55,22 +54,37 @@ public class GatheringService {
 	private final S3Service s3Service;
 
 	@Transactional(readOnly = true)
-	public List<GatheringListResponse> getGatherings(GatheringServiceRequest request, Pageable pageable) {
+	public List<GatheringListResponse> getGatherings(GatheringServiceRequest request, User user, Pageable pageable) {
 
 		Page<Gathering> gatheringPage = gatheringRepository.findWithFilters(request, pageable);
+		List<Long> gatheringCandidates;
+		if (user != null) {
+			List<UserGathering> userGatheringIds = userGatheringRepository.findByIdUser(user);
+			gatheringCandidates = userGatheringIds.stream()
+				.map(ug -> ug.getId().getGathering().getId())
+				.toList();
+		} else {
+			gatheringCandidates = new ArrayList<>();
+		}
 
 		return gatheringPage.stream()
-			.map(GatheringListResponse::of)
+			.map(g -> GatheringListResponse.of(g, gatheringCandidates.contains(g.getId())))
 			.toList();
 	}
 
 	@Transactional(readOnly = true)
-	public List<GatheringListResponse> searchGathering(List<String> search, LocationType location, GatheringType type,
+	public List<GatheringListResponse> searchGathering(List<String> search, User user, LocationType location, GatheringType type,
 		Pageable pageable) {
+
 		Page<Gathering> gatheringPage = gatheringRepository.searchByTerms(search, location, type, pageable);
+		List<UserGathering> userGatheringIds = userGatheringRepository.findByIdUser(user);
+
+		List<Long> gatheringCandidates = userGatheringIds.stream()
+			.map(ug -> ug.getId().getGathering().getId())
+			.toList();
 
 		return gatheringPage.stream()
-			.map(GatheringListResponse::of)
+			.map(g -> GatheringListResponse.of(g, gatheringCandidates.contains(g.getId())))
 			.toList();
 	}
 

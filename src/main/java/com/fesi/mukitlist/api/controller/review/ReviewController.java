@@ -22,10 +22,9 @@ import com.fesi.mukitlist.api.service.review.response.ReviewScoreResponse;
 import com.fesi.mukitlist.api.service.review.response.ReviewStatisticsScoreResponse;
 import com.fesi.mukitlist.api.service.review.response.ReviewWithGatheringAndUserResponse;
 import com.fesi.mukitlist.domain.auth.PrincipalDetails;
-import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
 import com.fesi.mukitlist.domain.gathering.constant.LocationType;
-import com.fesi.mukitlist.global.annotation.Authorize;
+import com.fesi.mukitlist.api.controller.annotation.Authorize;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -77,7 +76,6 @@ public class ReviewController {
 		@RequestParam(required = false) Long userId,
 		@RequestParam(required = false) GatheringType type,
 		@RequestParam(required = false) LocationType location,
-		@RequestParam(required = false) LocalDateTime date,
 		@RequestParam(required = false) LocalDateTime registrationEnd,
 		@RequestParam(defaultValue = "10") int size,
 		@RequestParam(defaultValue = "0") int page,
@@ -85,34 +83,10 @@ public class ReviewController {
 		@RequestParam(defaultValue = "desc") String direction
 	) {
 
-		ReviewRequest request = ReviewRequest.of(gatheringId, userId, type, location, date, registrationEnd, size,
+		ReviewRequest request = ReviewRequest.of(gatheringId, userId, type, location, registrationEnd, size,
 			page, sort, direction);
 		return new ResponseEntity<>(reviewService.getReviews(request.toServiceRequest()), HttpStatus.OK);
 	}
-
-	@Operation(summary = "모임 별 리뷰 목록 조회", description = "모임 별 리뷰 목록을 조회합니다.",
-		responses = {
-			@ApiResponse(responseCode = "200", description = "리뷰 목록 조회 성공",
-				content = @Content(array = @ArraySchema(
-					schema = @Schema(implementation = ReviewResponse.class)
-				))),
-			@ApiResponse(responseCode = "400", description = "잘못된 요청",
-				content = @Content(mediaType = "application/json", schema = @Schema(implementation = ValidationErrorResponse.class))),
-		}
-	)
-	@GetMapping("/gathering")
-	public ResponseEntity<List<ReviewResponse>> getReviewsBy(
-		@RequestParam(required = false) Long gatheringId,
-		@RequestParam(defaultValue = "10") int size,
-		@RequestParam(defaultValue = "0") int page,
-		@RequestParam(defaultValue = "createdAt") String sort,
-		@RequestParam(defaultValue = "desc") String direction
-	) {
-
-		ReviewByRequest request = ReviewByRequest.of(gatheringId, size, page, sort, direction);
-		return new ResponseEntity<>(reviewService.getReviewsBy(request.toServiceRequest()), HttpStatus.OK);
-	}
-
 	@Operation(summary = "리뷰 평점 목록 조회", description = "필터링에 따라 리뷰 평점 목록을 조회합니다",
 		responses = {
 			@ApiResponse(responseCode = "200", description = "리뷰 목록 조회 성공",

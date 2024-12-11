@@ -36,14 +36,10 @@ public class ReviewSpecifications {
 			if (request.location() != null) {
 				predicates.add(criteriaBuilder.equal(gatheringJoin.get("location"), request.location()));
 			}
-			if (request.date() != null) {
-				predicates.add(criteriaBuilder.greaterThanOrEqualTo(gatheringJoin.get("dateTime"), request.date()));
-			}
 			if (request.registrationEnd() != null) {
 				predicates.add(criteriaBuilder.greaterThanOrEqualTo(gatheringJoin.get("registrationEnd"),
 					request.registrationEnd()));
 			}
-
 			return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
 		});
 	}

@@ -55,7 +55,7 @@ public class ApiControllerAdvice {
 		@ApiResponse(responseCode = "400", description = "요청 오류",
 			content = @Content(mediaType = "application/json",
 				schema = @Schema(implementation = ValidationErrorResponse.class))),
-		@ApiResponse(responseCode = "404", description = "요청 오류",
+		@ApiResponse(responseCode = "404", description = "조회 실패 오류",
 			content = @Content(mediaType = "application/json",
 				schema = @Schema(implementation = AppErrorResponse.class)))
 	})
@@ -88,7 +88,7 @@ public class ApiControllerAdvice {
 		@ApiResponse(responseCode = "400", description = "요청 오류",
 			content = @Content(mediaType = "application/json",
 				schema = @Schema(implementation = ValidationErrorResponse.class))),
-		@ApiResponse(responseCode = "404", description = "요청 오류",
+		@ApiResponse(responseCode = "404", description = "조회 실패 오류",
 			content = @Content(mediaType = "application/json",
 				schema = @Schema(implementation = AppErrorResponse.class)))
 	})

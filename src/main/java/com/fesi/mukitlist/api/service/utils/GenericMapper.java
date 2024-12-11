@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.global.utils;
+package com.fesi.mukitlist.api.service.utils;
 
 import java.util.List;
 import java.util.function.Function;

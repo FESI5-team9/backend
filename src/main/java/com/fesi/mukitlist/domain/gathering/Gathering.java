@@ -95,6 +95,7 @@ public class Gathering {
 	@Builder
 	private Gathering(
 		LocationType location,
+		GatheringStatus status,
 		GatheringType type,
 		String name,
 		LocalDateTime dateTime,
@@ -109,12 +110,13 @@ public class Gathering {
 		String createdBy,
 		LocalDateTime createdAt,
 		User user,
-		LocalDateTime canceledAt,
-		GatheringStatus status) {
+		LocalDateTime canceledAt
+		) {
 		if (location == null || type == null || name == null || dateTime == null || address1 == null || address2 == null) {
 			throw new AppException(REQUIRED_PROPERTIES);
 		}
 		this.location = location;
+		this.status = status;
 		this.type = type;
 		this.name = name;
 		this.dateTime = dateTime;
@@ -130,12 +132,12 @@ public class Gathering {
 		this.createdAt = createdAt;
 		this.user = user;
 		this.canceledAt = canceledAt;
-		this.status = status;
 	}
 
 	public static Gathering create(GatheringServiceCreateRequest request, String storedName, User user) {
 		return Gathering.builder()
 			.location(request.location())
+			.status(RECRUITING)
 			.type(request.type())
 			.name(request.name())
 			.dateTime(request.dateTime())
@@ -147,7 +149,6 @@ public class Gathering {
 			.address2(request.address2())
 			.description(request.description())
 			.user(user)
-			.status(RECRUITING)
 			.build();
 	}
 
@@ -172,11 +173,11 @@ public class Gathering {
 	}
 
 	public boolean isCancelAuthorization(User user) {
-		return this.user.equals(user);
+		return this.user.getId().equals(user.getId());
 	}
 
 	public boolean isHostUser(User user) {
-		return this.user.equals(user);
+		return this.user.getId().equals(user.getId());
 	}
 
 	public boolean isCanceledGathering() {
@@ -185,6 +186,10 @@ public class Gathering {
 
 	public boolean isJoinableGathering() {
 		return this.participantCount <= this.capacity;
+	}
+
+	public boolean isOpenedGathering() {
+		return this.participantCount >= this.openParticipantCount;
 	}
 
 	public void joinParticipant() {

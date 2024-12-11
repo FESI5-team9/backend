@@ -23,6 +23,7 @@ public record GatheringWithParticipantsResponse(
 	String address2,
 	String description,
 	List<String> keyword,
+	int openParticipantCount,
 	int participantCount,
 	int capacity,
 	String image,
@@ -47,14 +48,15 @@ public record GatheringWithParticipantsResponse(
 			gathering.getAddress2(),
 			gathering.getDescription(),
 			keywords.stream().map(Keyword::toString).collect(Collectors.toList()),
+			gathering.getOpenParticipantCount(),
 			gathering.getParticipantCount(),
 			gathering.getCapacity(),
 			gathering.getUser().getImage(),
 			gathering.getCreatedAt(),
 			gathering.getCanceledAt(),
-			user != null && gathering.getUser().getId().equals(user.getId()),
+			user != null && gathering.isHostUser(user),
 			isFavorite,
-			participants.size() >= gathering.getOpenParticipantCount(),
+			gathering.isOpenedGathering(),
 			participants
 		);
 	}

@@ -13,7 +13,6 @@ public record ReviewRequest(
 	Long userId,
 	GatheringType type,
 	LocationType location,
-	LocalDateTime date,
 	LocalDateTime registrationEnd,
 	int size,
 	int page,
@@ -22,8 +21,8 @@ public record ReviewRequest(
 ) {
 
 	public static ReviewRequest of(Long gatheringId, Long userId, GatheringType type, LocationType location,
-		LocalDateTime date, LocalDateTime registrationEnd, int size, int page, String sort, String direction) {
-		return new ReviewRequest(gatheringId, userId, type, location, date, registrationEnd, size, page, sort, direction);
+		LocalDateTime registrationEnd, int size, int page, String sort, String direction) {
+		return new ReviewRequest(gatheringId, userId, type, location, registrationEnd, size, page, sort, direction);
 	}
 
 	@Builder
@@ -33,7 +32,6 @@ public record ReviewRequest(
 			.userId(userId)
 			.type(type)
 			.location(location)
-			.date(date)
 			.registrationEnd(registrationEnd)
 			.size(size)
 			.page(page)
