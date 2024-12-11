@@ -2,6 +2,9 @@ package com.fesi.mukitlist.api.service.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fesi.mukitlist.api.exception.AppException;
+import com.fesi.mukitlist.api.exception.ExceptionCode;
+import com.fesi.mukitlist.api.service.oauth.KakaoLoginService;
+import com.fesi.mukitlist.api.service.oauth.response.SocialUserResponse;
 import com.fesi.mukitlist.domain.auth.PrincipalDetails;
 import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.domain.auth.constant.GrantType;
@@ -24,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import static com.fesi.mukitlist.api.exception.ExceptionCode.NOT_FOUND_USER;
 
@@ -35,8 +39,9 @@ public class AuthenticationService {
     private final TokenRepository tokenRepository;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final KakaoLoginService kakaoLoginService;
 
-    private void saveUserToken(PrincipalDetails principalDetails, String refreshToken) {
+    public void saveUserToken(PrincipalDetails principalDetails, String refreshToken) {
         Token existingToken = tokenRepository.findByUserAndToken(principalDetails.getUser().getId(), refreshToken);
         if (existingToken != null) {
             existingToken = Token.builder()
@@ -112,7 +117,7 @@ public class AuthenticationService {
         return null;
     }
 
-    private void addRefreshTokenToCookie(HttpServletResponse response, String refreshToken) {
+    public void addRefreshTokenToCookie(HttpServletResponse response, String refreshToken) {
         Cookie cookie = new Cookie("refresh-token", refreshToken);
         cookie.setHttpOnly(true);
         cookie.setSecure(false);
@@ -120,4 +125,5 @@ public class AuthenticationService {
         cookie.setMaxAge(60 * 60 * 24 * 7);
         response.addCookie(cookie);
     }
+
 }

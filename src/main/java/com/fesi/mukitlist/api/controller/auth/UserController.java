@@ -1,15 +1,21 @@
 package com.fesi.mukitlist.api.controller.auth;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.Map;
 
 import com.fesi.mukitlist.api.controller.auth.request.UserUpdateRequest;
+import com.fesi.mukitlist.api.service.auth.AuthenticationService;
 import com.fesi.mukitlist.api.service.auth.UserService;
 import com.fesi.mukitlist.api.controller.auth.request.UserCreateRequest;
 import com.fesi.mukitlist.api.service.auth.response.UserInfoResponse;
+import com.fesi.mukitlist.api.service.oauth.request.KakaoSocialLoginRequest;
+import com.fesi.mukitlist.api.service.oauth.response.LoginResponse;
 import com.fesi.mukitlist.domain.auth.PrincipalDetails;
 import com.fesi.mukitlist.global.annotation.Authorize;
 
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +36,7 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 
 	private final UserService userService;
+	private final AuthenticationService authenticationService;
 
 	@Operation(summary = "회원가입", description = "회원 가입을 진행합니다.",
 		responses = {

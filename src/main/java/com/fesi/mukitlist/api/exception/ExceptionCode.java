@@ -25,7 +25,9 @@ public enum ExceptionCode {
 	PAST_GATHERING(HttpStatus.BAD_REQUEST, "PAST_GATHERING", "이미 지난 모임입니다"),
 	NOT_PARTICIPANTS(HttpStatus.FORBIDDEN, "FORBIDDEN", "모임에 참석하지 않았습니다."),
 	//파일
-	RESOURCE_SIZE_LIMIT(HttpStatus.BAD_REQUEST, "SIZE_LIMIT", "파일의 용량은 10mb 이하여야 합니다.");
+	RESOURCE_SIZE_LIMIT(HttpStatus.BAD_REQUEST, "SIZE_LIMIT", "파일의 용량은 10mb 이하여야 합니다."),
+	//서버
+	IO_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "IO_EXCEPTION", "입출력 오류가 발생했습니다.");
 
 	private HttpStatus status;
 	private String code;

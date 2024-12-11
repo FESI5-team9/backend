@@ -10,7 +10,9 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import com.fesi.mukitlist.domain.Review;
 import com.fesi.mukitlist.domain.auth.User;
 import com.fesi.mukitlist.domain.gathering.constant.GatheringType;
+import org.springframework.stereotype.Repository;
 
+@Repository("reviewRepository2")
 public interface ReviewRepository extends JpaRepository<Review, Long>, JpaSpecificationExecutor<Review> {
 	List<Review> findAllByGathering_Type(GatheringType gatheringType);
 

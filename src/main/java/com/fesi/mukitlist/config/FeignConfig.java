@@ -2,18 +2,30 @@ package com.fesi.mukitlist.config;
 
 import com.fesi.mukitlist.api.exception.FeignClientExceptionErrorDecoder;
 import feign.Logger;
+import feign.RequestInterceptor;
 import feign.Retryer;
 import feign.codec.ErrorDecoder;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.cloud.openfeign.FeignFormatterRegistrar;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.format.datetime.standard.DateTimeFormatterRegistrar;
 
+@EnableFeignClients(basePackages = "com.fesi.mukitlist")
 @Configuration
-@EnableFeignClients(basePackages = "com.fesi")
 public class FeignConfig {
 
     @Bean
-    Logger.Level feignLoggerLevel() {
+    public FeignFormatterRegistrar localDateFormatter () {
+        return registry -> {
+            DateTimeFormatterRegistrar registrar = new DateTimeFormatterRegistrar();
+            registrar.setUseIsoFormat(true);
+            registrar.registerFormatters(registry);
+        };
+    }
+
+    @Bean
+    public Logger.Level feignLoggerLevel() {
         return Logger.Level.FULL;
     }
 

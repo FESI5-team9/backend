@@ -66,6 +66,7 @@ public class AuthenticationController {
         return new ResponseEntity<>(new AuthenticationResponse(authenticate.accessToken()), HttpStatus.OK);
     }
 
+
     @PostMapping("/refresh-token") // TODO Error Code 변경
     public ResponseEntity<AuthenticationResponse> refreshToken(
             HttpServletRequest request,
