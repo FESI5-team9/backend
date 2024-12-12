@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.api.service.oauth.response;
+package com.fesi.mukitlist.domain.service.oauth.response;
 
 import lombok.Builder;
 
@@ -7,7 +7,8 @@ public record SocialUserResponse(
         String email,
         String nickname
 ) {
-    public static SocialUserResponse fromKaKaoLoginResponse(KaKaoLoginResponse kaKaoLoginResponse) {
+    public static SocialUserResponse fromKaKaoLoginResponse(
+        KaKaoLoginResponse kaKaoLoginResponse) {
         KaKaoLoginResponse.KakaoLoginData kakaoLoginData = kaKaoLoginResponse.kakao_account();
         return SocialUserResponse.builder()
                 .email(kakaoLoginData.email())

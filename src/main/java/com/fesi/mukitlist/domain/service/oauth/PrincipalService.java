@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.api.service.oauth;
+package com.fesi.mukitlist.domain.service.oauth;
 
 import static com.fesi.mukitlist.api.exception.ExceptionCode.*;
 
@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 
 import com.fesi.mukitlist.api.exception.AppException;
 import com.fesi.mukitlist.api.repository.UserRepository;
-import com.fesi.mukitlist.domain.auth.PrincipalDetails;
-import com.fesi.mukitlist.domain.auth.User;
+import com.fesi.mukitlist.core.auth.PrincipalDetails;
+import com.fesi.mukitlist.core.auth.User;
 
 import lombok.RequiredArgsConstructor;
 

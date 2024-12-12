@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.domain.auth.constant;
+package com.fesi.mukitlist.core.auth.constant;
 
 import lombok.Getter;
 

@@ -1,6 +1,7 @@
-package com.fesi.mukitlist.api.service.oauth.request;
+package com.fesi.mukitlist.domain.service.oauth.request;
 
-import com.fesi.mukitlist.domain.auth.constant.UserType;
+import com.fesi.mukitlist.core.auth.constant.UserType;
+
 import jakarta.validation.constraints.NotNull;
 
 public record KakaoSocialLoginRequest(

@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.api.service.auth;
+package com.fesi.mukitlist.domain.service.auth;
 
 import static com.fesi.mukitlist.api.exception.ExceptionCode.*;
 
@@ -12,12 +12,12 @@ import com.fesi.mukitlist.api.controller.auth.response.AuthenticationResponse;
 import com.fesi.mukitlist.api.exception.AppException;
 import com.fesi.mukitlist.api.repository.TokenRepository;
 import com.fesi.mukitlist.api.repository.UserRepository;
-import com.fesi.mukitlist.api.service.auth.request.AuthenticationServiceRequest;
-import com.fesi.mukitlist.domain.auth.PrincipalDetails;
-import com.fesi.mukitlist.domain.auth.Token;
-import com.fesi.mukitlist.domain.auth.User;
-import com.fesi.mukitlist.domain.auth.constant.GrantType;
-import com.fesi.mukitlist.domain.auth.constant.TokenType;
+import com.fesi.mukitlist.core.auth.PrincipalDetails;
+import com.fesi.mukitlist.core.auth.Token;
+import com.fesi.mukitlist.core.auth.User;
+import com.fesi.mukitlist.core.auth.constant.GrantType;
+import com.fesi.mukitlist.core.auth.constant.TokenType;
+import com.fesi.mukitlist.domain.service.auth.request.AuthenticationServiceRequest;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;

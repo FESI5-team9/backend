@@ -1,6 +1,5 @@
-package com.fesi.mukitlist.api.service.auth;
+package com.fesi.mukitlist.domain.service.auth;
 
-import com.fesi.mukitlist.domain.auth.PrincipalDetails;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -13,11 +12,12 @@ import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
 import javax.crypto.SecretKey;
+
+import com.fesi.mukitlist.core.auth.PrincipalDetails;
 
 @Service
 public class JwtService {

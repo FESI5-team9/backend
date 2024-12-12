@@ -1,11 +1,13 @@
 spring:
   datasource:
-    url:
-    driver-class-name:
+    url: "jdbc:mysql://mukitlist-database.czysgm4sc0xt.ap-northeast-2.rds.amazonaws.com:3306/mikitlist-database"
+    username: "admin"
+    password: "!mukitlist1211"
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: create-drop
     show-sql: false
     properties:
       hibernate:

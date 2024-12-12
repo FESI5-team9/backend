@@ -120,7 +120,6 @@ public class AuthenticationController {
     )
     @GetMapping("/check-email")
     public ResponseEntity<Map<String,Boolean>> checkEmailDuplicated(@RequestParam String email){
-
         return new ResponseEntity(SimpleApiResponse.of(String.valueOf(userService.checkEmail(email))),HttpStatus.OK);
     }
 
@@ -134,7 +133,7 @@ public class AuthenticationController {
     )
     @GetMapping("/check-nickname")
     public ResponseEntity<Map<String,Boolean>> checkNicknameDuplicated(@RequestParam String nickname){
-        return new ResponseEntity(SimpleApiResponse.of(String.valueOf(userService.checkEmail(nickname))),HttpStatus.OK);
+        return new ResponseEntity(SimpleApiResponse.of(String.valueOf(userService.checkNickname(nickname))),HttpStatus.OK);
     }
 
 

@@ -1,16 +1,13 @@
-package com.fesi.mukitlist.api.service.oauth;
+package com.fesi.mukitlist.domain.service.oauth;
 
 import com.fesi.mukitlist.api.controller.auth.oauth.KakaoAuthApi;
 import com.fesi.mukitlist.api.controller.auth.oauth.KakaoUserApi;
 import com.fesi.mukitlist.api.controller.auth.oauth.util.GsonLocalDateTimeAdapter;
 import com.fesi.mukitlist.api.exception.AppException;
 import com.fesi.mukitlist.api.exception.ExceptionCode;
-import com.fesi.mukitlist.api.service.oauth.response.KaKaoLoginResponse;
-import com.fesi.mukitlist.api.service.oauth.response.SocialAuthResponse;
-
-import com.fesi.mukitlist.api.service.oauth.response.SocialUserResponse;
-import com.fesi.mukitlist.domain.auth.User;
-import com.fesi.mukitlist.domain.auth.constant.UserType;
+import com.fesi.mukitlist.domain.service.oauth.response.KaKaoLoginResponse;
+import com.fesi.mukitlist.domain.service.oauth.response.SocialAuthResponse;
+import com.fesi.mukitlist.domain.service.oauth.response.SocialUserResponse;
 import com.nimbusds.jose.shaded.gson.Gson;
 
 import com.nimbusds.jose.shaded.gson.GsonBuilder;
@@ -40,7 +37,7 @@ public class KakaoLoginService  {
     @Value("${kakao.client.secret}")
     private String clientSecret;
 
-    @Value("${kakao.client.redirect_url}")
+    @Value("${kakao.client.redirect-url}")
     private String redirectUrl;
 
 

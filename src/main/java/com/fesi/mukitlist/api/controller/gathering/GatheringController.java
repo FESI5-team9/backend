@@ -21,11 +21,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fesi.mukitlist.api.controller.annotation.Authorize;
 import com.fesi.mukitlist.api.controller.gathering.request.GatheringCreateRequest;
 import com.fesi.mukitlist.api.controller.gathering.request.GatheringRequest;
 import com.fesi.mukitlist.api.controller.gathering.request.GatheringUpdateRequest;
 import com.fesi.mukitlist.api.exception.response.ValidationErrorResponse;
 import com.fesi.mukitlist.api.response.SimpleApiResponse;
+import com.fesi.mukitlist.core.auth.PrincipalDetails;
+import com.fesi.mukitlist.core.gathering.constant.GatheringStatus;
+import com.fesi.mukitlist.core.gathering.constant.GatheringType;
+import com.fesi.mukitlist.core.gathering.constant.LocationType;
 import com.fesi.mukitlist.domain.service.gathering.GatheringService;
 import com.fesi.mukitlist.domain.service.gathering.response.GatheringCreateResponse;
 import com.fesi.mukitlist.domain.service.gathering.response.GatheringListResponse;
@@ -34,12 +39,6 @@ import com.fesi.mukitlist.domain.service.gathering.response.GatheringResponse;
 import com.fesi.mukitlist.domain.service.gathering.response.GatheringUpdateResponse;
 import com.fesi.mukitlist.domain.service.gathering.response.GatheringWithParticipantsResponse;
 import com.fesi.mukitlist.domain.service.gathering.response.JoinedGatheringsResponse;
-import com.fesi.mukitlist.core.auth.PrincipalDetails;
-import com.fesi.mukitlist.core.auth.User;
-import com.fesi.mukitlist.core.gathering.constant.GatheringStatus;
-import com.fesi.mukitlist.core.gathering.constant.GatheringType;
-import com.fesi.mukitlist.core.gathering.constant.LocationType;
-import com.fesi.mukitlist.api.controller.annotation.Authorize;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -483,8 +482,8 @@ public class GatheringController {
 	)
 	@DeleteMapping("/{id}/favorite")
 	public ResponseEntity<SimpleApiResponse> cancelFavoriteGathering(@PathVariable("id") Long id,
-		@Parameter(hidden = true) @Authorize User user) {
-		gatheringService.cancelFavorite(id, user);
+		@Parameter(hidden = true) @Authorize PrincipalDetails user) {
+		gatheringService.cancelFavorite(id, user.getUser());
 		return new ResponseEntity<>(SimpleApiResponse.of("모임 찜하기를 취소했습니다."), HttpStatus.OK);
 	}
 

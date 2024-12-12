@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.fesi.mukitlist.domain.auth.Token;
+import com.fesi.mukitlist.core.auth.Token;
 
 public interface TokenRepository extends JpaRepository<Token, Integer> {
 

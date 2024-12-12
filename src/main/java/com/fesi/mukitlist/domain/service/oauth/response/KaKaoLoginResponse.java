@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.api.service.oauth.response;
+package com.fesi.mukitlist.domain.service.oauth.response;
 
 public record KaKaoLoginResponse(
         KakaoLoginData kakao_account

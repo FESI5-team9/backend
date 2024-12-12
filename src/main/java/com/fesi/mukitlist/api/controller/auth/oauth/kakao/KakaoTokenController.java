@@ -1,8 +1,9 @@
 package com.fesi.mukitlist.api.controller.auth.oauth.kakao;
 
-import static com.fesi.mukitlist.domain.auth.constant.GrantType.*;
-import static com.fesi.mukitlist.domain.auth.constant.TokenType.*;
-import static com.fesi.mukitlist.domain.auth.constant.UserType.*;
+
+import static com.fesi.mukitlist.core.auth.constant.GrantType.*;
+import static com.fesi.mukitlist.core.auth.constant.TokenType.*;
+import static com.fesi.mukitlist.core.auth.constant.UserType.*;
 
 import java.util.Map;
 import java.util.Objects;
@@ -26,14 +27,14 @@ import com.fesi.mukitlist.api.controller.auth.oauth.kakao.response.KakaoTokenRes
 import com.fesi.mukitlist.api.controller.auth.response.AuthenticationResponse;
 import com.fesi.mukitlist.api.repository.TokenRepository;
 import com.fesi.mukitlist.api.repository.UserRepository;
-import com.fesi.mukitlist.api.service.auth.AuthenticationService;
-import com.fesi.mukitlist.api.service.auth.JwtService;
-import com.fesi.mukitlist.api.service.auth.UserService;
-import com.fesi.mukitlist.domain.auth.PrincipalDetails;
-import com.fesi.mukitlist.domain.auth.Token;
-import com.fesi.mukitlist.domain.auth.User;
-import com.fesi.mukitlist.domain.oauth.KakaoUserInfo;
-import com.fesi.mukitlist.domain.oauth.OAuth2UserInfo;
+import com.fesi.mukitlist.core.auth.PrincipalDetails;
+import com.fesi.mukitlist.core.auth.Token;
+import com.fesi.mukitlist.core.auth.User;
+import com.fesi.mukitlist.core.oauth.KakaoUserInfo;
+import com.fesi.mukitlist.core.oauth.OAuth2UserInfo;
+import com.fesi.mukitlist.domain.service.auth.AuthenticationService;
+import com.fesi.mukitlist.domain.service.auth.JwtService;
+import com.fesi.mukitlist.domain.service.auth.UserService;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
