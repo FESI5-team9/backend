@@ -23,7 +23,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
-@Deprecated
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/my")
@@ -46,9 +45,10 @@ public class MyPageController {
 		return new ResponseEntity<>(myPageService.getGatheringMypage(user, pageable), HttpStatus.OK);
 	}
 
+	@Deprecated
 	@GetMapping("/review")
 	public ResponseEntity<MyPageReviewResponse> getReviewMyPage(
 		@Parameter(hidden = true) @Authorize PrincipalDetails user) {
-		return new ResponseEntity<>(myPageService.getReviewMypage(user.getUser()),HttpStatus.OK);
+		return new ResponseEntity<>(myPageService.getReviewMypage(user.getUser()), HttpStatus.OK);
 	}
 }
