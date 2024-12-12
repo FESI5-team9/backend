@@ -1,5 +1,7 @@
 package com.fesi.mukitlist.api.repository;
 
+import static com.fesi.mukitlist.core.gathering.constant.GatheringType.*;
+import static com.fesi.mukitlist.core.gathering.constant.LocationType.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;

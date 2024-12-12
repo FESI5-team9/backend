@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.fesi.mukitlist.domain.service.auth.response.UserResponse;
-import com.fesi.mukitlist.core.auth.User;
+import com.fesi.mukitlist.core.auth.application.User;
 import com.fesi.mukitlist.core.gathering.Gathering;
 import com.fesi.mukitlist.core.gathering.constant.GatheringType;
 import com.fesi.mukitlist.core.gathering.Keyword;

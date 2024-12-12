@@ -1,6 +1,6 @@
-package com.fesi.mukitlist.domain.service.oauth.request;
+package com.fesi.mukitlist.domain.service.auth.oauth.request;
 
-import com.fesi.mukitlist.core.auth.constant.UserType;
+import com.fesi.mukitlist.core.auth.application.constant.UserType;
 
 public record KakaoUserCreateRequest(
         String email,

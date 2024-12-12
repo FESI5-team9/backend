@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.config;
+package com.fesi.mukitlist.config.security;
 
 import com.fesi.mukitlist.domain.service.auth.JwtService;
 import com.fesi.mukitlist.core.auth.PrincipalDetails;

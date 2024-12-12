@@ -2,7 +2,7 @@ package com.fesi.mukitlist.api.repository;
 
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
-import com.fesi.mukitlist.core.auth.User;
+import com.fesi.mukitlist.core.auth.application.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 

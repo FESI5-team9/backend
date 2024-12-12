@@ -7,7 +7,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import com.fesi.mukitlist.domain.service.review.request.ReviewServiceRequest;
 import com.fesi.mukitlist.core.Review;
-import com.fesi.mukitlist.core.auth.User;
+import com.fesi.mukitlist.core.auth.application.User;
 import com.fesi.mukitlist.core.gathering.Gathering;
 import com.fesi.mukitlist.core.gathering.constant.GatheringType;
 

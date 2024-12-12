@@ -1,13 +1,13 @@
-package com.fesi.mukitlist.domain.service.oauth;
+package com.fesi.mukitlist.domain.service.auth.oauth;
 
 import com.fesi.mukitlist.api.controller.auth.oauth.KakaoAuthApi;
 import com.fesi.mukitlist.api.controller.auth.oauth.KakaoUserApi;
 import com.fesi.mukitlist.api.controller.auth.oauth.util.GsonLocalDateTimeAdapter;
 import com.fesi.mukitlist.api.exception.AppException;
 import com.fesi.mukitlist.api.exception.ExceptionCode;
-import com.fesi.mukitlist.domain.service.oauth.response.KaKaoLoginResponse;
-import com.fesi.mukitlist.domain.service.oauth.response.SocialAuthResponse;
-import com.fesi.mukitlist.domain.service.oauth.response.SocialUserResponse;
+import com.fesi.mukitlist.domain.service.auth.oauth.response.KaKaoLoginResponse;
+import com.fesi.mukitlist.domain.service.auth.oauth.response.SocialAuthResponse;
+import com.fesi.mukitlist.domain.service.auth.oauth.response.SocialUserResponse;
 import com.nimbusds.jose.shaded.gson.Gson;
 
 import com.nimbusds.jose.shaded.gson.GsonBuilder;

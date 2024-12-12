@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.config;
+package com.fesi.mukitlist.config.web;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;

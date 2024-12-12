@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.core.oauth;
+package com.fesi.mukitlist.core.auth.oauth;
 
 public interface OAuth2UserInfo {
 

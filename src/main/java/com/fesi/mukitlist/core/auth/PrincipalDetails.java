@@ -10,6 +10,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import com.fesi.mukitlist.core.auth.application.User;
+
 @Getter
 @Builder
 public class PrincipalDetails implements UserDetails, OAuth2User {

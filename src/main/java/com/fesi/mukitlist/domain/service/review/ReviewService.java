@@ -17,7 +17,7 @@ import com.fesi.mukitlist.api.repository.review.ReviewRepository;
 import com.fesi.mukitlist.api.repository.usergathering.UserGatheringRepository;
 import com.fesi.mukitlist.domain.service.PageService;
 import com.fesi.mukitlist.domain.service.review.response.ReviewStatisticsScoreResponse;
-import com.fesi.mukitlist.core.auth.User;
+import com.fesi.mukitlist.core.auth.application.User;
 import com.fesi.mukitlist.core.gathering.Gathering;
 import com.fesi.mukitlist.core.gathering.constant.GatheringType;
 import com.fesi.mukitlist.core.Review;

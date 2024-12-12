@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.core.auth.constant;
+package com.fesi.mukitlist.core.auth;
 
 public enum GrantType {
 

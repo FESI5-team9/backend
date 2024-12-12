@@ -1,9 +1,9 @@
-package com.fesi.mukitlist.config;
+package com.fesi.mukitlist.config.security;
 
 import com.fesi.mukitlist.api.exception.AppException;
 import com.fesi.mukitlist.api.repository.UserRepository;
 import com.fesi.mukitlist.core.auth.PrincipalDetails;
-import com.fesi.mukitlist.core.auth.User;
+import com.fesi.mukitlist.core.auth.application.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

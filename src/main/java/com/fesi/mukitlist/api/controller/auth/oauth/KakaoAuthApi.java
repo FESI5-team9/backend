@@ -1,6 +1,6 @@
 package com.fesi.mukitlist.api.controller.auth.oauth;
 
-import com.fesi.mukitlist.config.FeignConfig;
+import com.fesi.mukitlist.config.web.FeignConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

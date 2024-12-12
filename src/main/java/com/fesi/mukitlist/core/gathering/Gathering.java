@@ -12,7 +12,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import com.fesi.mukitlist.api.exception.AppException;
 import com.fesi.mukitlist.domain.service.gathering.request.GatheringServiceCreateRequest;
 import com.fesi.mukitlist.domain.service.gathering.request.GatheringServiceUpdateRequest;
-import com.fesi.mukitlist.core.auth.User;
+import com.fesi.mukitlist.core.auth.application.User;
 import com.fesi.mukitlist.core.gathering.constant.GatheringStatus;
 import com.fesi.mukitlist.core.gathering.constant.GatheringType;
 import com.fesi.mukitlist.core.gathering.constant.LocationType;

@@ -17,7 +17,7 @@ import com.fesi.mukitlist.domain.service.gathering.response.GatheringListRespons
 import com.fesi.mukitlist.domain.service.review.response.ReviewResponse;
 import com.fesi.mukitlist.core.Review;
 import com.fesi.mukitlist.core.auth.PrincipalDetails;
-import com.fesi.mukitlist.core.auth.User;
+import com.fesi.mukitlist.core.auth.application.User;
 import com.fesi.mukitlist.core.gathering.Gathering;
 import com.fesi.mukitlist.core.usergathering.UserGathering;
 

@@ -16,7 +16,7 @@ import com.fesi.mukitlist.api.controller.auth.request.UserCreateRequest;
 import com.fesi.mukitlist.api.controller.auth.response.AuthenticationResponse;
 import com.fesi.mukitlist.api.response.SimpleApiResponse;
 import com.fesi.mukitlist.domain.service.auth.AuthenticationService;
-import com.fesi.mukitlist.domain.service.auth.UserService;
+import com.fesi.mukitlist.domain.service.auth.application.UserService;
 import com.fesi.mukitlist.domain.service.auth.request.AuthenticationServiceRequest;
 import com.fesi.mukitlist.domain.service.auth.response.UserInfoResponse;
 

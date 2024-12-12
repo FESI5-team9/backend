@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.domain.service.auth;
+package com.fesi.mukitlist.domain.service.auth.application;
 
 import static com.fesi.mukitlist.api.exception.ExceptionCode.*;
 
@@ -14,7 +14,7 @@ import com.fesi.mukitlist.api.exception.AppException;
 import com.fesi.mukitlist.api.repository.UserRepository;
 import com.fesi.mukitlist.domain.service.auth.request.UserServiceCreateRequest;
 import com.fesi.mukitlist.domain.service.auth.response.UserInfoResponse;
-import com.fesi.mukitlist.core.auth.User;
+import com.fesi.mukitlist.core.auth.application.User;
 import com.fesi.mukitlist.domain.service.aws.S3Service;
 
 import jakarta.transaction.Transactional;

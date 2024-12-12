@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.config;
+package com.fesi.mukitlist.config.web;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

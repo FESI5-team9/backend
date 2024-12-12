@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.domain.service.oauth.response;
+package com.fesi.mukitlist.domain.service.auth.oauth.response;
 
 import lombok.Builder;
 

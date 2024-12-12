@@ -14,9 +14,9 @@ import com.fesi.mukitlist.api.repository.TokenRepository;
 import com.fesi.mukitlist.api.repository.UserRepository;
 import com.fesi.mukitlist.core.auth.PrincipalDetails;
 import com.fesi.mukitlist.core.auth.Token;
-import com.fesi.mukitlist.core.auth.User;
-import com.fesi.mukitlist.core.auth.constant.GrantType;
-import com.fesi.mukitlist.core.auth.constant.TokenType;
+import com.fesi.mukitlist.core.auth.application.User;
+import com.fesi.mukitlist.core.auth.GrantType;
+import com.fesi.mukitlist.core.auth.TokenType;
 import com.fesi.mukitlist.domain.service.auth.request.AuthenticationServiceRequest;
 
 import jakarta.servlet.http.Cookie;
