@@ -63,10 +63,19 @@ public class AuthenticationService {
 
         PrincipalDetails principalDetails = new PrincipalDetails(user);
 
+
         String accessToken = jwtService.generateAccessToken(principalDetails);
-        String refreshToken = jwtService.generateRefreshToken(principalDetails);
-        saveUserToken(principalDetails, refreshToken);
-        addRefreshTokenToCookie(response, refreshToken);
+        String refreshToken = tokenRepository.findByUser(user).map(Token::getToken).orElseGet(() -> {
+            String newToken = jwtService.generateRefreshToken(principalDetails);
+            Token token = Token.builder()
+                .user(principalDetails.getUser())
+                .token(newToken)
+                .tokenType(TokenType.REFRESH)
+                .expired(false)
+                .build();
+            tokenRepository.save(token);
+            return newToken;
+        });
         return AuthenticationResponse.builder()
                 .accessToken(accessToken)
                 .build();
