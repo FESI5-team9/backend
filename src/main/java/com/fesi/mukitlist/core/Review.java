@@ -21,8 +21,8 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Entity
 @EntityListeners(AuditingEntityListener.class)
+@Entity
 public class Review {
 
 	@Id

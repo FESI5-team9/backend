@@ -3,6 +3,7 @@ package com.fesi.mukitlist.core.usergathering;
 import com.fesi.mukitlist.core.auth.User;
 import com.fesi.mukitlist.core.gathering.Gathering;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
