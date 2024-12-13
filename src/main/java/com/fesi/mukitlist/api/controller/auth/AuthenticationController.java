@@ -105,7 +105,7 @@ public class AuthenticationController {
 
     @Operation(
             summary = "카카오 로그인 리다이렉트",
-            description = "이 API를 호출하면 카카오 로그인 페이지로 리다이렉트됩니다. 리다이렉트 링크를 복사하여 브라우저에 입력하세요.",
+            description = "카카오 로그인 리다이렉트를 시도합니다.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "로그인 페이지로 리다이렉트됨",
                             content = @Content(
