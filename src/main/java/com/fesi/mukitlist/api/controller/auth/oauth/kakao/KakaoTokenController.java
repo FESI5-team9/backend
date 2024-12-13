@@ -59,7 +59,6 @@ public class KakaoTokenController {
 	@GetMapping("/kakao/callback")
 	public ResponseEntity<AuthenticationResponse> loginCallback(@RequestParam String code,
 																HttpServletResponse response) {
-		String contentType = "application/x-www-form-urlencoded;charset=UTF-8";
 
 		KakaoTokenResponse kakaoTokenResponse = kakaoTokenClient.requestKakaoToken(
 			"authorization_code",
@@ -76,7 +75,6 @@ public class KakaoTokenController {
 			String providerId = oAuth2UserInfo.getProviderId();
 			String nickname =
 				oAuth2UserInfo.getNickname() != null ? oAuth2UserInfo.getNickname() : oAuth2UserInfo.getName();
-			String password = passwordEncoder.encode("temporaryPassword");
 
 			KakaoServiceCreateRequest userCreateRequest = KakaoUserCreateRequest.toServiceRequest(
 				email,

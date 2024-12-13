@@ -1,13 +1,5 @@
 package com.fesi.mukitlist.domain.service.auth;
 
-import static com.fesi.mukitlist.api.exception.ExceptionCode.*;
-
-import java.io.IOException;
-
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.stereotype.Service;
-
 import com.fesi.mukitlist.api.controller.auth.response.AuthenticationResponse;
 import com.fesi.mukitlist.api.exception.AppException;
 import com.fesi.mukitlist.api.repository.TokenRepository;
@@ -18,11 +10,17 @@ import com.fesi.mukitlist.core.auth.User;
 import com.fesi.mukitlist.core.auth.constant.GrantType;
 import com.fesi.mukitlist.core.auth.constant.TokenType;
 import com.fesi.mukitlist.domain.service.auth.request.AuthenticationServiceRequest;
-
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+
+import static com.fesi.mukitlist.api.exception.ExceptionCode.NOT_FOUND_USER;
 
 @RequiredArgsConstructor
 @Service
@@ -72,8 +70,7 @@ public class AuthenticationService {
                 .build();
     }
 
-    public AuthenticationResponse refreshToken(String token) throws IOException {
-        jwtService.isRefreshTokenValid(token);
+    public AuthenticationResponse generateToNewAccessToken(String token) throws IOException {
         Token tokenInfo = tokenRepository.findByToken(token);
         String accessToken = "";
         if (tokenRepository.existsTokenByUserIdAndToken(tokenInfo.getUser().getId(), token)) {

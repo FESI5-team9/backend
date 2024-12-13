@@ -2,8 +2,11 @@ package com.fesi.mukitlist.api.controller.auth;
 
 import com.fesi.mukitlist.api.controller.auth.request.UserCreateRequest;
 import com.fesi.mukitlist.api.controller.auth.response.AuthenticationResponse;
+import com.fesi.mukitlist.api.exception.AppException;
+import com.fesi.mukitlist.api.exception.ExceptionCode;
 import com.fesi.mukitlist.api.response.SimpleApiResponse;
 import com.fesi.mukitlist.domain.service.auth.AuthenticationService;
+import com.fesi.mukitlist.domain.service.auth.JwtService;
 import com.fesi.mukitlist.domain.service.auth.UserService;
 import com.fesi.mukitlist.domain.service.auth.request.AuthenticationServiceRequest;
 import com.fesi.mukitlist.domain.service.auth.response.UserInfoResponse;
@@ -12,6 +15,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +37,7 @@ public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
     private final UserService userService;
+    private final JwtService jwtService;
 
     @Value("${kakao.client.id}")
     private String clientId;
@@ -139,11 +144,9 @@ public class AuthenticationController {
     )
     @GetMapping("/kakao/login")
     public ResponseEntity<Map<String, String>> redirectToKakaoLogin() {
-        // 카카오 로그인 URL 생성
         String kakaoAuthUrl = "https://kauth.kakao.com/oauth/authorize?client_id=" + clientId +
                 "&redirect_uri=" + redirectUri + "&response_type=code";
 
-        // 로그인 리다이렉트 URL을 사용자에게 반환
         Map<String, String> response = new HashMap<>();
         response.put("message", "카카오 로그인 페이지로 리다이렉트됩니다. URL을 복사하여 브라우저에 입력하세요.");
         response.put("redirectUrl", kakaoAuthUrl);
@@ -186,19 +189,68 @@ public class AuthenticationController {
     public ResponseEntity<Map<String,Boolean>> checkNicknameDuplicated(@RequestParam String nickname){
         return new ResponseEntity(SimpleApiResponse.of(String.valueOf(userService.checkNickname(nickname))),HttpStatus.OK);
     }
-
-    @PostMapping("/refresh-token") // TODO 더 좋게 받을 방법 있을까 고민
+    @Operation(
+            summary = "새로운 액세스 토큰 발급",
+            description = "쿠키에서 리프레시 토큰을 가져와 유효성을 검사한 후 새로운 액세스 토큰을 발급합니다.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "새로운 액세스 토큰이 발급되었습니다.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = AuthenticationResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "잘못된 요청 또는 쿠키에 리프레시 토큰이 없음",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(
+                                            example = "{\"code\":\"BAD_REQUEST\",\"message\":\"쿠키에 리프레시 토큰이 없습니다.\"}"
+                                    )
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "유효하지 않거나 만료된 리프레시 토큰",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(
+                                            example = "{\"code\":\"TOKEN_EXPIRED\",\"message\":\"유효하지 않은 리프레시 토큰입니다.\"}"
+                                    )
+                            )
+                    )
+            }
+    )
+    @PostMapping("/managed-access-token") // TODO 더 좋게 받을 방법 있을까 고민
     public ResponseEntity<AuthenticationResponse> refreshToken(
-        HttpServletRequest request,
-        String refreshToken
+            HttpServletRequest request
     ) throws IOException {
-        String cookie = request.getHeader("Cookie");
-        String token = cookie.substring(14);
-        AuthenticationResponse authenticationResponse = authenticationService.refreshToken(token);
+        String refreshToken = getRefreshTokenFromCookie(request);
 
-        if (authenticationResponse == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if (refreshToken == null) {
+            throw new AppException(ExceptionCode.TOKEN_IS_NOT_IN_COOKIE);
         }
+
+        if (jwtService.isRefreshTokenValid(refreshToken)) {
+            throw new AppException(ExceptionCode.TOKEN_EXPIRED);
+        }
+
+        AuthenticationResponse authenticationResponse = authenticationService.generateToNewAccessToken(refreshToken);
+
         return new ResponseEntity<>(authenticationResponse, HttpStatus.OK);
+    }
+
+    private String getRefreshTokenFromCookie(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("refresh-token".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
     }
 }
