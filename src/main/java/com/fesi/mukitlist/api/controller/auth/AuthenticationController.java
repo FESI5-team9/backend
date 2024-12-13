@@ -1,25 +1,16 @@
 package com.fesi.mukitlist.api.controller.auth;
 
-import java.io.IOException;
-import java.util.Map;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
+import com.fesi.mukitlist.api.controller.auth.oauth.kakao.client.KakaoTokenClient;
 import com.fesi.mukitlist.api.controller.auth.request.UserCreateRequest;
 import com.fesi.mukitlist.api.controller.auth.response.AuthenticationResponse;
+import com.fesi.mukitlist.api.repository.TokenRepository;
+import com.fesi.mukitlist.api.repository.UserRepository;
 import com.fesi.mukitlist.api.response.SimpleApiResponse;
 import com.fesi.mukitlist.domain.service.auth.AuthenticationService;
+import com.fesi.mukitlist.domain.service.auth.JwtService;
 import com.fesi.mukitlist.domain.service.auth.UserService;
 import com.fesi.mukitlist.domain.service.auth.request.AuthenticationServiceRequest;
 import com.fesi.mukitlist.domain.service.auth.response.UserInfoResponse;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -28,6 +19,16 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 
 @RequiredArgsConstructor
 @RestController
@@ -37,6 +38,21 @@ public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
     private final UserService userService;
+
+    private final KakaoTokenClient kakaoTokenClient;
+    private final JwtService jwtService;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final TokenRepository tokenRepository;
+
+    @Value("${kakao.client.id}")
+    private String clientId;
+
+    @Value("${kakao.client.secret}")
+    private String clientSecret;
+
+    @Value("${kakao.client.redirect_url}")
+    private String redirectUri;
 
     @Operation(summary = "회원가입", description = "회원 가입을 진행합니다.",
         responses = {
@@ -62,7 +78,6 @@ public class AuthenticationController {
         userService.createUser(userCreateRequest.toServiceRequest());
         return new ResponseEntity<>(SimpleApiResponse.of("사용자 생성 성공"), HttpStatus.CREATED);
     }
-
 
     @Operation(summary = "로그인", description = "로그인을 시도합니다.",
         responses = {
@@ -92,12 +107,59 @@ public class AuthenticationController {
             ),
         }
     )
-
     @PostMapping("/signin")
     public ResponseEntity<AuthenticationResponse> signIn(
             @RequestBody AuthenticationServiceRequest request, HttpServletResponse response) {
         AuthenticationResponse authenticate = authenticationService.authenticate(request, response);
         return new ResponseEntity<>(AuthenticationResponse.of(authenticate.accessToken()), HttpStatus.OK);
+    }
+
+    @Operation(
+            summary = "카카오 로그인 리다이렉트",
+            description = "이 API를 호출하면 카카오 로그인 페이지로 리다이렉트됩니다. 리다이렉트 링크를 복사하여 브라우저에 입력하세요.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "로그인 페이지로 리다이렉트됨",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(
+                                            example = "{\"message\":\"카카오 로그인 페이지로 리다이렉트됩니다. URL을 복사하여 브라우저에 입력하세요.\"}"
+                                    )
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "잘못된 요청",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(
+                                            example = "{\"code\":\"BAD_REQUEST\",\"message\":\"잘못된 요청입니다.\"}"
+                                    )
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "서버 오류",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(
+                                            example = "{\"code\":\"INTERNAL_SERVER_ERROR\",\"message\":\"서버 오류가 발생했습니다.\"}"
+                                    )
+                            )
+                    )
+            }
+    )
+    @GetMapping("/kakao/login")
+    public ResponseEntity<Map<String, String>> redirectToKakaoLogin() {
+        // 카카오 로그인 URL 생성
+        String kakaoAuthUrl = "https://kauth.kakao.com/oauth/authorize?client_id=" + clientId +
+                "&redirect_uri=" + redirectUri + "&response_type=code";
+
+        // 로그인 리다이렉트 URL을 사용자에게 반환
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "카카오 로그인 페이지로 리다이렉트됩니다. URL을 복사하여 브라우저에 입력하세요.");
+        response.put("redirectUrl", kakaoAuthUrl);
+
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "이메일 중복확인", description = "이메일 중복 확인을 진행합니다.",
@@ -137,6 +199,15 @@ public class AuthenticationController {
     }
 
 
+//    @Operation(summary = "리프레시 토큰 확인", description = "리프레시 토큰 확인을 진행합니다.",
+//            responses = {
+//                    @ApiResponse(responseCode = "200", description = "리프 성공",
+//                            content = @Content(
+//                                    mediaType = "application/json",
+//                                    schema = @Schema(implementation = SimpleApiResponse.class))),
+//            }
+//    )
+
     @PostMapping("/refresh-token") // TODO 더 좋게 받을 방법 있을까 고민
     public ResponseEntity<AuthenticationResponse> refreshToken(
         HttpServletRequest request,
@@ -145,11 +216,18 @@ public class AuthenticationController {
         String cookie = request.getHeader("Cookie");
         String token = cookie.substring(14);
         AuthenticationResponse authenticationResponse = authenticationService.refreshToken(token);
-        // 내가 생각나는거
 
         if (authenticationResponse == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(authenticationResponse, HttpStatus.OK);
     }
+    // 일단 리프레시 토큰이 쿠키에 있어
+    // 그거가 있기만 하면은 되
+    // 음 근데 쿠키를 가져오네
+    // refresh token은 없어도 되네
+    // 일단 refresh token이 없어!
+    // 그러면 refresh token이 없다는걸 말해줘야겠다
+    // 근데 결국에 access token이 발급 되잖아
+    // 음 response에 expired를 어떻게 나타낼까...
 }
