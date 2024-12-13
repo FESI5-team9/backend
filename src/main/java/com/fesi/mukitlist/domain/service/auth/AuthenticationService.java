@@ -4,7 +4,9 @@ import static com.fesi.mukitlist.api.exception.ExceptionCode.*;
 
 import java.io.IOException;
 
+import org.springdoc.core.service.GenericResponseService;
 import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -32,6 +34,7 @@ public class AuthenticationService {
 	private final TokenRepository tokenRepository;
 	private final JwtService jwtService;
 	private final AuthenticationManager authenticationManager;
+	private final GenericResponseService responseBuilder;
 
 	public void saveUserToken(PrincipalDetails principalDetails, String refreshToken) {
 		Token existingToken = tokenRepository.findByUserAndToken(principalDetails.getUser().getId(), refreshToken);
@@ -55,7 +58,7 @@ public class AuthenticationService {
 		}
 	}
 
-	public AuthenticationResponse authenticate(AuthenticationServiceRequest request) {
+	public ResponseEntity<AuthenticationResponse> authenticate(AuthenticationServiceRequest request) {
 		Authentication authenticate = authenticationManager.authenticate(
 			new UsernamePasswordAuthenticationToken(request.email(), request.password()));
 
@@ -77,10 +80,14 @@ public class AuthenticationService {
 				return newToken;
 			});
 
-		addRefreshTokenToCookie(refreshToken);
-		return AuthenticationResponse.builder()
+		ResponseCookie cookie = addRefreshTokenToCookie(refreshToken);
+
+		AuthenticationResponse response = AuthenticationResponse.builder()
 			.accessToken(accessToken)
 			.build();
+		return ResponseEntity.ok()
+			.header("Set-Cookie", cookie.toString())
+			.body(response);
 	}
 
 	public AuthenticationResponse refreshToken(String token) throws IOException {
@@ -93,8 +100,8 @@ public class AuthenticationService {
 		return AuthenticationResponse.of(accessToken);
 	}
 
-	public void addRefreshTokenToCookie(String refreshToken) {
-		ResponseCookie.from("refresh-token", refreshToken)
+	public ResponseCookie addRefreshTokenToCookie(String refreshToken) {
+		return ResponseCookie.from("refresh-token", refreshToken)
 			.httpOnly(true)
 			.sameSite("None")
 			.secure(true)

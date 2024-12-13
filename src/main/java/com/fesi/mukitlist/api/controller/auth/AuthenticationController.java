@@ -94,8 +94,7 @@ public class AuthenticationController {
 	@PostMapping("/signin")
 	public ResponseEntity<AuthenticationResponse> signIn(
 		@RequestBody AuthenticationServiceRequest request) {
-		AuthenticationResponse authenticate = authenticationService.authenticate(request);
-		return new ResponseEntity<>(AuthenticationResponse.of(authenticate.accessToken()), HttpStatus.OK);
+		return authenticationService.authenticate(request);
 	}
 
 	@Operation(summary = "이메일 중복확인", description = "이메일 중복 확인을 진행합니다.",
