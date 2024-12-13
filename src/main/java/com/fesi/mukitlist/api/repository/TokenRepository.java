@@ -15,7 +15,9 @@ public interface TokenRepository extends JpaRepository<Token, Integer> {
       """)
     Token findByUserAndToken(@Param("userId") Long userId, @Param("refreshToken") String refreshToken);
 
-    boolean existsTokenByUserIdAndToken(Long userI, String refreshToken);
+    boolean existsTokenByUserId(Long userId);
 
-    Token findByToken(String token);
+    Token findFirstByUserId(Long id);
+
+    Token findFirstByToken(String token);
 }

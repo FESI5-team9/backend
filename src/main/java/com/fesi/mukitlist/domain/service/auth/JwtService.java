@@ -1,20 +1,27 @@
 package com.fesi.mukitlist.domain.service.auth;
 
+import static com.fesi.mukitlist.api.exception.ExceptionCode.*;
 
-import com.fesi.mukitlist.core.auth.PrincipalDetails;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
-import javax.crypto.SecretKey;
 import java.security.Key;
 import java.util.Date;
 import java.util.Map;
 import java.util.function.Function;
+
+import javax.crypto.SecretKey;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.oauth2.jwt.JwtValidationException;
+import org.springframework.stereotype.Service;
+
+import com.fesi.mukitlist.api.exception.AppException;
+import com.fesi.mukitlist.core.auth.PrincipalDetails;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 
 @Service
 public class JwtService {
@@ -37,7 +44,6 @@ public class JwtService {
 		return claimsResolver.apply(claims);
 	}
 
-
 	public String generateAccessToken(PrincipalDetails principalDetails) {
 		return buildToken(Map.of("access-token",true), principalDetails, accessExpiration);
 	}
@@ -54,11 +60,6 @@ public class JwtService {
 			.setExpiration(new Date(System.currentTimeMillis() + expiration))
 			.signWith(getSignInKey(), SignatureAlgorithm.HS256)
 			.compact();
-	}
-
-	public boolean isTokenValid(String token, PrincipalDetails principalDetails) {
-		final String username = extractUsername(token);
-		return (username.equals(principalDetails.getUsername())) && !isTokenExpired(token);
 	}
 
 	public boolean isRefreshTokenValid(String token) {
@@ -90,12 +91,18 @@ public class JwtService {
 		return extractClaim(token, Claims::getExpiration);
 	}
 
-	private Claims extractAllClaims(String token) {
-		return Jwts.parserBuilder()
-			.setSigningKey(getSignInKey())
-			.build()
-			.parseClaimsJws(token)
-			.getBody();
+	private Claims extractAllClaims(String token) throws AppException {
+		try {
+			return Jwts.parserBuilder()
+				.setSigningKey(getSignInKey())
+				.build()
+				.parseClaimsJws(token)
+				.getBody();
+		} catch (ExpiredJwtException e) {
+			throw new AppException(TOKEN_EXPIRED);
+		} catch (JwtValidationException e) {
+			throw new AppException(NOT_VALID_TOKEN);
+		}
 	}
 }
 

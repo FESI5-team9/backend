@@ -46,8 +46,8 @@ public class SecurityConfig {
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authenticationProvider(authenticationProvider)
 			.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-			// TODO http basic 인증 방식 disable
-			// TODO 일반 로그인 OAuth2 로그인 uri 설정
+		// TODO http basic 인증 방식 disable
+		// TODO 일반 로그인 OAuth2 로그인 uri 설정
 
 		return http.build();
 	}
@@ -56,10 +56,13 @@ public class SecurityConfig {
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowedOrigins(
-			List.of("http://localhost:3000", "https://scintillating-caramel-7883ef.netlify.app/")); // 모든 Origin 허용
-		configuration.addAllowedMethod("*"); // 모든 HTTP Method 허용
-		configuration.addAllowedHeader("*"); // 모든 Header 허용
-		configuration.setAllowCredentials(true); // 인증 정보 허용
+			List.of(
+				"http://localhost:3000",
+				"https://scintillating-caramel-7883ef.netlify.app/",
+				"https://muckitlist.vercel.app/"));
+		configuration.addAllowedMethod("*");
+		configuration.addAllowedHeader("*");
+		configuration.setAllowCredentials(true);
 
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
