@@ -1,17 +1,12 @@
 package com.fesi.mukitlist.api.exception;
 
 import java.sql.SQLIntegrityConstraintViolationException;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -25,7 +20,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 
 @RestControllerAdvice
@@ -104,12 +98,12 @@ public class ApiControllerAdvice {
 	}
 
 	@ExceptionHandler(AppException.class)
-	public ResponseEntity<AppErrorResponse> handle (AppException e) {
-		return new ResponseEntity<>(AppErrorResponse.of(e.getExceptionCode()),e.getExceptionCode().getStatus());
+	public ResponseEntity<AppErrorResponse> handle(AppException e) {
+		return new ResponseEntity<>(AppErrorResponse.of(e.getExceptionCode()), e.getExceptionCode().getStatus());
 	}
 
 	@ExceptionHandler(SQLIntegrityConstraintViolationException.class)
-	protected ResponseEntity handleSQLException(SQLIntegrityConstraintViolationException e){
+	protected ResponseEntity handleSQLException(SQLIntegrityConstraintViolationException e) {
 		log.error("ERROR: {}", e.getMessage(), e);
 		return new ResponseEntity(AppErrorResponse.of(ExceptionCode.EMAIL_EXIST), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
