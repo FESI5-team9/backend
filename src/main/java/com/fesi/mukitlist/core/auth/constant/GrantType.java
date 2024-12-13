@@ -10,4 +10,8 @@ public enum GrantType {
     }
 
     private String type;
+
+    public String getType() {
+        return type;
+    }
 }

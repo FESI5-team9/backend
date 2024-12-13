@@ -1,25 +1,5 @@
 package com.fesi.mukitlist.api.controller.auth.oauth.kakao;
 
-
-import static com.fesi.mukitlist.core.auth.constant.GrantType.*;
-import static com.fesi.mukitlist.core.auth.constant.TokenType.*;
-import static com.fesi.mukitlist.core.auth.constant.UserType.*;
-
-import java.util.Map;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.client.RestTemplate;
-
 import com.fesi.mukitlist.api.controller.auth.oauth.kakao.client.KakaoTokenClient;
 import com.fesi.mukitlist.api.controller.auth.oauth.kakao.request.KakaoServiceCreateRequest;
 import com.fesi.mukitlist.api.controller.auth.oauth.kakao.request.KakaoUserCreateRequest;
@@ -35,10 +15,27 @@ import com.fesi.mukitlist.core.oauth.OAuth2UserInfo;
 import com.fesi.mukitlist.domain.service.auth.AuthenticationService;
 import com.fesi.mukitlist.domain.service.auth.JwtService;
 import com.fesi.mukitlist.domain.service.auth.UserService;
-
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.Map;
+import java.util.Objects;
+
+import static com.fesi.mukitlist.core.auth.constant.GrantType.BEARER;
+import static com.fesi.mukitlist.core.auth.constant.TokenType.REFRESH;
+import static com.fesi.mukitlist.core.auth.constant.UserType.KAKAO;
 
 @Controller
 @RequestMapping("/api/auth")
@@ -59,17 +56,9 @@ public class KakaoTokenController {
 	@Value("${kakao.client.secret}")
 	private String clientSecret;
 
-	@GetMapping("/kakao/login")
-	public String redirectToKakaoLogin() {
-		String kakaoAuthUrl = "https://kauth.kakao.com/oauth/authorize?client_id=" + clientId +
-			"&redirect_uri=" + "http://localhost:8080/api/auth/kakao/callback" + "&response_type=code";
-		return "redirect:" + kakaoAuthUrl;
-	}
-
 	@GetMapping("/kakao/callback")
 	public ResponseEntity<AuthenticationResponse> loginCallback(@RequestParam String code,
-		HttpServletResponse response) {
-		String contentType = "application/x-www-form-urlencoded;charset=UTF-8";
+																HttpServletResponse response) {
 
 		KakaoTokenResponse kakaoTokenResponse = kakaoTokenClient.requestKakaoToken(
 			"authorization_code",
@@ -79,8 +68,6 @@ public class KakaoTokenController {
 			"http://localhost:8080/api/auth/kakao/callback"
 		);
 
-		log.info("Kakao Token Response: " + kakaoTokenResponse);
-
 		OAuth2UserInfo oAuth2UserInfo = getKakaoUserInfo(kakaoTokenResponse.access_token());
 		String email = oAuth2UserInfo.getEmail();
 
@@ -88,7 +75,6 @@ public class KakaoTokenController {
 			String providerId = oAuth2UserInfo.getProviderId();
 			String nickname =
 				oAuth2UserInfo.getNickname() != null ? oAuth2UserInfo.getNickname() : oAuth2UserInfo.getName();
-			String password = passwordEncoder.encode("temporaryPassword");
 
 			KakaoServiceCreateRequest userCreateRequest = KakaoUserCreateRequest.toServiceRequest(
 				email,
