@@ -17,6 +17,6 @@ public class JpaConfig {
 
 	@Bean
 	public AuditorAware<String> auditorProvider() {
-		return new SecurityAuditorAware();
+		return new CustomAuditorAware();
 	}
 }

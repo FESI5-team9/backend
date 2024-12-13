@@ -8,7 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.fesi.mukitlist.core.auth.PrincipalDetails;
 
-public class SecurityAuditorAware implements AuditorAware<String> {
+public class CustomAuditorAware implements AuditorAware<String> {
 
 	@Override
 	public Optional<String> getCurrentAuditor() {
@@ -21,7 +21,7 @@ public class SecurityAuditorAware implements AuditorAware<String> {
 		Object principal = authentication.getPrincipal();
 		if (principal instanceof PrincipalDetails) {
 			// UserDetails의 구현체에서 닉네임을 가져온다고 가정
-			return Optional.of(((PrincipalDetails) principal).getName());
+			return Optional.of(((PrincipalDetails)principal).getName());
 		} else {
 			return Optional.of(principal.toString());
 		}
