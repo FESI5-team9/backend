@@ -1,6 +1,5 @@
 package com.fesi.mukitlist.api.controller.auth.oauth.kakao;
 
-
 import static com.fesi.mukitlist.core.auth.GrantType.*;
 import static com.fesi.mukitlist.core.auth.TokenType.*;
 import static com.fesi.mukitlist.core.auth.application.constant.UserType.*;
@@ -102,7 +101,7 @@ public class KakaoTokenController {
 		String accessToken = jwtService.generateAccessToken(kakaoAccount);
 		String refreshToken = jwtService.generateRefreshToken(kakaoAccount);
 		tokenRepository.save(Token.of(refreshToken, BEARER, REFRESH, false, user));
-		authenticationService.addRefreshTokenToCookie(response, refreshToken);
+		authenticationService.addRefreshTokenToCookie(refreshToken);
 		// 루트도메인
 		return ResponseEntity.ok(AuthenticationResponse.of(accessToken));
 	}
