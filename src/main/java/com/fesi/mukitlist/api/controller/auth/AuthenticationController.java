@@ -1,13 +1,9 @@
 package com.fesi.mukitlist.api.controller.auth;
 
-import com.fesi.mukitlist.api.controller.auth.oauth.kakao.client.KakaoTokenClient;
 import com.fesi.mukitlist.api.controller.auth.request.UserCreateRequest;
 import com.fesi.mukitlist.api.controller.auth.response.AuthenticationResponse;
-import com.fesi.mukitlist.api.repository.TokenRepository;
-import com.fesi.mukitlist.api.repository.UserRepository;
 import com.fesi.mukitlist.api.response.SimpleApiResponse;
 import com.fesi.mukitlist.domain.service.auth.AuthenticationService;
-import com.fesi.mukitlist.domain.service.auth.JwtService;
 import com.fesi.mukitlist.domain.service.auth.UserService;
 import com.fesi.mukitlist.domain.service.auth.request.AuthenticationServiceRequest;
 import com.fesi.mukitlist.domain.service.auth.response.UserInfoResponse;
@@ -22,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -38,12 +33,6 @@ public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
     private final UserService userService;
-
-    private final KakaoTokenClient kakaoTokenClient;
-    private final JwtService jwtService;
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final TokenRepository tokenRepository;
 
     @Value("${kakao.client.id}")
     private String clientId;
@@ -198,16 +187,6 @@ public class AuthenticationController {
         return new ResponseEntity(SimpleApiResponse.of(String.valueOf(userService.checkNickname(nickname))),HttpStatus.OK);
     }
 
-
-//    @Operation(summary = "리프레시 토큰 확인", description = "리프레시 토큰 확인을 진행합니다.",
-//            responses = {
-//                    @ApiResponse(responseCode = "200", description = "리프 성공",
-//                            content = @Content(
-//                                    mediaType = "application/json",
-//                                    schema = @Schema(implementation = SimpleApiResponse.class))),
-//            }
-//    )
-
     @PostMapping("/refresh-token") // TODO 더 좋게 받을 방법 있을까 고민
     public ResponseEntity<AuthenticationResponse> refreshToken(
         HttpServletRequest request,
@@ -222,12 +201,4 @@ public class AuthenticationController {
         }
         return new ResponseEntity<>(authenticationResponse, HttpStatus.OK);
     }
-    // 일단 리프레시 토큰이 쿠키에 있어
-    // 그거가 있기만 하면은 되
-    // 음 근데 쿠키를 가져오네
-    // refresh token은 없어도 되네
-    // 일단 refresh token이 없어!
-    // 그러면 refresh token이 없다는걸 말해줘야겠다
-    // 근데 결국에 access token이 발급 되잖아
-    // 음 response에 expired를 어떻게 나타낼까...
 }
