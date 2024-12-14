@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fesi.mukitlist.api.repository.FavoriteGatheringRepository;
-import com.fesi.mukitlist.core.auth.User;
+import com.fesi.mukitlist.core.auth.application.User;
 import com.fesi.mukitlist.core.gathering.Gathering;
 import com.fesi.mukitlist.core.gathering.favorite.FavoriteGathering;
 import com.fesi.mukitlist.core.gathering.favorite.FavoriteGatheringId;

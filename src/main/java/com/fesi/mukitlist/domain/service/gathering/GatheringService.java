@@ -26,7 +26,7 @@ import com.fesi.mukitlist.domain.service.gathering.response.GatheringResponse;
 import com.fesi.mukitlist.domain.service.gathering.response.GatheringUpdateResponse;
 import com.fesi.mukitlist.domain.service.gathering.response.GatheringWithParticipantsResponse;
 import com.fesi.mukitlist.domain.service.gathering.response.JoinedGatheringsResponse;
-import com.fesi.mukitlist.core.auth.User;
+import com.fesi.mukitlist.core.auth.application.User;
 import com.fesi.mukitlist.core.gathering.Gathering;
 import com.fesi.mukitlist.core.gathering.Keyword;
 import com.fesi.mukitlist.core.gathering.constant.GatheringStatus;

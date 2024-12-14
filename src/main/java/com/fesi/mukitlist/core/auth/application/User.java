@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.core.auth;
+package com.fesi.mukitlist.core.auth.application;
 
 import java.time.LocalDateTime;
 
@@ -7,7 +7,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.fesi.mukitlist.api.controller.auth.oauth.kakao.request.KakaoServiceCreateRequest;
-import com.fesi.mukitlist.core.auth.constant.UserType;
+import com.fesi.mukitlist.core.auth.application.constant.UserType;
 import com.fesi.mukitlist.domain.service.auth.request.UserServiceCreateRequest;
 
 import jakarta.persistence.Column;
@@ -93,6 +93,7 @@ public class User {
 			.nickname(request.nickname())
 			.userType(request.userType())
 			.provider(request.userType().getProviderName())
+			.providerId(request.providerId())
 			.build();
 	}
 

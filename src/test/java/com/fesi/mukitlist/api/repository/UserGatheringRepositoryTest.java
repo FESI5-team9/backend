@@ -1,5 +1,7 @@
 package com.fesi.mukitlist.api.repository;
 
+import static com.fesi.mukitlist.core.gathering.constant.GatheringType.*;
+import static com.fesi.mukitlist.core.gathering.constant.LocationType.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
@@ -17,7 +19,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import com.fesi.mukitlist.api.repository.gathering.GatheringRepository;
 import com.fesi.mukitlist.api.repository.usergathering.UserGatheringRepository;
-import com.fesi.mukitlist.core.auth.User;
+import com.fesi.mukitlist.core.auth.application.User;
 import com.fesi.mukitlist.core.gathering.Gathering;
 import com.fesi.mukitlist.core.usergathering.UserGathering;
 import com.fesi.mukitlist.core.usergathering.UserGatheringId;
@@ -36,9 +38,8 @@ class UserGatheringRepositoryTest {
 	void setUp() {
 		User user = User.builder()
 			.email("test@test.com")
-			.password("test1234")
-			.name("name")
-			.nickname("company")
+			.password("test1234!")
+			.nickname("test")
 			.createdAt(LocalDateTime.now())
 			.updatedAt(LocalDateTime.now())
 			.deletedAt(null)
@@ -55,7 +56,7 @@ class UserGatheringRepositoryTest {
 			.address1("성동구")
 			.address2("성수동")
 			.description("성수동 카페 탐방")
-			.createdBy(user.getName())
+			.createdBy(user.getNickname())
 			.user(user)
 			.build();
 		gatheringRepository.save(gathering);
@@ -103,7 +104,7 @@ class UserGatheringRepositoryTest {
 		assertThat(gatherings.getContent()).isNotEmpty().hasSize(2)
 			.extracting(
 				g -> g.getId().getGathering().getName(),
-				g -> g.getId().getUser().getName()
+				g -> g.getId().getUser().getNickname()
 			).containsExactlyInAnyOrder(
 				tuple("성수동 카페", "name"),
 				tuple("성수동 카페1", "name")
@@ -124,7 +125,7 @@ class UserGatheringRepositoryTest {
 		assertThat(participants.getContent()).hasSize(1)
 			.extracting(
 				ug -> ug.getId().getGathering().getName(),
-				ug -> ug.getId().getUser().getName()
+				ug -> ug.getId().getUser().getNickname()
 			)
 			.containsExactlyInAnyOrder(
 				tuple("성수동 카페", "name")

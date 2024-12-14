@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.core.oauth;
+package com.fesi.mukitlist.core.auth.oauth;
 
 import java.util.Map;
 

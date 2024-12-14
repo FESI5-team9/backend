@@ -2,7 +2,7 @@ package com.fesi.mukitlist.domain.service.auth.response;
 
 import java.time.LocalDateTime;
 
-import com.fesi.mukitlist.core.auth.User;
+import com.fesi.mukitlist.core.auth.application.User;
 
 public record UserInfoResponse(
 	Long id,

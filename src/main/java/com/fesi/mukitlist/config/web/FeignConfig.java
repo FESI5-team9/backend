@@ -1,8 +1,7 @@
-package com.fesi.mukitlist.config;
+package com.fesi.mukitlist.config.web;
 
 import com.fesi.mukitlist.api.exception.FeignClientExceptionErrorDecoder;
 import feign.Logger;
-import feign.RequestInterceptor;
 import feign.Retryer;
 import feign.codec.ErrorDecoder;
 import org.springframework.cloud.openfeign.EnableFeignClients;

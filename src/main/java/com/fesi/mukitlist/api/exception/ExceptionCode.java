@@ -28,7 +28,8 @@ public enum ExceptionCode {
 	//파일
 	RESOURCE_SIZE_LIMIT(HttpStatus.BAD_REQUEST, "SIZE_LIMIT", "파일의 용량은 10mb 이하여야 합니다."),
 	//서버
-	IO_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "IO_EXCEPTION", "입출력 오류가 발생했습니다.");
+	IO_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "IO_EXCEPTION", "입출력 오류가 발생했습니다."),
+	SERVER_CHECK(HttpStatus.INTERNAL_SERVER_ERROR, "SERVER_CHECK", "서버 로그 확인을 요청해주세요." );
 
 	private HttpStatus status;
 	private String code;

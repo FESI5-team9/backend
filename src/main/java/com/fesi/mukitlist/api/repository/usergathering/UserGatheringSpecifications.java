@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import org.springframework.data.jpa.domain.Specification;
 
 import com.fesi.mukitlist.core.Review;
-import com.fesi.mukitlist.core.auth.User;
+import com.fesi.mukitlist.core.auth.application.User;
 import com.fesi.mukitlist.core.gathering.Gathering;
 import com.fesi.mukitlist.core.usergathering.UserGathering;
 import com.fesi.mukitlist.core.usergathering.UserGatheringId;

@@ -25,6 +25,7 @@ import com.fesi.mukitlist.core.gathering.constant.GatheringType;
 import com.fesi.mukitlist.core.gathering.constant.LocationType;
 import com.fesi.mukitlist.api.controller.annotation.Authorize;
 
+import feign.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -55,8 +56,7 @@ public class ReviewController {
 	@PostMapping
 	public ResponseEntity<ReviewResponse> createReview(@RequestBody ReviewCreateRequest request,
 		@Parameter(hidden = true) @Authorize PrincipalDetails user) {
-		return new ResponseEntity<>(reviewService.createReview(request.toServiceRequest(), user.getUser()),
-			HttpStatus.OK);
+		return ResponseEntity.ok(reviewService.createReview(request.toServiceRequest(), user.getUser()));
 	}
 
 	@Operation(summary = "리뷰 목록 조회", description = "필터링 및 정렬 조건에 따라 리뷰 목록을 조회합니다.",
@@ -84,8 +84,9 @@ public class ReviewController {
 
 		ReviewRequest request = ReviewRequest.of(gatheringId, userId, type, location, registrationEnd, size,
 			page, sort, direction);
-		return new ResponseEntity<>(reviewService.getReviews(request.toServiceRequest()), HttpStatus.OK);
+		return ResponseEntity.ok(reviewService.getReviews(request.toServiceRequest()));
 	}
+
 	@Operation(summary = "리뷰 평점 목록 조회", description = "필터링에 따라 리뷰 평점 목록을 조회합니다",
 		responses = {
 			@ApiResponse(responseCode = "200", description = "리뷰 목록 조회 성공",
@@ -98,7 +99,7 @@ public class ReviewController {
 	public ResponseEntity<List<ReviewScoreResponse>> getReviewScores(
 		@RequestParam(required = false) List<Long> gatheringId,
 		@RequestParam(required = false) GatheringType type) {
-		return new ResponseEntity<>(reviewService.getReviewScores(gatheringId, type), HttpStatus.OK);
+		return ResponseEntity.ok(reviewService.getReviewScores(gatheringId, type));
 	}
 
 	@Operation(summary = "타입별 리뷰 평점 통계 조회", description = "타입별 리뷰 평점 통계를 조회합니다",
@@ -112,7 +113,7 @@ public class ReviewController {
 	@GetMapping("/statistics")
 	public ResponseEntity<ReviewStatisticsScoreResponse> getReviewScores(
 		@RequestParam(required = false) GatheringType type) {
-		return new ResponseEntity<>(reviewService.getReviewScoreStatistics(type), HttpStatus.OK);
+		return ResponseEntity.ok(reviewService.getReviewScoreStatistics(type));
 	}
 
 }

@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.config;
+package com.fesi.mukitlist.config.security;
 
 import java.util.List;
 

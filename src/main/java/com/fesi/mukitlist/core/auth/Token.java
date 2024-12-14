@@ -1,7 +1,7 @@
 package com.fesi.mukitlist.core.auth;
 
-import com.fesi.mukitlist.core.auth.constant.GrantType;
-import com.fesi.mukitlist.core.auth.constant.TokenType;
+import com.fesi.mukitlist.core.auth.application.User;
+
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
