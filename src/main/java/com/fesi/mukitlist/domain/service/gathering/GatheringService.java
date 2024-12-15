@@ -184,10 +184,10 @@ public class GatheringService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<GatheringListResponse> findFavoriteGatheringsBy(User user) {
+	public List<GatheringListResponse> findFavoriteGatheringsBy(User user, Pageable pageable) {
 
 		List<Long> gatheringCandidates = favoriteService.findFavoriteGatheringIdBy(user.getId());
-		List<Gathering> gatherings = gatheringRepository.findAllByIdIn(gatheringCandidates);
+		List<Gathering> gatherings = gatheringRepository.findAllByIdIn(gatheringCandidates, pageable);
 
 		return gatherings.stream()
 			.map(GatheringListResponse::of)

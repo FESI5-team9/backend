@@ -1,6 +1,8 @@
 package com.fesi.mukitlist.domain.service.auth;
 
 import static com.fesi.mukitlist.api.exception.ExceptionCode.*;
+import static com.fesi.mukitlist.core.auth.GrantType.*;
+import static com.fesi.mukitlist.core.auth.TokenType.*;
 
 import java.io.IOException;
 
@@ -14,9 +16,7 @@ import com.fesi.mukitlist.api.repository.TokenRepository;
 import com.fesi.mukitlist.api.repository.UserRepository;
 import com.fesi.mukitlist.core.auth.PrincipalDetails;
 import com.fesi.mukitlist.core.auth.Token;
-import com.fesi.mukitlist.core.auth.User;
-import com.fesi.mukitlist.core.auth.constant.GrantType;
-import com.fesi.mukitlist.core.auth.constant.TokenType;
+import com.fesi.mukitlist.core.auth.application.User;
 import com.fesi.mukitlist.domain.service.auth.request.AuthenticationServiceRequest;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -30,7 +30,6 @@ public class AuthenticationService {
 	private final UserRepository userRepository;
 	private final TokenRepository tokenRepository;
 	private final JwtService jwtService;
-	private final AuthenticationManager authenticationManager;
 
 	public String checkRefreshToken(PrincipalDetails principalDetails) {
 		if (tokenIsEmpty(principalDetails)) {
@@ -38,8 +37,8 @@ public class AuthenticationService {
 			Token savedToken = Token.builder()
 				.user(principalDetails.getUser())
 				.token(token)
-				.grantType(GrantType.BEARER)
-				.tokenType(TokenType.REFRESH)
+				.grantType(BEARER)
+				.tokenType(REFRESH)
 				.expired(false)
 				.build();
 			return tokenRepository.save(savedToken).getToken();

@@ -25,7 +25,6 @@ import com.fesi.mukitlist.api.controller.annotation.Authorize;
 import com.fesi.mukitlist.api.controller.gathering.request.GatheringCreateRequest;
 import com.fesi.mukitlist.api.controller.gathering.request.GatheringRequest;
 import com.fesi.mukitlist.api.controller.gathering.request.GatheringUpdateRequest;
-import com.fesi.mukitlist.api.exception.response.ValidationErrorResponse;
 import com.fesi.mukitlist.api.response.SimpleApiResponse;
 import com.fesi.mukitlist.core.auth.PrincipalDetails;
 import com.fesi.mukitlist.core.gathering.constant.GatheringStatus;
@@ -42,8 +41,6 @@ import com.fesi.mukitlist.domain.service.gathering.response.JoinedGatheringsResp
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
-import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -102,7 +99,7 @@ public class GatheringController {
 		return ResponseEntity.ok(gatheringService.getGatheringById(id, user != null ? user.getUser() : null));
 	}
 
-	@Operation(summary = "모임 상태 변경", description = "모임의 상태를 변경합니다.")
+	@Operation(summary = "모임 상태 변경", description = "모임의 상태를 변경합니다.", security = @SecurityRequirement(name = "bearerAuth"))
 	@GetMapping("/{id}/recruit")
 	ResponseEntity<Map<String, String>> getGatheringRecruit(@PathVariable("id") Long id,
 		@RequestParam GatheringStatus status,
@@ -197,9 +194,15 @@ public class GatheringController {
 		security = @SecurityRequirement(name = "bearerAuth"))
 	@GetMapping("/favorite")
 	public ResponseEntity<List<GatheringListResponse>> getFavoriteGatherings(
-		@Parameter(hidden = true) @Authorize PrincipalDetails user) {
+		@Parameter(hidden = true) @Authorize PrincipalDetails user,
+		@RequestParam(defaultValue = "10") int size,
+		@RequestParam(defaultValue = "0") int page,
+		@RequestParam(defaultValue = "dateTime") String sort,
+		@RequestParam(defaultValue = "desc") String direction) {
 
-		List<GatheringListResponse> response = gatheringService.findFavoriteGatheringsBy(user.getUser());
+		Sort sortOrder = Sort.by(Sort.Order.by(sort).with(Sort.Direction.fromString(direction)));
+		Pageable pageable = PageRequest.of(page, size, sortOrder);
+		List<GatheringListResponse> response = gatheringService.findFavoriteGatheringsBy(user.getUser(), pageable);
 		return ResponseEntity.ok(response);
 	}
 
