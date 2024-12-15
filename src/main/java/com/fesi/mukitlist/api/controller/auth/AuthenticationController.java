@@ -193,7 +193,7 @@ public class AuthenticationController {
 	@Operation(
 		summary = "새로운 액세스 토큰 발급",
 		description = "쿠키에서 리프레시 토큰을 가져와 유효성을 검사한 후 새로운 액세스 토큰을 발급합니다.",
-		security = @SecurityRequirement(name = "Cookie")
+		security = @SecurityRequirement(name = "bearerAuth")
 	)
 	@PostMapping("/managed-access-token") // TODO 더 좋게 받을 방법 있을까 고민
 	public ResponseEntity<AuthenticationResponse> refreshToken(
