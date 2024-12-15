@@ -52,6 +52,7 @@ public class UserService {
 			String storedName = s3Service.upload(request.image(), request.image().getOriginalFilename());
 			user.updateImage(storedName);
 		}
+		userRepository.save(user);
 		return UserInfoResponse.of(user);
 	}
 
