@@ -1,20 +1,5 @@
 package com.fesi.mukitlist.api.controller.auth;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.fesi.mukitlist.api.controller.auth.request.UserCreateRequest;
 import com.fesi.mukitlist.api.controller.auth.response.AuthenticationResponse;
 import com.fesi.mukitlist.api.response.SimpleApiResponse;
@@ -22,14 +7,22 @@ import com.fesi.mukitlist.domain.service.auth.AuthenticationService;
 import com.fesi.mukitlist.domain.service.auth.application.UserService;
 import com.fesi.mukitlist.domain.service.auth.request.AuthenticationServiceRequest;
 import com.fesi.mukitlist.domain.service.auth.response.UserInfoResponse;
-
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -224,6 +217,7 @@ public class AuthenticationController {
 	)
 	@PostMapping("/managed-access-token") // TODO 더 좋게 받을 방법 있을까 고민
 	public ResponseEntity<AuthenticationResponse> refreshToken(
+		@Parameter(hidden = true)
 		@CookieValue(value = "refresh-token") String refreshToken) throws IOException {
 		return ResponseEntity.ok(
 			AuthenticationResponse.of(authenticationService.generateToNewAccessToken(refreshToken)));
