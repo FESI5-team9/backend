@@ -30,6 +30,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -193,13 +194,14 @@ public class AuthenticationController {
 	@Operation(
 		summary = "새로운 액세스 토큰 발급",
 		description = "쿠키에서 리프레시 토큰을 가져와 유효성을 검사한 후 새로운 액세스 토큰을 발급합니다.",
-		security = @SecurityRequirement(name = "refreshToken")
+		security = @SecurityRequirement(name = "Cookie")
 	)
 	@PostMapping("/managed-access-token") // TODO 더 좋게 받을 방법 있을까 고민
 	public ResponseEntity<AuthenticationResponse> refreshToken(
-		@Parameter(hidden = true) @CookieValue(value = "refresh-Token") String refreshToken) throws IOException {
+		@Parameter(hidden = true) @CookieValue(value = "refresh-token",required = false) Cookie cookie) throws IOException {
+		String refreshToken = cookie.getValue();
 		return ResponseEntity.ok(
-			AuthenticationResponse.of(authenticationService.generateToNewAccessToken(refreshToken)));
+			AuthenticationResponse.of(authenticationService.generateToNewAccessToken(cookie.getValue())));
 	}
 
 }

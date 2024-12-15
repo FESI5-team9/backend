@@ -25,11 +25,10 @@ public class SwaggerConfig {
 							.type(SecurityScheme.Type.HTTP)
 							.scheme("bearer")
 							.bearerFormat("JWT"))
-					.addSecuritySchemes("refreshToken",
+					.addSecuritySchemes("Cookie",
 						new SecurityScheme()
-							.name("Cookie")
-							.scheme("refreshToken")
-							.type(SecurityScheme.Type.HTTP)
+							.name("refresh-token")
+							.type(SecurityScheme.Type.APIKEY)
 							.in(SecurityScheme.In.COOKIE)
 					)
 			);
