@@ -7,10 +7,10 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,7 +30,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -198,10 +197,10 @@ public class AuthenticationController {
 	)
 	@PostMapping("/managed-access-token") // TODO 더 좋게 받을 방법 있을까 고민
 	public ResponseEntity<AuthenticationResponse> refreshToken(
-		@Parameter(hidden = true) @CookieValue(value = "refresh-token",required = false) Cookie cookie) throws IOException {
-		String refreshToken = cookie.getValue();
+		@Parameter(hidden = true) @RequestHeader(value = "Authorization") String header) throws IOException {
+		String refreshToken = header.split(" ")[1];
 		return ResponseEntity.ok(
-			AuthenticationResponse.of(authenticationService.generateToNewAccessToken(cookie.getValue())));
+			AuthenticationResponse.of(authenticationService.generateToNewAccessToken(refreshToken)));
 	}
 
 }
