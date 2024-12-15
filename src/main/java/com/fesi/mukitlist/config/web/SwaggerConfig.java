@@ -18,12 +18,20 @@ public class SwaggerConfig {
 				.title("먹킷리스트")
 				.version("1.0.0")
 				.description("먹킷리스트 API 명세서"))
-			.components(new Components().addSecuritySchemes("bearerAuth",
-				new SecurityScheme()
-					.name("Authorization")
-					.type(SecurityScheme.Type.HTTP)
-					.scheme("bearer")
-					.bearerFormat("JWT"))
+			.components(
+				new Components().addSecuritySchemes("bearerAuth",
+						new SecurityScheme()
+							.name("Authorization")
+							.type(SecurityScheme.Type.HTTP)
+							.scheme("bearer")
+							.bearerFormat("JWT"))
+					.addSecuritySchemes("refreshToken",
+						new SecurityScheme()
+							.name("Cookie")
+							.scheme("refreshToken")
+							.type(SecurityScheme.Type.HTTP)
+							.in(SecurityScheme.In.COOKIE)
+					)
 			);
 	}
 }

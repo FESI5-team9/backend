@@ -24,9 +24,11 @@ import com.fesi.mukitlist.domain.service.auth.request.AuthenticationServiceReque
 import com.fesi.mukitlist.domain.service.auth.response.UserInfoResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -191,40 +193,11 @@ public class AuthenticationController {
 	@Operation(
 		summary = "새로운 액세스 토큰 발급",
 		description = "쿠키에서 리프레시 토큰을 가져와 유효성을 검사한 후 새로운 액세스 토큰을 발급합니다.",
-		responses = {
-			@ApiResponse(
-				responseCode = "200",
-				description = "새로운 액세스 토큰이 발급되었습니다.",
-				content = @Content(
-					mediaType = "application/json",
-					schema = @Schema(implementation = AuthenticationResponse.class)
-				)
-			),
-			@ApiResponse(
-				responseCode = "400",
-				description = "잘못된 요청 또는 쿠키에 리프레시 토큰이 없음",
-				content = @Content(
-					mediaType = "application/json",
-					schema = @Schema(
-						example = "{\"code\":\"BAD_REQUEST\",\"message\":\"쿠키에 리프레시 토큰이 없습니다.\"}"
-					)
-				)
-			),
-			@ApiResponse(
-				responseCode = "401",
-				description = "유효하지 않거나 만료된 리프레시 토큰",
-				content = @Content(
-					mediaType = "application/json",
-					schema = @Schema(
-						example = "{\"code\":\"TOKEN_EXPIRED\",\"message\":\"유효하지 않은 리프레시 토큰입니다.\"}"
-					)
-				)
-			)
-		}
+		security = @SecurityRequirement(name = "refreshToken")
 	)
 	@PostMapping("/managed-access-token") // TODO 더 좋게 받을 방법 있을까 고민
 	public ResponseEntity<AuthenticationResponse> refreshToken(
-		@CookieValue(value = "refresh-token") String refreshToken) throws IOException {
+		@Parameter(hidden = true) @CookieValue(value = "refresh-Token") String refreshToken) throws IOException {
 		return ResponseEntity.ok(
 			AuthenticationResponse.of(authenticationService.generateToNewAccessToken(refreshToken)));
 	}

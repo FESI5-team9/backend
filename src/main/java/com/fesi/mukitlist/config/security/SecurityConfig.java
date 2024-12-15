@@ -57,7 +57,7 @@ public class SecurityConfig {
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowedOrigins(
 			List.of(
-				"http://localhost:3000",
+				"http://localhost:3000/",
 				"https://scintillating-caramel-7883ef.netlify.app/",
 				"https://muckitlist.vercel.app/"));
 		configuration.addAllowedMethod("*");

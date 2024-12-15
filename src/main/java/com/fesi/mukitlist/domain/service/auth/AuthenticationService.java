@@ -7,7 +7,6 @@ import static com.fesi.mukitlist.core.auth.TokenType.*;
 import java.io.IOException;
 
 import org.springframework.http.ResponseCookie;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Service;
 
 import com.fesi.mukitlist.api.controller.auth.response.AuthenticationResponse;
@@ -78,7 +77,6 @@ public class AuthenticationService {
 			.secure(false)
 			.path("/")
 			.sameSite("None")
-			.domain("mukitlist.com")
 			.maxAge(60 * 60 * 24 * 7)
 			.build();
 	}
