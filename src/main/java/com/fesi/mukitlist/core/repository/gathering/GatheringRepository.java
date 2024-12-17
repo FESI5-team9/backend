@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.api.repository.gathering;
+package com.fesi.mukitlist.core.repository.gathering;
 
 import java.util.List;
 
@@ -7,14 +7,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
-import com.fesi.mukitlist.domain.service.gathering.request.GatheringServiceRequest;
 import com.fesi.mukitlist.core.auth.application.User;
 import com.fesi.mukitlist.core.gathering.Gathering;
 import com.fesi.mukitlist.core.gathering.constant.GatheringType;
 import com.fesi.mukitlist.core.gathering.constant.LocationType;
+import com.fesi.mukitlist.domain.service.gathering.request.GatheringServiceRequest;
 
 public interface GatheringRepository extends JpaRepository<Gathering, Long>, JpaSpecificationExecutor<Gathering> {
 	default Page<Gathering> findWithFilters(GatheringServiceRequest request, Pageable pageable) {
@@ -33,8 +31,5 @@ public interface GatheringRepository extends JpaRepository<Gathering, Long>, Jpa
 	List<Gathering> findAllByIdIn(List<Long> gatheringId, Pageable pageable);
 
 	List<Gathering> findGatheringsByUser(User user, Pageable pageable);
-
-	@Query("SELECT g FROM Gathering g WHERE g IN :gatherings AND NOT EXISTS (SELECT 1 FROM Review r WHERE r.gathering = g)")
-	List<Gathering> findGatheringsWithoutReviews(@Param("gatherings") List<Gathering> gatherings);
 
 }
