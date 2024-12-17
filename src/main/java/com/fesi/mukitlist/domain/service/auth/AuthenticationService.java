@@ -10,6 +10,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
 import com.fesi.mukitlist.api.controller.auth.response.AuthenticationResponse;
+import com.fesi.mukitlist.api.controller.auth.response.AuthenticationResponseV2;
 import com.fesi.mukitlist.api.exception.AppException;
 import com.fesi.mukitlist.api.repository.TokenRepository;
 import com.fesi.mukitlist.api.repository.UserRepository;
@@ -62,6 +63,20 @@ public class AuthenticationService {
 			.build();
 	}
 
+	public AuthenticationResponseV2 authenticate(AuthenticationServiceRequest request) {
+		User user = userRepository.findByEmail(request.email())
+			.orElseThrow(() -> new AppException(NOT_FOUND_USER));
+		PrincipalDetails principalDetails = new PrincipalDetails(user);
+
+		String accessToken = jwtService.generateAccessToken(principalDetails);
+		String refreshToken = checkRefreshToken(principalDetails);
+
+		return AuthenticationResponseV2.builder()
+			.accessToken(accessToken)
+			.refreshToken(refreshToken)
+			.build();
+	}
+
 	public String generateToNewAccessToken(String refreshToken) throws IOException {
 		Token refreshTokenEntity = tokenRepository.findFirstByToken(refreshToken);
 		if (refreshTokenEntity != null) {
@@ -69,7 +84,6 @@ public class AuthenticationService {
 		}
 		throw new AppException(TOKEN_IS_NOT_IN_COOKIE);
 	}
-
 
 	public ResponseCookie addRefreshTokenToCookie(String refreshToken) {
 		return ResponseCookie.from("refresh-token", refreshToken)
