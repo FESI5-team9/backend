@@ -6,9 +6,9 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fesi.mukitlist.api.repository.KeywordRepository;
 import com.fesi.mukitlist.core.gathering.Gathering;
 import com.fesi.mukitlist.core.gathering.Keyword;
+import com.fesi.mukitlist.core.repository.KeywordRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,7 +28,6 @@ public class KeywordService {
 			.toList();
 		return keywordRepository.saveAll(keywords);
 	}
-
 
 	public void updateKeywords(List<String> newKeywordValues, Gathering gathering) {
 		if (newKeywordValues == null) {

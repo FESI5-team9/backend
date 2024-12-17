@@ -13,9 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import com.fesi.mukitlist.api.repository.gathering.GatheringRepository;
 import com.fesi.mukitlist.core.gathering.Gathering;
 import com.fesi.mukitlist.core.gathering.Keyword;
+import com.fesi.mukitlist.core.repository.KeywordRepository;
+import com.fesi.mukitlist.core.repository.gathering.GatheringRepository;
 
 @ActiveProfiles("test")
 @DataJpaTest

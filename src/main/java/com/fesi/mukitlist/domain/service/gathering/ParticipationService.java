@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fesi.mukitlist.api.exception.AppException;
-import com.fesi.mukitlist.api.repository.usergathering.UserGatheringRepository;
 import com.fesi.mukitlist.core.auth.application.User;
 import com.fesi.mukitlist.core.gathering.Gathering;
+import com.fesi.mukitlist.core.repository.usergathering.UserGatheringRepository;
 import com.fesi.mukitlist.core.usergathering.UserGathering;
 import com.fesi.mukitlist.core.usergathering.UserGatheringId;
 

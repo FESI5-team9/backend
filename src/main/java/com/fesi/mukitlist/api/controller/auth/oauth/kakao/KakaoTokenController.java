@@ -24,13 +24,13 @@ import com.fesi.mukitlist.api.controller.auth.oauth.kakao.request.KakaoServiceCr
 import com.fesi.mukitlist.api.controller.auth.oauth.kakao.request.KakaoUserCreateRequest;
 import com.fesi.mukitlist.api.controller.auth.oauth.kakao.response.KakaoTokenResponse;
 import com.fesi.mukitlist.api.controller.auth.response.AuthenticationResponse;
-import com.fesi.mukitlist.api.repository.TokenRepository;
-import com.fesi.mukitlist.api.repository.UserRepository;
 import com.fesi.mukitlist.core.auth.PrincipalDetails;
 import com.fesi.mukitlist.core.auth.Token;
 import com.fesi.mukitlist.core.auth.application.User;
 import com.fesi.mukitlist.core.auth.oauth.KakaoUserInfo;
 import com.fesi.mukitlist.core.auth.oauth.OAuth2UserInfo;
+import com.fesi.mukitlist.core.repository.TokenRepository;
+import com.fesi.mukitlist.core.repository.UserRepository;
 import com.fesi.mukitlist.domain.service.auth.AuthenticationService;
 import com.fesi.mukitlist.domain.service.auth.JwtService;
 import com.fesi.mukitlist.domain.service.auth.application.UserService;

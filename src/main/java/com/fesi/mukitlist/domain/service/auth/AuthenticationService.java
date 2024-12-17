@@ -11,11 +11,11 @@ import org.springframework.stereotype.Service;
 
 import com.fesi.mukitlist.api.controller.auth.response.AuthenticationResponse;
 import com.fesi.mukitlist.api.exception.AppException;
-import com.fesi.mukitlist.api.repository.TokenRepository;
-import com.fesi.mukitlist.api.repository.UserRepository;
 import com.fesi.mukitlist.core.auth.PrincipalDetails;
 import com.fesi.mukitlist.core.auth.Token;
 import com.fesi.mukitlist.core.auth.application.User;
+import com.fesi.mukitlist.core.repository.TokenRepository;
+import com.fesi.mukitlist.core.repository.UserRepository;
 import com.fesi.mukitlist.domain.service.auth.request.AuthenticationServiceRequest;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -69,7 +69,6 @@ public class AuthenticationService {
 		}
 		throw new AppException(TOKEN_IS_NOT_IN_COOKIE);
 	}
-
 
 	public ResponseCookie addRefreshTokenToCookie(String refreshToken) {
 		return ResponseCookie.from("refresh-token", refreshToken)

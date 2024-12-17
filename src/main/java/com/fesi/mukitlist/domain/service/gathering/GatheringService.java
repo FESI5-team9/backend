@@ -14,7 +14,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fesi.mukitlist.api.exception.AppException;
-import com.fesi.mukitlist.api.repository.gathering.GatheringRepository;
+import com.fesi.mukitlist.core.auth.application.User;
+import com.fesi.mukitlist.core.gathering.Gathering;
+import com.fesi.mukitlist.core.gathering.Keyword;
+import com.fesi.mukitlist.core.gathering.constant.GatheringStatus;
+import com.fesi.mukitlist.core.gathering.constant.GatheringType;
+import com.fesi.mukitlist.core.gathering.constant.LocationType;
+import com.fesi.mukitlist.core.repository.gathering.GatheringRepository;
+import com.fesi.mukitlist.core.usergathering.UserGathering;
 import com.fesi.mukitlist.domain.service.aws.S3Service;
 import com.fesi.mukitlist.domain.service.gathering.request.GatheringServiceCreateRequest;
 import com.fesi.mukitlist.domain.service.gathering.request.GatheringServiceRequest;
@@ -26,13 +33,6 @@ import com.fesi.mukitlist.domain.service.gathering.response.GatheringResponse;
 import com.fesi.mukitlist.domain.service.gathering.response.GatheringUpdateResponse;
 import com.fesi.mukitlist.domain.service.gathering.response.GatheringWithParticipantsResponse;
 import com.fesi.mukitlist.domain.service.gathering.response.JoinedGatheringsResponse;
-import com.fesi.mukitlist.core.auth.application.User;
-import com.fesi.mukitlist.core.gathering.Gathering;
-import com.fesi.mukitlist.core.gathering.Keyword;
-import com.fesi.mukitlist.core.gathering.constant.GatheringStatus;
-import com.fesi.mukitlist.core.gathering.constant.GatheringType;
-import com.fesi.mukitlist.core.gathering.constant.LocationType;
-import com.fesi.mukitlist.core.usergathering.UserGathering;
 
 import lombok.RequiredArgsConstructor;
 
@@ -239,7 +239,6 @@ public class GatheringService {
 	private Gathering getGatheringsFrom(Long id) {
 		return gatheringRepository.findById(id).orElseThrow(() -> new AppException(NOT_FOUND));
 	}
-
 
 	private void checkCancelAuthority(Gathering gathering, User user) {
 		if (!gathering.isHostUser(user)) {

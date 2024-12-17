@@ -13,9 +13,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.fesi.mukitlist.api.exception.AppException;
-import com.fesi.mukitlist.api.repository.UserRepository;
 import com.fesi.mukitlist.core.auth.PrincipalDetails;
 import com.fesi.mukitlist.core.auth.application.User;
+import com.fesi.mukitlist.core.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 

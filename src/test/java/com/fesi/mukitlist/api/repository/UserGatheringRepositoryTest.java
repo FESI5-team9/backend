@@ -17,10 +17,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 
-import com.fesi.mukitlist.api.repository.gathering.GatheringRepository;
-import com.fesi.mukitlist.api.repository.usergathering.UserGatheringRepository;
 import com.fesi.mukitlist.core.auth.application.User;
 import com.fesi.mukitlist.core.gathering.Gathering;
+import com.fesi.mukitlist.core.repository.UserRepository;
+import com.fesi.mukitlist.core.repository.gathering.GatheringRepository;
+import com.fesi.mukitlist.core.repository.usergathering.UserGatheringRepository;
 import com.fesi.mukitlist.core.usergathering.UserGathering;
 import com.fesi.mukitlist.core.usergathering.UserGatheringId;
 
