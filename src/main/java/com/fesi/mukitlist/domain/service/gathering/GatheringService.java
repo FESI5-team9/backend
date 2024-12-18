@@ -147,16 +147,19 @@ public class GatheringService {
 
 	public void joinGathering(Long id, User user) {
 		Gathering gathering = getGatheringsFrom(id);
-		participationService.checkAlreadyJoinedGathering(gathering, user);
 
 		LocalDateTime joinedTime = LocalDateTime.now();
+
+		participationService.checkAlreadyJoinedGathering(gathering, user);
 		participationService.joinGathering(gathering, user, joinedTime);
 	}
 
 	public void leaveGathering(Long id, User user, LocalDateTime leaveTime) {
 		Gathering gathering = getGatheringsFrom(id);
+		checkGatheringHost(gathering, user);
+		
+		participationService.checkAlreadyLeavedGathering(gathering, user);
 		participationService.leaveGathering(gathering, user, leaveTime);
-		gatheringRepository.save(gathering);
 	}
 
 	@Transactional(readOnly = true)
@@ -240,6 +243,12 @@ public class GatheringService {
 
 	private Gathering getGatheringsFrom(Long id) {
 		return gatheringRepository.findById(id).orElseThrow(() -> new AppException(NOT_FOUND));
+	}
+
+	private void checkGatheringHost(Gathering gathering, User user) {
+		if (gathering.isHostUser(user)) {
+			throw new AppException(HOST_CANNOT_LEAVE);
+		}
 	}
 
 	private void checkCancelAuthority(Gathering gathering, User user) {

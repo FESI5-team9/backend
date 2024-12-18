@@ -23,14 +23,16 @@ public enum ExceptionCode {
 	AT_LEAST_ONE(HttpStatus.BAD_REQUEST, "AT_LEAST_ONE", "size는 최소 1이어야 합니다"),
 	NOT_FOUND(HttpStatus.NOT_FOUND, "NOT_FOUND", "모임을 찾을 수 없습니다"),
 	MINIMUM_CAPACITY(HttpStatus.BAD_REQUEST, "MINIMUM_CAPACITY", "최소 인원은 5명입니다."),
-	FORBIDDEN(HttpStatus.FORBIDDEN, "FORBIDDEN", "모임을 변경할 권한이 없습니다"),
-	PAST_GATHERING(HttpStatus.BAD_REQUEST, "PAST_GATHERING", "이미 지난 모임입니다"),
+	FORBIDDEN(HttpStatus.FORBIDDEN, "FORBIDDEN", "모임을 변경할 권한이 없습니다."),
+	PAST_GATHERING(HttpStatus.BAD_REQUEST, "PAST_GATHERING", "이미 지난 모임입니다."),
 
 	//참여
+	HOST_CANNOT_LEAVE(HttpStatus.BAD_REQUEST, "HOST_CANNOT_LEAVE", "호스트는 모임을 떠날 수 없습니다."),
 	GATHERING_CANCELED(HttpStatus.BAD_REQUEST, "CANCELED_GATHERING", "취소된 모임입니다."),
 	NOT_PARTICIPANTS(HttpStatus.FORBIDDEN, "FORBIDDEN", "모임에 참석하지 않았습니다."),
 	MAXIMUM_PARTICIPANTS(HttpStatus.BAD_REQUEST, "MAXIMUM_PARTICIPANTS", "정원 초과 입니다."),
 	ALREADY_JOINED_GATHERING(HttpStatus.BAD_REQUEST, "ALREADY_JOINED_GATHERING", "이미 참여한 모임입니다."),
+	ALREADY_LEAVED_GATHERING(HttpStatus.BAD_REQUEST, "ALREADY_LEAVED_GATHERING", "이미 참여 취소한 모임입니다."),
 	//파일
 	RESOURCE_SIZE_LIMIT(HttpStatus.BAD_REQUEST, "SIZE_LIMIT", "파일의 용량은 10mb 이하여야 합니다."),
 

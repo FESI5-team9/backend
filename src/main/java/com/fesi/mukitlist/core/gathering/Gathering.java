@@ -187,7 +187,7 @@ public class Gathering {
 		return this.participantCount >= this.openParticipantCount;
 	}
 
-	public void joinParticipant(int participantCount) {
+	public void updateParticipantCount(int participantCount) {
 		this.participantCount = participantCount;
 	}
 

@@ -26,19 +26,22 @@ public class ParticipationService {
 	private final UserGatheringRepository userGatheringRepository;
 
 	public void checkAlreadyJoinedGathering(Gathering gathering, User user) {
-		if (userGatheringRepository.existsByIdUserAndIdGathering(user, gathering)) {
-			throw new AppException(ALREADY_JOINED_GATHERING);
-		}
+		checkIsAlreadyJoinedUser(gathering, user);
+	}
+
+	public void checkAlreadyLeavedGathering(Gathering gathering, User user) {
+		checkIsAlreadyLeavedUser(gathering, user);
 	}
 
 	public Gathering joinGathering(Gathering gathering, User user, LocalDateTime joinedTime) {
+		checkIsNotPastGathering(gathering, joinedTime);
 		checkIsCanceledGathering(gathering);
 		checkIsJoinedGathering(gathering);
 
 		UserGatheringId userGatheringId = UserGatheringId.of(user, gathering);
 		UserGathering userGathering = UserGathering.of(userGatheringId, joinedTime);
 		userGatheringRepository.save(userGathering);
-		gathering.joinParticipant(userGatheringRepository.findByIdGathering(gathering).size());
+		gathering.updateParticipantCount(getParticipantCount(gathering));
 		return gathering;
 	}
 
@@ -49,7 +52,7 @@ public class ParticipationService {
 		UserGathering userGathering = userGatheringRepository.findById(userGatheringId)
 			.orElseThrow(() -> new AppException(NOT_PARTICIPANTS));
 		userGatheringRepository.delete(userGathering);
-		gathering.leaveParticipant();
+		gathering.updateParticipantCount(getParticipantCount(gathering));
 
 		return gathering;
 	}
@@ -71,8 +74,20 @@ public class ParticipationService {
 		return userGatheringRepository.findWithFilters(user, completed, reviewed, pageable);
 	}
 
-	private void checkIsNotPastGathering(Gathering gathering, LocalDateTime leaveTime) {
-		if (leaveTime.isAfter(gathering.getDateTime())) {
+	private void checkIsAlreadyJoinedUser(Gathering gathering, User user) {
+		if (userGatheringRepository.existsByIdUserAndIdGathering(user, gathering)) {
+			throw new AppException(ALREADY_JOINED_GATHERING);
+		}
+	}
+
+	private void checkIsAlreadyLeavedUser(Gathering gathering, User user) {
+		if (!userGatheringRepository.existsByIdUserAndIdGathering(user, gathering)) {
+			throw new AppException(ALREADY_LEAVED_GATHERING);
+		}
+	}
+
+	private void checkIsNotPastGathering(Gathering gathering, LocalDateTime time) {
+		if (time.isAfter(gathering.getDateTime())) {
 			throw new AppException(PAST_GATHERING);
 		}
 	}
@@ -87,7 +102,10 @@ public class ParticipationService {
 		if (!gathering.isJoinableGathering()) {
 			throw new AppException(MAXIMUM_PARTICIPANTS);
 		}
+	}
 
+	private int getParticipantCount(Gathering gathering) {
+		return userGatheringRepository.findByIdGathering(gathering).size();
 	}
 
 }
