@@ -147,6 +147,8 @@ public class GatheringService {
 
 	public void joinGathering(Long id, User user) {
 		Gathering gathering = getGatheringsFrom(id);
+		participationService.checkAlreadyJoinedGathering(gathering, user);
+
 		LocalDateTime joinedTime = LocalDateTime.now();
 		participationService.joinGathering(gathering, user, joinedTime);
 	}

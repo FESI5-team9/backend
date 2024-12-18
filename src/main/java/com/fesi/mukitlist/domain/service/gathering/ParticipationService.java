@@ -25,6 +25,12 @@ import lombok.RequiredArgsConstructor;
 public class ParticipationService {
 	private final UserGatheringRepository userGatheringRepository;
 
+	public void checkAlreadyJoinedGathering(Gathering gathering, User user) {
+		if (userGatheringRepository.existsByIdUserAndIdGathering(user, gathering)) {
+			throw new AppException(ALREADY_JOINED_GATHERING);
+		}
+	}
+
 	public Gathering joinGathering(Gathering gathering, User user, LocalDateTime joinedTime) {
 		checkIsCanceledGathering(gathering);
 		checkIsJoinedGathering(gathering);
@@ -32,7 +38,7 @@ public class ParticipationService {
 		UserGatheringId userGatheringId = UserGatheringId.of(user, gathering);
 		UserGathering userGathering = UserGathering.of(userGatheringId, joinedTime);
 		userGatheringRepository.save(userGathering);
-		gathering.joinParticipant();
+		gathering.joinParticipant(userGatheringRepository.findByIdGathering(gathering).size());
 		return gathering;
 	}
 

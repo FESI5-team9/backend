@@ -10,12 +10,12 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.fesi.mukitlist.api.exception.AppException;
-import com.fesi.mukitlist.domain.service.gathering.request.GatheringServiceCreateRequest;
-import com.fesi.mukitlist.domain.service.gathering.request.GatheringServiceUpdateRequest;
 import com.fesi.mukitlist.core.auth.application.User;
 import com.fesi.mukitlist.core.gathering.constant.GatheringStatus;
 import com.fesi.mukitlist.core.gathering.constant.GatheringType;
 import com.fesi.mukitlist.core.gathering.constant.LocationType;
+import com.fesi.mukitlist.domain.service.gathering.request.GatheringServiceCreateRequest;
+import com.fesi.mukitlist.domain.service.gathering.request.GatheringServiceUpdateRequest;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -109,8 +109,9 @@ public class Gathering {
 		LocalDateTime createdAt,
 		User user,
 		LocalDateTime canceledAt
-		) {
-		if (location == null || type == null || name == null || dateTime == null || address1 == null || address2 == null) {
+	) {
+		if (location == null || type == null || name == null || dateTime == null || address1 == null
+			|| address2 == null) {
 			throw new AppException(REQUIRED_PROPERTIES);
 		}
 		this.location = location;
@@ -179,15 +180,15 @@ public class Gathering {
 	}
 
 	public boolean isJoinableGathering() {
-		return this.participantCount <= this.capacity;
+		return this.participantCount < this.capacity;
 	}
 
 	public boolean isOpenedGathering() {
 		return this.participantCount >= this.openParticipantCount;
 	}
 
-	public void joinParticipant() {
-		this.participantCount++;
+	public void joinParticipant(int participantCount) {
+		this.participantCount = participantCount;
 	}
 
 	public void leaveParticipant() {

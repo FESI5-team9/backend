@@ -34,4 +34,5 @@ public interface UserGatheringRepository
 	@Query("SELECT ug.id.gathering FROM UserGathering ug WHERE ug.id.user = :user AND NOT EXISTS (SELECT 1 FROM Review r WHERE r.gathering = ug.id.gathering)")
 	List<Gathering> findGatheringsWithoutReviewsByUser(@Param("user") User user);
 
+	boolean existsByIdUserAndIdGathering(User user, Gathering gathering);
 }
