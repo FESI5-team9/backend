@@ -5,6 +5,7 @@ import static com.fesi.mukitlist.core.gathering.constant.LocationType.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,13 +13,17 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.fesi.mukitlist.api.exception.AppException;
+import com.fesi.mukitlist.core.Review;
 import com.fesi.mukitlist.core.auth.application.User;
 import com.fesi.mukitlist.core.gathering.Gathering;
 import com.fesi.mukitlist.core.repository.UserRepository;
 import com.fesi.mukitlist.core.repository.gathering.GatheringRepository;
+import com.fesi.mukitlist.core.repository.review.ReviewRepository;
 import com.fesi.mukitlist.core.repository.usergathering.UserGatheringRepository;
 import com.fesi.mukitlist.core.usergathering.UserGathering;
 import com.fesi.mukitlist.core.usergathering.UserGatheringId;
@@ -37,6 +42,8 @@ class ParticipationServiceTest {
 	private UserRepository userRepository;
 	@Autowired
 	private GatheringRepository gatheringRepository;
+	@Autowired
+	private ReviewRepository reviewRepository;
 
 	@BeforeEach
 	void setUp() {
@@ -55,6 +62,7 @@ class ParticipationServiceTest {
 
 	@AfterEach
 	void tearDown() {
+		reviewRepository.deleteAllInBatch();
 		userGatheringRepository.deleteAllInBatch();
 		gatheringRepository.deleteAllInBatch();
 		userRepository.deleteAllInBatch();
@@ -90,8 +98,8 @@ class ParticipationServiceTest {
 		LocalDateTime joinedTime = TEST_TIME.plusHours(1);
 
 		// when // then
-		assertThatThrownBy(() -> participationService.joinGathering(gathering, user, joinedTime))
-			.isInstanceOf(AppException.class)
+		assertThatThrownBy(() -> participationService.joinGathering(gathering, user, joinedTime)).isInstanceOf(
+				AppException.class)
 			.extracting("exceptionCode")
 			.extracting("code", "message")
 			.containsExactly("PAST_GATHERING", "이미 지난 모임입니다.");
@@ -110,8 +118,8 @@ class ParticipationServiceTest {
 		LocalDateTime joinedTime = LocalDateTime.now();
 
 		// when // then
-		assertThatThrownBy(() -> participationService.joinGathering(gathering, user, joinedTime))
-			.isInstanceOf(AppException.class)
+		assertThatThrownBy(() -> participationService.joinGathering(gathering, user, joinedTime)).isInstanceOf(
+				AppException.class)
 			.extracting("exceptionCode")
 			.extracting("code", "message")
 			.containsExactly("CANCELED_GATHERING", "취소된 모임입니다.");
@@ -130,8 +138,8 @@ class ParticipationServiceTest {
 		LocalDateTime joinedTime = LocalDateTime.now();
 
 		// when // then
-		assertThatThrownBy(() -> participationService.joinGathering(gathering, user, joinedTime))
-			.isInstanceOf(AppException.class)
+		assertThatThrownBy(() -> participationService.joinGathering(gathering, user, joinedTime)).isInstanceOf(
+				AppException.class)
 			.extracting("exceptionCode")
 			.extracting("code", "message")
 			.containsExactly("MAXIMUM_PARTICIPANTS", "정원 초과 입니다.");
@@ -148,10 +156,10 @@ class ParticipationServiceTest {
 
 		LocalDateTime joinedTime = LocalDateTime.now();
 		Gathering joinedGathering = participationService.joinGathering(gathering, user, joinedTime);
-		;
+
 		// when // then
-		assertThatThrownBy(() -> participationService.checkAlreadyJoinedGathering(joinedGathering, user))
-			.isInstanceOf(AppException.class)
+		assertThatThrownBy(() -> participationService.checkAlreadyJoinedGathering(joinedGathering, user)).isInstanceOf(
+				AppException.class)
 			.extracting("exceptionCode")
 			.extracting("code", "message")
 			.containsExactly("ALREADY_JOINED_GATHERING", "이미 참여한 모임입니다.");
@@ -189,8 +197,8 @@ class ParticipationServiceTest {
 		LocalDateTime joinedTime = TEST_TIME.plusHours(1);
 
 		// when // then
-		assertThatThrownBy(() -> participationService.leaveGathering(gathering, user, joinedTime))
-			.isInstanceOf(AppException.class)
+		assertThatThrownBy(() -> participationService.leaveGathering(gathering, user, joinedTime)).isInstanceOf(
+				AppException.class)
 			.extracting("exceptionCode")
 			.extracting("code", "message")
 			.containsExactly("PAST_GATHERING", "이미 지난 모임입니다.");
@@ -222,8 +230,8 @@ class ParticipationServiceTest {
 		participationService.leaveGathering(gathering, user, TEST_TIME);
 
 		//when // then
-		assertThatThrownBy(() -> participationService.leaveGathering(gathering, user, TEST_TIME))
-			.isInstanceOf(AppException.class)
+		assertThatThrownBy(() -> participationService.leaveGathering(gathering, user, TEST_TIME)).isInstanceOf(
+				AppException.class)
 			.extracting("exceptionCode")
 			.extracting("code", "message")
 			.containsExactly("FORBIDDEN", "모임에 참석하지 않았습니다.");
@@ -244,31 +252,153 @@ class ParticipationServiceTest {
 		participationService.leaveGathering(gathering, user, TEST_TIME);
 
 		//when // then
-		assertThatThrownBy(() -> participationService.checkAlreadyLeavedGathering(gathering, user))
-			.isInstanceOf(AppException.class)
+		assertThatThrownBy(() -> participationService.checkAlreadyLeavedGathering(gathering, user)).isInstanceOf(
+				AppException.class)
 			.extracting("exceptionCode")
 			.extracting("code", "message")
 			.containsExactly("ALREADY_LEAVED_GATHERING", "이미 참여 취소한 모임입니다.");
 	}
 
 	@Test
+	@DisplayName("모임 참가자 리스트를 조회합니다.")
 	void getParticipantsBy() {
+		// given
+		User user1 = createUser("user1@test.com", "user1");
+		User user2 = createUser("user2@test.com", "user2");
+		userRepository.saveAll(List.of(user1, user2));
+
+		Gathering gathering = createGathering(1, 5, TEST_TIME);
+		gatheringRepository.save(gathering);
+
+		UserGatheringId userGatheringId1 = UserGatheringId.of(user1, gathering);
+		UserGatheringId userGatheringId2 = UserGatheringId.of(user2, gathering);
+
+		userGatheringRepository.saveAll(
+			List.of(UserGathering.of(userGatheringId1, TEST_TIME), UserGathering.of(userGatheringId2, TEST_TIME)));
+
+		// when
+		List<UserGathering> participants = participationService.getParticipantsBy(gathering);
+
+		// then
+		assertThat(participants).hasSize(2)
+			.extracting("id")
+			.extracting("user")
+			.extracting("email")
+			.containsExactlyInAnyOrder("user1@test.com", "user2@test.com");
 	}
 
 	@Test
-	void testGetParticipantsBy() {
+	@DisplayName("완료된 참여한 모임을 조회합니다.")
+	void getParticipantsWithCompletedFilter() {
+		// given
+		User user = userRepository.findByEmail("test@test.com").orElseThrow();
+
+		LocalDateTime now = LocalDateTime.now();
+		Gathering gathering1 = createGathering(1, 5, now.minusDays(1));
+		Gathering gathering2 = createGathering(1, 5, now.plusDays(1));
+		gatheringRepository.saveAll(List.of(gathering1, gathering2));
+
+		UserGatheringId userGatheringId1 = UserGatheringId.of(user, gathering1);
+		UserGatheringId userGatheringId2 = UserGatheringId.of(user, gathering2);
+
+		userGatheringRepository.saveAll(List.of(
+			UserGathering.of(userGatheringId1, now.minusDays(2)),
+			UserGathering.of(userGatheringId2, now)));
+		Pageable pageable = Pageable.unpaged();
+
+		// when
+		Page<UserGathering> participants = participationService.getParticipantsWithFilters(user, true, null, pageable);
+
+		// then
+		assertThat(participants).hasSize(1)
+			.extracting("id")
+			.extracting("gathering")
+			.extracting("name")
+			.containsExactly("성수동 카페");
 	}
 
+	// TODO 이게 여기 있는게 맞을까..
 	@Test
-	void testGetParticipantsBy1() {
+	@DisplayName("리뷰를 남긴 모임을 조회 합니다.")
+	void getParticipantsWithReviewedFilter() {
+		// given
+		User user = userRepository.findByEmail("test@test.com").orElseThrow();
+
+		Gathering gathering1 = createGathering(1, 5, TEST_TIME);
+		Gathering gathering2 = createGathering(1, 6, TEST_TIME);
+		gatheringRepository.saveAll(List.of(gathering1, gathering2));
+
+		Review review = Review.builder()
+			.user(user)
+			.gathering(gathering1)
+			.score(5)
+			.comment("좋아요")
+			.build();
+		reviewRepository.save(review);
+
+		UserGatheringId userGatheringId1 = UserGatheringId.of(user, gathering1);
+		UserGatheringId userGatheringId2 = UserGatheringId.of(user, gathering2);
+		userGatheringRepository.saveAll(
+			List.of(
+				UserGathering.of(userGatheringId1, TEST_TIME),
+				UserGathering.of(userGatheringId2, TEST_TIME)
+			)
+		);
+		Pageable pageable = Pageable.unpaged();
+
+		// when
+		Page<UserGathering> participants = participationService.getParticipantsWithFilters(user, null, true, pageable);
+
+		// then
+		assertThat(participants).hasSize(1)
+			.extracting("id")
+			.extracting("gathering")
+			.extracting("capacity")
+			.containsExactly(5);
 	}
 
+	// TODO 배타적인지 확인
 	@Test
-	void getParticipantsWithFilters() {
-	}
+	@DisplayName("리뷰를 남긴 완료된 모임을 조회합니다.")
+	void getParticipantsWithCompletedAndReviewedFilters() {
+		// given
+		User user = userRepository.findByEmail("test@test.com").orElseThrow();
 
-	private Gathering createGathering(int openParticipantCount, int capacity,
-		LocalDateTime dateTime) {
+		Gathering gathering1 = createGathering(1, 5, TEST_TIME.minusDays(1));
+		Gathering gathering2 = createGathering(1, 6, TEST_TIME);
+		gatheringRepository.saveAll(List.of(gathering1, gathering2));
+
+		Review review = Review.builder()
+			.user(user)
+			.gathering(gathering1)
+			.score(5)
+			.comment("좋아요")
+			.build();
+		reviewRepository.save(review);
+
+		UserGatheringId userGatheringId1 = UserGatheringId.of(user, gathering1);
+		UserGatheringId userGatheringId2 = UserGatheringId.of(user, gathering2);
+		userGatheringRepository.saveAll(
+			List.of(
+				UserGathering.of(userGatheringId1, TEST_TIME.minusDays(2)),
+				UserGathering.of(userGatheringId2, TEST_TIME)
+			)
+		);
+		Pageable pageable = Pageable.unpaged();
+
+		// when
+		Page<UserGathering> participants = participationService.getParticipantsWithFilters(user, true, true, pageable);
+
+		// then
+		assertThat(participants).hasSize(1)
+			.extracting("id")
+			.extracting("gathering")
+			.extracting("name")
+			.containsExactly("성수동 카페");
+
+	}
+	
+	private Gathering createGathering(int openParticipantCount, int capacity, LocalDateTime dateTime) {
 		return Gathering.builder()
 			.location(SEOUL)
 			.type(CAFE)
