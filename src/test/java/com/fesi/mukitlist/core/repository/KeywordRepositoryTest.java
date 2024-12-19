@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.api.repository;
+package com.fesi.mukitlist.core.repository;
 
 import static com.fesi.mukitlist.core.gathering.constant.GatheringType.*;
 import static com.fesi.mukitlist.core.gathering.constant.LocationType.*;
@@ -15,7 +15,6 @@ import org.springframework.test.context.ActiveProfiles;
 
 import com.fesi.mukitlist.core.gathering.Gathering;
 import com.fesi.mukitlist.core.gathering.Keyword;
-import com.fesi.mukitlist.core.repository.KeywordRepository;
 import com.fesi.mukitlist.core.repository.gathering.GatheringRepository;
 
 @ActiveProfiles("test")
