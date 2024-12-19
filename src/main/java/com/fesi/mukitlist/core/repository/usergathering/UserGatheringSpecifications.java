@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.api.repository.usergathering;
+package com.fesi.mukitlist.core.repository.usergathering;
 
 import java.time.LocalDateTime;
 
@@ -25,7 +25,8 @@ public class UserGatheringSpecifications {
 
 	public static Specification<UserGathering> byCompleted(Boolean completed) {
 		return (root, query, criteriaBuilder) -> {
-			if (completed == null) return criteriaBuilder.conjunction(); // No filtering
+			if (completed == null)
+				return criteriaBuilder.conjunction(); // No filtering
 			Join<UserGatheringId, Gathering> gatheringJoin = root.join("id").join("gathering", JoinType.INNER);
 			LocalDateTime now = LocalDateTime.now();
 			return completed
@@ -36,7 +37,8 @@ public class UserGatheringSpecifications {
 
 	public static Specification<UserGathering> byReviewed(Boolean reviewed) {
 		return (root, query, criteriaBuilder) -> {
-			if (reviewed == null) return criteriaBuilder.conjunction();
+			if (reviewed == null)
+				return criteriaBuilder.conjunction();
 			Join<UserGatheringId, Gathering> gatheringJoin = root.join("id").join("gathering", JoinType.INNER);
 
 			Subquery<Long> reviewSubquery = query.subquery(Long.class);

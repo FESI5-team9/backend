@@ -7,27 +7,26 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
-
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fesi.mukitlist.api.exception.AppException;
-import com.fesi.mukitlist.api.repository.review.ReviewRepository;
-import com.fesi.mukitlist.api.repository.usergathering.UserGatheringRepository;
-import com.fesi.mukitlist.domain.service.PageService;
-import com.fesi.mukitlist.domain.service.review.response.ReviewStatisticsScoreResponse;
+import com.fesi.mukitlist.core.Review;
 import com.fesi.mukitlist.core.auth.application.User;
 import com.fesi.mukitlist.core.gathering.Gathering;
 import com.fesi.mukitlist.core.gathering.constant.GatheringType;
-import com.fesi.mukitlist.core.Review;
-import com.fesi.mukitlist.api.repository.gathering.GatheringRepository;
+import com.fesi.mukitlist.core.repository.gathering.GatheringRepository;
+import com.fesi.mukitlist.core.repository.review.ReviewRepository;
+import com.fesi.mukitlist.core.repository.usergathering.UserGatheringRepository;
+import com.fesi.mukitlist.core.usergathering.UserGatheringId;
+import com.fesi.mukitlist.domain.service.PageService;
 import com.fesi.mukitlist.domain.service.review.request.ReviewServiceCreateRequest;
 import com.fesi.mukitlist.domain.service.review.request.ReviewServiceRequest;
 import com.fesi.mukitlist.domain.service.review.response.ReviewResponse;
 import com.fesi.mukitlist.domain.service.review.response.ReviewScoreResponse;
+import com.fesi.mukitlist.domain.service.review.response.ReviewStatisticsScoreResponse;
 import com.fesi.mukitlist.domain.service.review.response.ReviewWithGatheringAndUserResponse;
-import com.fesi.mukitlist.core.usergathering.UserGatheringId;
 
 import lombok.RequiredArgsConstructor;
 

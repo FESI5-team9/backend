@@ -1,15 +1,15 @@
-package com.fesi.mukitlist.api.repository.review;
+package com.fesi.mukitlist.core.repository.review;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import com.fesi.mukitlist.domain.service.review.request.ReviewServiceRequest;
 import com.fesi.mukitlist.core.Review;
 import com.fesi.mukitlist.core.auth.application.User;
 import com.fesi.mukitlist.core.gathering.Gathering;
 import com.fesi.mukitlist.core.gathering.constant.GatheringType;
+import com.fesi.mukitlist.domain.service.review.request.ReviewServiceRequest;
 
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;

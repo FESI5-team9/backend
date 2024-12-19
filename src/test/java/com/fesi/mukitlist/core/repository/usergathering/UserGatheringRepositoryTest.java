@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.api.repository;
+package com.fesi.mukitlist.core.repository.usergathering;
 
 import static com.fesi.mukitlist.core.gathering.constant.GatheringType.*;
 import static com.fesi.mukitlist.core.gathering.constant.LocationType.*;
@@ -17,16 +17,19 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 
-import com.fesi.mukitlist.api.repository.gathering.GatheringRepository;
-import com.fesi.mukitlist.api.repository.usergathering.UserGatheringRepository;
 import com.fesi.mukitlist.core.auth.application.User;
 import com.fesi.mukitlist.core.gathering.Gathering;
+import com.fesi.mukitlist.core.repository.UserRepository;
+import com.fesi.mukitlist.core.repository.gathering.GatheringRepository;
 import com.fesi.mukitlist.core.usergathering.UserGathering;
 import com.fesi.mukitlist.core.usergathering.UserGatheringId;
 
 @ActiveProfiles("test")
 @DataJpaTest
 class UserGatheringRepositoryTest {
+	private static final LocalDateTime TEST_TIME = LocalDateTime.now().plusDays(1);
+	private Gathering savedGathering;
+
 	@Autowired
 	private UserGatheringRepository userGatheringRepository;
 	@Autowired
@@ -50,16 +53,16 @@ class UserGatheringRepositoryTest {
 			.location(SEOUL)
 			.type(CAFE)
 			.name("성수동 카페")
-			.dateTime(LocalDateTime.now())
+			.dateTime(TEST_TIME)
 			.capacity(5)
-			.registrationEnd(LocalDateTime.now())
+			.registrationEnd(TEST_TIME.minusHours(6))
 			.address1("성동구")
 			.address2("성수동")
 			.description("성수동 카페 탐방")
 			.createdBy(user.getNickname())
 			.user(user)
 			.build();
-		gatheringRepository.save(gathering);
+		savedGathering = gatheringRepository.save(gathering);
 
 		UserGatheringId userGatheringId = UserGatheringId.of(user, gathering);
 		UserGathering userGathering = UserGathering.of(userGatheringId, LocalDateTime.now());
@@ -73,7 +76,7 @@ class UserGatheringRepositoryTest {
 		userRepository.deleteAllInBatch();
 	}
 
-	@DisplayName("로그인된 사용자가 참석한 모임 데이터를 가져온다.")
+	@DisplayName("사용자가 참석한 모임 데이터를 가져온다.")
 	@Test
 	void findWithFilters() {
 		// given
@@ -81,9 +84,9 @@ class UserGatheringRepositoryTest {
 			.location(SEOUL)
 			.type(CAFE)
 			.name("성수동 카페1")
-			.dateTime(LocalDateTime.now())
+			.dateTime(TEST_TIME.plusDays(1))
 			.capacity(5)
-			.registrationEnd(LocalDateTime.now())
+			.registrationEnd(TEST_TIME.minusHours(6))
 			.address1("성동구")
 			.address2("성수동")
 			.description("성수동 카페 탐방")
@@ -91,23 +94,23 @@ class UserGatheringRepositoryTest {
 			.build();
 		gatheringRepository.save(gathering);
 
-		User user = userRepository.findById(1L).orElseThrow();
+		User user = userRepository.findByEmail("test@test.com").orElseThrow();
 		UserGatheringId userGatheringId = UserGatheringId.of(user, gathering);
 		UserGathering userGathering = UserGathering.of(userGatheringId, LocalDateTime.now());
 		userGatheringRepository.save(userGathering);
 
 		Pageable pageable = PageRequest.of(0, 10);
 		// when
-		Page<UserGathering> gatherings = userGatheringRepository.findWithFilters(user, null, null,
+		Page<UserGathering> response = userGatheringRepository.findWithFilters(user, null, null,
 			pageable);
 		// then
-		assertThat(gatherings.getContent()).isNotEmpty().hasSize(2)
-			.extracting(
-				g -> g.getId().getGathering().getName(),
-				g -> g.getId().getUser().getNickname()
-			).containsExactlyInAnyOrder(
-				tuple("성수동 카페", "name"),
-				tuple("성수동 카페1", "name")
+		assertThat(response).isNotEmpty().hasSize(2)
+			.extracting("id")
+			.extracting("gathering")
+			.extracting("name", "createdBy")
+			.containsExactlyInAnyOrder(
+				tuple("성수동 카페", "test"),
+				tuple("성수동 카페1", "test")
 			);
 	}
 
@@ -115,20 +118,16 @@ class UserGatheringRepositoryTest {
 	@Test
 	void findByIdGathering() {
 		// given
-		Gathering gathering = gatheringRepository.findById(1L).orElseThrow();
 		Pageable pageable = PageRequest.of(0, 10);
 
 		// when
-		Page<UserGathering> participants = userGatheringRepository.findByIdGathering(gathering, pageable);
+		Page<UserGathering> response = userGatheringRepository.findByIdGathering(savedGathering, pageable);
 
 		// then
-		assertThat(participants.getContent()).hasSize(1)
-			.extracting(
-				ug -> ug.getId().getGathering().getName(),
-				ug -> ug.getId().getUser().getNickname()
-			)
-			.containsExactlyInAnyOrder(
-				tuple("성수동 카페", "name")
-			);
+		assertThat(response).hasSize(1)
+			.extracting("id")
+			.extracting("user")
+			.extracting("nickname")
+			.containsExactly("test");
 	}
 }

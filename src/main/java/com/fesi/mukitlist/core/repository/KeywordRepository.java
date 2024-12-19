@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.api.repository;
+package com.fesi.mukitlist.core.repository;
 
 import java.util.List;
 

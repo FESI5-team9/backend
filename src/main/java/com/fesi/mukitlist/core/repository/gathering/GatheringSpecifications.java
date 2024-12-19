@@ -1,4 +1,4 @@
-package com.fesi.mukitlist.api.repository.gathering;
+package com.fesi.mukitlist.core.repository.gathering;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -7,11 +7,11 @@ import java.util.stream.Collectors;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import com.fesi.mukitlist.domain.service.gathering.request.GatheringServiceRequest;
 import com.fesi.mukitlist.core.gathering.Gathering;
 import com.fesi.mukitlist.core.gathering.Keyword;
 import com.fesi.mukitlist.core.gathering.constant.GatheringType;
 import com.fesi.mukitlist.core.gathering.constant.LocationType;
+import com.fesi.mukitlist.domain.service.gathering.request.GatheringServiceRequest;
 
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
@@ -50,7 +50,8 @@ public class GatheringSpecifications {
 		});
 	}
 
-	public static Specification<Gathering> bySearchTerms(List<String> searchTerms, LocationType locationType, GatheringType gatheringType) {
+	public static Specification<Gathering> bySearchTerms(List<String> searchTerms, LocationType locationType,
+		GatheringType gatheringType) {
 		return (root, query, criteriaBuilder) -> {
 			List<Predicate> predicates = new ArrayList<>();
 

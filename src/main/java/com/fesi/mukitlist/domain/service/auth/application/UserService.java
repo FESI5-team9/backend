@@ -11,10 +11,10 @@ import org.springframework.stereotype.Service;
 import com.fesi.mukitlist.api.controller.auth.oauth.kakao.request.KakaoServiceCreateRequest;
 import com.fesi.mukitlist.api.controller.auth.request.UserUpdateRequest;
 import com.fesi.mukitlist.api.exception.AppException;
-import com.fesi.mukitlist.api.repository.UserRepository;
+import com.fesi.mukitlist.core.auth.application.User;
+import com.fesi.mukitlist.core.repository.UserRepository;
 import com.fesi.mukitlist.domain.service.auth.request.UserServiceCreateRequest;
 import com.fesi.mukitlist.domain.service.auth.response.UserInfoResponse;
-import com.fesi.mukitlist.core.auth.application.User;
 import com.fesi.mukitlist.domain.service.aws.S3Service;
 
 import jakarta.transaction.Transactional;
