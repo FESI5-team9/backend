@@ -27,7 +27,7 @@ import com.fesi.mukitlist.domain.service.gathering.request.GatheringServiceReque
 @ActiveProfiles("test")
 @DataJpaTest
 class GatheringRepositoryTest {
-	private final LocalDateTime TEST_TIME = LocalDateTime.now().plusDays(1);
+	private static final LocalDateTime TEST_TIME = LocalDateTime.now().plusDays(1);
 
 	@Autowired
 	private GatheringRepository gatheringRepository;
