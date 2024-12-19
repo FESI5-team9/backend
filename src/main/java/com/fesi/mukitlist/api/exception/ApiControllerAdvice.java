@@ -1,17 +1,16 @@
 package com.fesi.mukitlist.api.exception;
 
 import java.sql.SQLIntegrityConstraintViolationException;
-import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fesi.mukitlist.api.exception.response.AppErrorResponse;
@@ -50,7 +49,7 @@ public class ApiControllerAdvice {
 		@ApiResponse(responseCode = "400", description = "요청 오류",
 			content = @Content(mediaType = "application/json",
 				schema = @Schema(implementation = ValidationErrorResponse.class))),
-		@ApiResponse(responseCode = "404", description = "요청 오류",
+		@ApiResponse(responseCode = "404", description = "조회 실패 오류",
 			content = @Content(mediaType = "application/json",
 				schema = @Schema(implementation = AppErrorResponse.class)))
 	})
@@ -78,15 +77,35 @@ public class ApiControllerAdvice {
 
 	}
 
+	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "400", description = "요청 오류",
+			content = @Content(mediaType = "application/json",
+				schema = @Schema(implementation = ValidationErrorResponse.class))),
+		@ApiResponse(responseCode = "404", description = "조회 실패 오류",
+			content = @Content(mediaType = "application/json",
+				schema = @Schema(implementation = AppErrorResponse.class)))
+	})
+	public ResponseEntity<ValidationErrorResponse> handle(MethodArgumentTypeMismatchException e) {
+
+		String parameterName = e.getName();
+
+		return new ResponseEntity<>(ValidationErrorResponse.of(
+			"VALIDATION_ERROR",
+			parameterName,
+			responseMessage(parameterName)
+		), HttpStatus.BAD_REQUEST);
+	}
+
 	@ExceptionHandler(AppException.class)
-	public ResponseEntity<AppErrorResponse> handle (AppException e) {
-		return new ResponseEntity<>(AppErrorResponse.of(e.getExceptionCode()),e.getExceptionCode().getStatus());
+	public ResponseEntity<AppErrorResponse> handle(AppException e) {
+		return new ResponseEntity<>(AppErrorResponse.of(e.getExceptionCode()), e.getExceptionCode().getStatus());
 	}
 
 	@ExceptionHandler(SQLIntegrityConstraintViolationException.class)
-	protected ResponseEntity handleSQLException(SQLIntegrityConstraintViolationException e){
-		log.error("ERROR : {}", e.getMessage(), e);
-		return new ResponseEntity(Map.of("code",e.getCause()), HttpStatus.INTERNAL_SERVER_ERROR);
+	protected ResponseEntity handleSQLException(SQLIntegrityConstraintViolationException e) {
+		log.error("ERROR: {}", e.getMessage(), e);
+		return new ResponseEntity(AppErrorResponse.of(ExceptionCode.EMAIL_EXIST), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	private String responseMessage(String parameter) {
@@ -99,6 +118,4 @@ public class ApiControllerAdvice {
 		}
 		return message;
 	}
-
-
 }

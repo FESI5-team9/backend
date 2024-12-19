@@ -6,11 +6,11 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fesi.mukitlist.api.repository.FavoriteGatheringRepository;
-import com.fesi.mukitlist.core.auth.User;
+import com.fesi.mukitlist.core.auth.application.User;
 import com.fesi.mukitlist.core.gathering.Gathering;
 import com.fesi.mukitlist.core.gathering.favorite.FavoriteGathering;
 import com.fesi.mukitlist.core.gathering.favorite.FavoriteGatheringId;
+import com.fesi.mukitlist.core.repository.FavoriteGatheringRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,7 +34,7 @@ public class FavoriteService {
 	}
 
 	public void markAsFavorite(Gathering gathering, User user) {
-		 favoriteGatheringRepository.save(
+		favoriteGatheringRepository.save(
 			FavoriteGathering.of(FavoriteGatheringId.of(user.getId(), gathering.getId())));
 	}
 

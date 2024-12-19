@@ -43,4 +43,5 @@ out/
 ### VS Code ###
 .vscode/
 
-/application.yml
+### SubModule ###
+/src/main/resources/

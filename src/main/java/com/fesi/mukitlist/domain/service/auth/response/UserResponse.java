@@ -1,6 +1,6 @@
 package com.fesi.mukitlist.domain.service.auth.response;
 
-import com.fesi.mukitlist.core.auth.User;
+import com.fesi.mukitlist.core.auth.application.User;
 
 public record UserResponse(
 	Long id,

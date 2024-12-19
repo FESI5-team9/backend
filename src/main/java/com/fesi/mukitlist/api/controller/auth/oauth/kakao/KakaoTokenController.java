@@ -1,9 +1,8 @@
 package com.fesi.mukitlist.api.controller.auth.oauth.kakao;
 
-
-import static com.fesi.mukitlist.core.auth.constant.GrantType.*;
-import static com.fesi.mukitlist.core.auth.constant.TokenType.*;
-import static com.fesi.mukitlist.core.auth.constant.UserType.*;
+import static com.fesi.mukitlist.core.auth.GrantType.*;
+import static com.fesi.mukitlist.core.auth.TokenType.*;
+import static com.fesi.mukitlist.core.auth.application.constant.UserType.*;
 
 import java.util.Map;
 import java.util.Objects;
@@ -12,8 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,16 +24,16 @@ import com.fesi.mukitlist.api.controller.auth.oauth.kakao.request.KakaoServiceCr
 import com.fesi.mukitlist.api.controller.auth.oauth.kakao.request.KakaoUserCreateRequest;
 import com.fesi.mukitlist.api.controller.auth.oauth.kakao.response.KakaoTokenResponse;
 import com.fesi.mukitlist.api.controller.auth.response.AuthenticationResponse;
-import com.fesi.mukitlist.api.repository.TokenRepository;
-import com.fesi.mukitlist.api.repository.UserRepository;
 import com.fesi.mukitlist.core.auth.PrincipalDetails;
 import com.fesi.mukitlist.core.auth.Token;
-import com.fesi.mukitlist.core.auth.User;
-import com.fesi.mukitlist.core.oauth.KakaoUserInfo;
-import com.fesi.mukitlist.core.oauth.OAuth2UserInfo;
+import com.fesi.mukitlist.core.auth.application.User;
+import com.fesi.mukitlist.core.auth.oauth.KakaoUserInfo;
+import com.fesi.mukitlist.core.auth.oauth.OAuth2UserInfo;
+import com.fesi.mukitlist.core.repository.TokenRepository;
+import com.fesi.mukitlist.core.repository.UserRepository;
 import com.fesi.mukitlist.domain.service.auth.AuthenticationService;
 import com.fesi.mukitlist.domain.service.auth.JwtService;
-import com.fesi.mukitlist.domain.service.auth.UserService;
+import com.fesi.mukitlist.domain.service.auth.application.UserService;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +49,6 @@ public class KakaoTokenController {
 	private final AuthenticationService authenticationService;
 	private final JwtService jwtService;
 	private final UserRepository userRepository;
-	private final PasswordEncoder passwordEncoder;
 	private final TokenRepository tokenRepository;
 
 	@Value("${kakao.client.id}")
@@ -59,17 +57,9 @@ public class KakaoTokenController {
 	@Value("${kakao.client.secret}")
 	private String clientSecret;
 
-	@GetMapping("/kakao/login")
-	public String redirectToKakaoLogin() {
-		String kakaoAuthUrl = "https://kauth.kakao.com/oauth/authorize?client_id=" + clientId +
-			"&redirect_uri=" + "http://localhost:8080/api/auth/kakao/callback" + "&response_type=code";
-		return "redirect:" + kakaoAuthUrl;
-	}
-
 	@GetMapping("/kakao/callback")
 	public ResponseEntity<AuthenticationResponse> loginCallback(@RequestParam String code,
 		HttpServletResponse response) {
-		String contentType = "application/x-www-form-urlencoded;charset=UTF-8";
 
 		KakaoTokenResponse kakaoTokenResponse = kakaoTokenClient.requestKakaoToken(
 			"authorization_code",
@@ -79,8 +69,6 @@ public class KakaoTokenController {
 			"http://localhost:8080/api/auth/kakao/callback"
 		);
 
-		log.info("Kakao Token Response: " + kakaoTokenResponse);
-
 		OAuth2UserInfo oAuth2UserInfo = getKakaoUserInfo(kakaoTokenResponse.access_token());
 		String email = oAuth2UserInfo.getEmail();
 
@@ -88,7 +76,6 @@ public class KakaoTokenController {
 			String providerId = oAuth2UserInfo.getProviderId();
 			String nickname =
 				oAuth2UserInfo.getNickname() != null ? oAuth2UserInfo.getNickname() : oAuth2UserInfo.getName();
-			String password = passwordEncoder.encode("temporaryPassword");
 
 			KakaoServiceCreateRequest userCreateRequest = KakaoUserCreateRequest.toServiceRequest(
 				email,
@@ -102,7 +89,8 @@ public class KakaoTokenController {
 		String accessToken = jwtService.generateAccessToken(kakaoAccount);
 		String refreshToken = jwtService.generateRefreshToken(kakaoAccount);
 		tokenRepository.save(Token.of(refreshToken, BEARER, REFRESH, false, user));
-		authenticationService.addRefreshTokenToCookie(response, refreshToken);
+		ResponseCookie cookie = authenticationService.addRefreshTokenToCookie(refreshToken);
+		response.addHeader("Set-Cookie", cookie.toString());
 		// 루트도메인
 		return ResponseEntity.ok(AuthenticationResponse.of(accessToken));
 	}

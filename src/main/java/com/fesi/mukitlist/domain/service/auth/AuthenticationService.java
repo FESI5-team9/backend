@@ -1,25 +1,24 @@
 package com.fesi.mukitlist.domain.service.auth;
 
 import static com.fesi.mukitlist.api.exception.ExceptionCode.*;
+import static com.fesi.mukitlist.core.auth.GrantType.*;
+import static com.fesi.mukitlist.core.auth.TokenType.*;
 
 import java.io.IOException;
 
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
 import com.fesi.mukitlist.api.controller.auth.response.AuthenticationResponse;
+import com.fesi.mukitlist.api.controller.auth.response.AuthenticationResponseV2;
 import com.fesi.mukitlist.api.exception.AppException;
-import com.fesi.mukitlist.api.repository.TokenRepository;
-import com.fesi.mukitlist.api.repository.UserRepository;
 import com.fesi.mukitlist.core.auth.PrincipalDetails;
 import com.fesi.mukitlist.core.auth.Token;
-import com.fesi.mukitlist.core.auth.User;
-import com.fesi.mukitlist.core.auth.constant.GrantType;
-import com.fesi.mukitlist.core.auth.constant.TokenType;
+import com.fesi.mukitlist.core.auth.application.User;
+import com.fesi.mukitlist.core.repository.TokenRepository;
+import com.fesi.mukitlist.core.repository.UserRepository;
 import com.fesi.mukitlist.domain.service.auth.request.AuthenticationServiceRequest;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,67 +27,75 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class AuthenticationService {
-    private final UserRepository userRepository;
-    private final TokenRepository tokenRepository;
-    private final JwtService jwtService;
-    private final AuthenticationManager authenticationManager;
+	private final UserRepository userRepository;
+	private final TokenRepository tokenRepository;
+	private final JwtService jwtService;
 
-    public void saveUserToken(PrincipalDetails principalDetails, String refreshToken) {
-        Token existingToken = tokenRepository.findByUserAndToken(principalDetails.getUser().getId(), refreshToken);
-        if (existingToken != null) {
-            existingToken = Token.builder()
-                    .user(principalDetails.getUser())
-                    .token(refreshToken)
-                    .grantType(GrantType.BEARER)
-                    .tokenType(TokenType.REFRESH)
-                    .expired(false)
-                    .build();
-            tokenRepository.save(existingToken);
-        } else {
-            Token token = Token.builder()
-                    .user(principalDetails.getUser())
-                    .token(refreshToken)
-                    .tokenType(TokenType.REFRESH)
-                    .expired(false)
-                    .build();
-            tokenRepository.save(token);
-        }
-    }
+	public String checkRefreshToken(PrincipalDetails principalDetails) {
+		if (tokenIsEmpty(principalDetails)) {
+			String token = jwtService.generateRefreshToken(principalDetails);
+			Token savedToken = Token.builder()
+				.user(principalDetails.getUser())
+				.token(token)
+				.grantType(BEARER)
+				.tokenType(REFRESH)
+				.expired(false)
+				.build();
+			return tokenRepository.save(savedToken).getToken();
+		} else {
+			return tokenRepository.findFirstByUserId(principalDetails.getUser().getId()).getToken();
+		}
+	}
 
-    public AuthenticationResponse authenticate(AuthenticationServiceRequest request, HttpServletResponse response) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.email(), request.password()));
+	public AuthenticationResponse authenticate(AuthenticationServiceRequest request, HttpServletResponse response) {
+		User user = userRepository.findByEmail(request.email())
+			.orElseThrow(() -> new AppException(NOT_FOUND_USER));
+		PrincipalDetails principalDetails = new PrincipalDetails(user);
 
-        User user = userRepository.findByEmail(request.email())
-                .orElseThrow(() -> new AppException(NOT_FOUND_USER));
+		String accessToken = jwtService.generateAccessToken(principalDetails);
+		String refreshToken = checkRefreshToken(principalDetails);
 
-        PrincipalDetails principalDetails = new PrincipalDetails(user);
+		ResponseCookie cookie = addRefreshTokenToCookie(refreshToken);
+		response.addHeader("Set-Cookie", cookie.toString());
 
-        String accessToken = jwtService.generateAccessToken(principalDetails);
-        String refreshToken = jwtService.generateRefreshToken(principalDetails);
-        saveUserToken(principalDetails, refreshToken);
-        addRefreshTokenToCookie(response, refreshToken);
-        return AuthenticationResponse.builder()
-                .accessToken(accessToken)
-                .build();
-    }
+		return AuthenticationResponse.builder()
+			.accessToken(accessToken)
+			.build();
+	}
 
-    public AuthenticationResponse refreshToken(String token) throws IOException {
-        jwtService.isRefreshTokenValid(token);
-        Token tokenInfo = tokenRepository.findByToken(token);
-        String accessToken = "";
-        if (tokenRepository.existsTokenByUserIdAndToken(tokenInfo.getUser().getId(), token)) {
-            accessToken = jwtService.generateAccessToken(new PrincipalDetails(tokenInfo.getUser()));
-        }
-        return AuthenticationResponse.of(accessToken);
-    }
+	public AuthenticationResponseV2 authenticate(AuthenticationServiceRequest request) {
+		User user = userRepository.findByEmail(request.email())
+			.orElseThrow(() -> new AppException(NOT_FOUND_USER));
+		PrincipalDetails principalDetails = new PrincipalDetails(user);
 
-    public void addRefreshTokenToCookie(HttpServletResponse response, String refreshToken) {
-        Cookie cookie = new Cookie("refresh-token", refreshToken);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(false);
-        cookie.setPath("/");
-        cookie.setMaxAge(60 * 60 * 24 * 7);
-        response.addCookie(cookie);
-    }
+		String accessToken = jwtService.generateAccessToken(principalDetails);
+		String refreshToken = checkRefreshToken(principalDetails);
 
+		return AuthenticationResponseV2.builder()
+			.accessToken(accessToken)
+			.refreshToken(refreshToken)
+			.build();
+	}
+
+	public String generateToNewAccessToken(String refreshToken) throws IOException {
+		Token refreshTokenEntity = tokenRepository.findFirstByToken(refreshToken);
+		if (refreshTokenEntity != null) {
+			return jwtService.generateAccessToken(new PrincipalDetails(refreshTokenEntity.getUser()));
+		}
+		throw new AppException(TOKEN_IS_NOT_IN_COOKIE);
+	}
+
+	public ResponseCookie addRefreshTokenToCookie(String refreshToken) {
+		return ResponseCookie.from("refresh-token", refreshToken)
+			.httpOnly(true)
+			.secure(false)
+			.path("/")
+			.sameSite("None")
+			.maxAge(60 * 60 * 24 * 7)
+			.build();
+	}
+
+	private boolean tokenIsEmpty(PrincipalDetails principalDetails) {
+		return !tokenRepository.existsTokenByUserId(principalDetails.getUser().getId());
+	}
 }

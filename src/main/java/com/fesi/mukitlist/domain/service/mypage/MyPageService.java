@@ -10,16 +10,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fesi.mukitlist.api.controller.mypage.response.MyPageReviewResponse;
 import com.fesi.mukitlist.api.controller.mypage.response.ReviewCompletedList;
 import com.fesi.mukitlist.api.controller.mypage.response.ReviewUnCompletedList;
-import com.fesi.mukitlist.api.repository.gathering.GatheringRepository;
-import com.fesi.mukitlist.api.repository.review.ReviewRepository;
-import com.fesi.mukitlist.api.repository.usergathering.UserGatheringRepository;
+import com.fesi.mukitlist.core.Review;
+import com.fesi.mukitlist.core.auth.application.User;
+import com.fesi.mukitlist.core.gathering.Gathering;
+import com.fesi.mukitlist.core.repository.gathering.GatheringRepository;
+import com.fesi.mukitlist.core.repository.review.ReviewRepository;
+import com.fesi.mukitlist.core.repository.usergathering.UserGatheringRepository;
 import com.fesi.mukitlist.domain.service.gathering.response.GatheringListResponse;
 import com.fesi.mukitlist.domain.service.review.response.ReviewResponse;
-import com.fesi.mukitlist.core.Review;
-import com.fesi.mukitlist.core.auth.PrincipalDetails;
-import com.fesi.mukitlist.core.auth.User;
-import com.fesi.mukitlist.core.gathering.Gathering;
-import com.fesi.mukitlist.core.usergathering.UserGathering;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,8 +29,8 @@ public class MyPageService {
 	private final GatheringRepository gatheringRepository;
 	private final ReviewRepository reviewRepository;
 
-	public List<GatheringListResponse> getGatheringMypage(PrincipalDetails user, Pageable pageable) {
-		List<Gathering> response  = gatheringRepository.findGatheringsByUser(user.getUser(), pageable);
+	public List<GatheringListResponse> getGatheringMypage(User user, Pageable pageable) {
+		List<Gathering> response = gatheringRepository.findGatheringsByUser(user, pageable);
 		return response.stream()
 			.map(GatheringListResponse::of)
 			.toList();
@@ -44,10 +42,8 @@ public class MyPageService {
 			.map(r -> ReviewCompletedList.of(GatheringListResponse.of(r.getGathering()), ReviewResponse.of(r)))
 			.collect(Collectors.toList());
 
-		List<UserGathering> userGatherings = userGatheringRepository.findByIdUser(user);
-		List<Gathering> gatherings = userGatherings.stream().map(ug -> ug.getId().getGathering()).toList();
-		List<ReviewUnCompletedList> reviewUnCompletedLists = gatheringRepository.findGatheringsWithoutReviews(
-				gatherings).stream()
+		List<Gathering> gatheringCandidates = userGatheringRepository.findGatheringsWithoutReviewsByUser(user);
+		List<ReviewUnCompletedList> reviewUnCompletedLists = gatheringCandidates.stream()
 			.map(g -> ReviewUnCompletedList.of(GatheringListResponse.of(g))).toList();
 
 		return MyPageReviewResponse.of(reviewCompletedLists, reviewUnCompletedLists);
